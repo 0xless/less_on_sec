@@ -8,13 +8,14 @@
     <language>en-us</language>
     <lastBuildDate>Sat, 20 Mar 2021 18:06:36 +0100</lastBuildDate><atom:link href="https://less-on-sec.onrender.com/tags/lockpicking/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>The art of lock picking</title>
-      <link>https://less-on-sec.onrender.com/posts/2021/03/the-art-of-lock-picking/</link>
+      <title>The art of lock picking: Insights from picking locks</title>
+      <link>https://less-on-sec.onrender.com/posts/2021/03/the-art-of-lock-picking-insights-from-picking-locks/</link>
       <pubDate>Sat, 20 Mar 2021 18:06:36 +0100</pubDate>
       
-      <guid>https://less-on-sec.onrender.com/posts/2021/03/the-art-of-lock-picking/</guid>
-      <description>The art of lock picking: Insights from picking locks  Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
- Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target. Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
+      <guid>https://less-on-sec.onrender.com/posts/2021/03/the-art-of-lock-picking-insights-from-picking-locks/</guid>
+      <description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+ Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
+Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
     </item>
     
   </channel>

@@ -1,22 +1,18 @@
 ---
-title: "The art of lock picking"
+title: "The art of lock picking: Insights from picking locks"
 date: 2021-03-20T18:06:36+01:00
 toc: false
-images:
 tags:
   - lockpicking
 ---
 
-# The art of lock picking: *Insights from picking locks* 
-
 > **Lock picking** is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - [Wikipedia](https://en.wikipedia.org/wiki/Lock_picking)
 
-![lockpicking is hacking](https://raw.githubusercontent.com/0xless/less_on_sec/main/img/lockpicking/lock.jpg)
-
 Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target. 
+
 Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers. Like any other red team technique, lock picking translates to a defensive skill as it assists with finding and patching vulnerabilities. Since locks play such an important role in modern day security, it is important as a security professional to understand the lock picking process and what comes with it. 
 
-### Lock picking *is* hacking
+### Lock picking is hacking
 
 Picking locks is not so different from hacking a computer: you are faced with a challenge and need to defeat security measures to get to the target. In both cases to succeed, you will need a strong background of study and practice. 
 The passion for discovering vulnerabilities and the curiosity to learn about a technology is the reason why lock picking is so popular amongst security professionals.
