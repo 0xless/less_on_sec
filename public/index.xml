@@ -2,80 +2,72 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>less on sec</title>
-    <link>/</link>
+    <link>less-on-sec.onrender.com/</link>
     <description>Recent content on less on sec</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Mar 2021 12:37:04 +0100</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Mar 2021 18:06:36 +0100</lastBuildDate><atom:link href="less-on-sec.onrender.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Test</title>
-      <link>/posts/2021/03/test/</link>
-      <pubDate>Sat, 20 Mar 2021 12:37:04 +0100</pubDate>
+      <title>The art of lock picking</title>
+      <link>less-on-sec.onrender.com/posts/2021/03/the-art-of-lock-picking/</link>
+      <pubDate>Sat, 20 Mar 2021 18:06:36 +0100</pubDate>
       
-      <guid>/posts/2021/03/test/</guid>
-      <description></description>
+      <guid>less-on-sec.onrender.com/posts/2021/03/the-art-of-lock-picking/</guid>
+      <description>The art of lock picking: Insights from picking locks  Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+ Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target. Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
     </item>
     
     <item>
       <title>Chunked</title>
-      <link>/thoughts/chunked/</link>
+      <link>less-on-sec.onrender.com/thoughts/chunked/</link>
       <pubDate>Mon, 01 Mar 2021 18:07:12 +0100</pubDate>
       
-      <guid>/thoughts/chunked/</guid>
+      <guid>less-on-sec.onrender.com/thoughts/chunked/</guid>
       <description>Was working on something and got curious about the chunked transfer encoding, in particular about the fact that HTTP headers could be defined after the body of the request. Dug a bit deeper and found out it&amp;rsquo;s actually a known attack vector! Check this for more: https://swende.se/blog/HTTPChunked.html</description>
     </item>
     
     <item>
       <title>Rake</title>
-      <link>/thoughts/rake/</link>
+      <link>less-on-sec.onrender.com/thoughts/rake/</link>
       <pubDate>Sat, 27 Feb 2021 11:19:19 +0100</pubDate>
       
-      <guid>/thoughts/rake/</guid>
+      <guid>less-on-sec.onrender.com/thoughts/rake/</guid>
       <description>Raking is not really my first choice when it comes to covert entry: it&amp;rsquo;s easy to spot with forensic analysis and it only really works with low to moderate security locks. It can be the fastest and best choice for many situations nonetheless. That said, I bumped into this: https://elvencraft.com/lpd/Raking%20Techniques.html Awesome material on raking techniques.</description>
     </item>
     
     <item>
       <title>Http_test</title>
-      <link>/thoughts/http_test/</link>
+      <link>less-on-sec.onrender.com/thoughts/http_test/</link>
       <pubDate>Sun, 14 Feb 2021 11:25:19 +0100</pubDate>
       
-      <guid>/thoughts/http_test/</guid>
+      <guid>less-on-sec.onrender.com/thoughts/http_test/</guid>
       <description>I&amp;rsquo;ve been working on a project and discovered https://httpbin.org/. Great tool to test and experiment with HTTP.</description>
     </item>
     
     <item>
       <title>Bypass PHP addslashes()</title>
-      <link>/thoughts/sqli_charset/</link>
+      <link>less-on-sec.onrender.com/thoughts/sqli_charset/</link>
       <pubDate>Fri, 12 Feb 2021 12:03:55 +0100</pubDate>
       
-      <guid>/thoughts/sqli_charset/</guid>
+      <guid>less-on-sec.onrender.com/thoughts/sqli_charset/</guid>
       <description>So I was working on a CTF and had to try to perform an SQLi through a PHP page on an addslashes() sanitized text field. Turns out the flaw was in a business logic and I was looking in the wrong spot, but I found this interesting article on bypassing this sanitization mechanism abusing GBK character encoding: https://shiflett.org/blog/2006/addslashes-versus-mysql-real-escape-string</description>
     </item>
     
     <item>
       <title>Hello_world</title>
-      <link>/posts/2021/02/hello_world/</link>
+      <link>less-on-sec.onrender.com/thoughts/hello_world/</link>
       <pubDate>Wed, 03 Feb 2021 18:19:43 +0100</pubDate>
       
-      <guid>/posts/2021/02/hello_world/</guid>
-      <description>This is the very first content on this website, I guess I&amp;rsquo;m expected to say hello world!</description>
-    </item>
-    
-    <item>
-      <title>Hello_world</title>
-      <link>/thoughts/hello_world/</link>
-      <pubDate>Wed, 03 Feb 2021 18:19:43 +0100</pubDate>
-      
-      <guid>/thoughts/hello_world/</guid>
+      <guid>less-on-sec.onrender.com/thoughts/hello_world/</guid>
       <description>This is the very first content on this website, I guess I&amp;rsquo;m expected to say hello world!</description>
     </item>
     
     <item>
       <title>About</title>
-      <link>/about/</link>
+      <link>less-on-sec.onrender.com/about/</link>
       <pubDate>Wed, 09 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>/about/</guid>
+      <guid>less-on-sec.onrender.com/about/</guid>
       <description>Hugo is the world’s fastest framework for building websites. It is written in Go.
 It makes use of a variety of open source projects including:
  https://github.com/russross/blackfriday https://github.com/alecthomas/chroma https://github.com/muesli/smartcrop https://github.com/spf13/cobra https://github.com/spf13/viper  Learn more and contribute on GitHub.</description>
