@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>tag1 on less on sec</title>
-    <link>0xless.github.io/tags/tag1/</link>
+    <link>/tags/tag1/</link>
     <description>Recent content in tag1 on less on sec</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Mar 2021 12:37:04 +0100</lastBuildDate><atom:link href="0xless.github.io/tags/tag1/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Mar 2021 12:37:04 +0100</lastBuildDate><atom:link href="/tags/tag1/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Test</title>
-      <link>0xless.github.io/posts/2021/03/test/</link>
+      <link>/posts/2021/03/test/</link>
       <pubDate>Sat, 20 Mar 2021 12:37:04 +0100</pubDate>
       
-      <guid>0xless.github.io/posts/2021/03/test/</guid>
+      <guid>/posts/2021/03/test/</guid>
       <description></description>
     </item>
     

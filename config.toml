@@ -1,4 +1,4 @@
-baseURL = "https://less-on-sec.onrender.com"
+baseURL = "less-on-sec.onrender.com"
 title   = "less on sec"
 languageCode = "en-us"
 theme = "hello-friend-ng"
