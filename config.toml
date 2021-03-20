@@ -136,7 +136,7 @@ disableHugoGeneratorInject = false
   # Social icons
   [[params.social]]
     name = "email"
-    url  = "mailto:nobody@example.com"
+    url  = "mailto:contact@lessonsec.com"
 
   [[params.social]]
     name = "github"
