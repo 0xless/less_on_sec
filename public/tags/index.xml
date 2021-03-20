@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on less on sec</title>
-    <link>less-on-sec.onrender.com/tags/</link>
+    <link>/tags/</link>
     <description>Recent content in Tags on less on sec</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Mar 2021 18:06:36 +0100</lastBuildDate><atom:link href="less-on-sec.onrender.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Mar 2021 18:06:36 +0100</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>lockpicking</title>
-      <link>less-on-sec.onrender.com/tags/lockpicking/</link>
+      <link>/tags/lockpicking/</link>
       <pubDate>Sat, 20 Mar 2021 18:06:36 +0100</pubDate>
       
-      <guid>less-on-sec.onrender.com/tags/lockpicking/</guid>
+      <guid>/tags/lockpicking/</guid>
       <description></description>
     </item>
     
