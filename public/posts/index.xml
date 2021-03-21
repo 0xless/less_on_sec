@@ -1,23 +1,6 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>Posts on less on sec</title>
-        <link>https://lessonsec.com/posts/</link>
-        <description>Recent content in Posts on less on sec</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>en-us</language>
-        <lastBuildDate>Mon, 01 Mar 2021 18:06:36 +0100</lastBuildDate>
-        <atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml" />
-        
-        <item>
-            <title>The art of lock picking: Insights from picking locks</title>
-            <link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link>
-            <pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate>
-            
-            <guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid>
-            <description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
- Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
-Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
-            <content type="html"><![CDATA[<blockquote>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on less on sec</title><link>https://lessonsec.com/posts/</link><description>Recent content in Posts on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 01 Mar 2021 18:06:36 +0100</lastBuildDate><atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>The art of lock picking: Insights from picking locks</title><link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link><pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate><guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid><description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
+Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description><content type="html"><![CDATA[<blockquote>
 <p><strong>Lock picking</strong> is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - <a href="https://en.wikipedia.org/wiki/Lock_picking">Wikipedia</a></p>
 </blockquote>
 <p>Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.</p>
@@ -48,8 +31,4 @@ Picking locks brings a new dimension to &ldquo;<em>thinking like the enemy</em>&
 A strong ethic is needed in both cyber and physical security. Considering different approaches with the same concept can add to an individual&rsquo;s experience.</li>
 </ul>
 <p>To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risk faced every day. <em>It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place</em>.</p>
-]]></content>
-        </item>
-        
-    </channel>
-</rss>
+]]></content></item></channel></rss>
