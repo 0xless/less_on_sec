@@ -1,4 +1,5 @@
-# less_on_sec
-Personal blog realized with Hugo
+# less on sec
+Cybersecurity personal blog realized with Hugo
 
-https://lessonsec.com/
+Check it out at: https://lessonsec.com/
+Contact me: contact[at]lessonsec[dot]com
