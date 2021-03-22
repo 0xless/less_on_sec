@@ -39,5 +39,5 @@ Some skills that can be picked up from picking locks which apply to cybersecurit
 - **Ethics** 
   A strong ethic is needed in both cyber and physical security. Considering different approaches with the same concept can add to an individual's experience.
 
-To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risk faced every day. *It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place*.
+To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risks faced every day. *It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place*.
 
