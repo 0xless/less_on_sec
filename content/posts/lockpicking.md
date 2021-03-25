@@ -31,12 +31,12 @@ The reason is simple. Lock picking and cybersecurity are similar in nature where
 
 Some skills that can be picked up from picking locks which apply to cybersecurity are:
 
-- **Outside of the box thinking**
+- **Outside of the box thinking**  
   If a lock doesn't want to open, how can you make it do so? The more complex the lock, the more complex the solution can be. Though with the right intuition, you are in.
-- **Think like the enemy**
+- **Think like the enemy**  
   The only way to secure something is knowing exactly how to defeat its security measures. 
   Picking locks brings a new dimension to "*thinking like the enemy*", since implications are projected into the physical world.
-- **Ethics** 
+- **Ethics**  
   A strong ethic is needed in both cyber and physical security. Considering different approaches with the same concept can add to an individual's experience.
 
 To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risks faced every day. *It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place*.
