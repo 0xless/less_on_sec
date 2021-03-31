@@ -1,4 +1,4 @@
-baseURL = "https://lessonsec.com"
+baseURL = "https://lessonsec.com/"
 title   = "less on sec"
 languageCode = "en-us"
 theme = "hello-friend-ng"
