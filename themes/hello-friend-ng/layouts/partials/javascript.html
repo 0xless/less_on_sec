@@ -3,6 +3,7 @@
 {{ $prism := resources.Get "js/prism.js" }}
 {{ $secureJS := slice $main $menu $prism | resources.Concat "bundle.js" | resources.Minify | resources.Fingerprint "sha512" }}
 <script type="text/javascript" src="{{ $secureJS.RelPermalink }}" integrity="{{ $secureJS.Data.Integrity }}"></script>
+<script data-goatcounter="https://lessonsec.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 {{- if .Site.GoogleAnalytics }}
     {{ template "_internal/google_analytics.html" . }}
@@ -13,3 +14,4 @@
         <script src="{{ $val }}"></script>
     {{ end }}
 {{ end }}
+
