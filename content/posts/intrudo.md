@@ -1,5 +1,5 @@
 ---
-title: "Dev Chronicles: The Creation of Intrudo"
+title: "Dev Chronicles: Creating an HTTP attack client"
 date: 2021-04-01T23:23:00+02:00
 toc: false
 tags:
