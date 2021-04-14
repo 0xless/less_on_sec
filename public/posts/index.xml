@@ -2,6 +2,7 @@
 Check it out: https://github.com/0xless/Intrudo
 A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.
 I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description><content type="html"><![CDATA[<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
+<p><img src="/images/intrudo/logo.png#center" alt="intrudo"></p>
 <p>Check it out: <a href="https://github.com/0xless/Intrudo">https://github.com/0xless/Intrudo</a></p>
 <h3 id="a-little-of-background">A little of background</h3>
 <p>While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.<br>
