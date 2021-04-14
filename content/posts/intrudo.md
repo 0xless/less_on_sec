@@ -11,7 +11,7 @@ image:
 
 Intrudo is a tool for automating customized attacks against web applications loosely shaped after [burp intruder](https://portswigger.net/burp/documentation/desktop/tools/intruder).  
 
-![intrudo](/images/intrudo/logo.png#center)
+![intrudo logo](/images/intrudo/logo.png#center)
 
 Check it out: [https://github.com/0xless/Intrudo](https://github.com/0xless/Intrudo)
 
@@ -89,6 +89,10 @@ I implemented the payload position logics just like in burp intruder (pitchfork,
 After that I implemented a few simple callback mechanisms to manage, analyze and store incoming responses which match user specified criteria.
 
 It's only a draft, but the very first version of Intrudo was complete!
+
+Here's a little demo of the speed Intrudo can offer at the moment:
+
+![intrudo logo](/images/intrudo/demo.gif#center)
 
 ### What I learned
 
