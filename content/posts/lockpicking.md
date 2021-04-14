@@ -8,9 +8,9 @@ image:
   - /images/lockpicking/lockpicking.jpg
 ---
 
-![lock picks](/images/lockpicking/lockpicking.jpg#center)
-
 > **Lock picking** is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - [Wikipedia](https://en.wikipedia.org/wiki/Lock_picking)
+
+![lock picks](/images/lockpicking/lockpicking.jpg#center)
 
 Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target. 
 
