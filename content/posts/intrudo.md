@@ -92,7 +92,7 @@ It's only a draft, but the very first version of Intrudo was complete!
 
 Here's a little demo of the speed Intrudo can offer at the moment:
 
-![intrudo logo](/images/intrudo/demo.gif#center)
+![intrudo demo](/images/intrudo/demo.gif#center)
 
 ### What I learned
 

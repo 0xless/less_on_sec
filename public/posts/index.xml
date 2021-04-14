@@ -52,7 +52,7 @@ I implemented the payload position logics just like in burp intruder (pitchfork,
 <p>After that I implemented a few simple callback mechanisms to manage, analyze and store incoming responses which match user specified criteria.</p>
 <p>It&rsquo;s only a draft, but the very first version of Intrudo was complete!</p>
 <p>Here&rsquo;s a little demo of the speed Intrudo can offer at the moment:</p>
-<p><img src="/images/intrudo/demo.gif#center" alt="intrudo logo"></p>
+<p><img src="/images/intrudo/demo.gif#center" alt="intrudo demo"></p>
 <h3 id="what-i-learned">What I learned</h3>
 <p>Of course the main takeaway is a deeper understanding of the HTTP protocol, especially when it comes to encodings and compression methods, since I  had to work with these directly.</p>
 <p>Working with raw HTTP requests was also the main challenge, ensuring that an user specified request is acceptable by the server was an hard task. Since there are no debug messages this process was based on a &ldquo;try and fail&rdquo; method and I had to read multiple rfc documents on the standard but I could complete this task, at least for the majority of servers I&rsquo;ve experimented with.</p>
