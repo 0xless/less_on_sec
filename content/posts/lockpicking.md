@@ -4,7 +4,11 @@ date: 2021-03-01T18:06:36+01:00
 toc: false
 tags:
   - lockpicking
+image:
+  - /images/lockpicking/lockpicking.jpg
 ---
+
+![lock picks](/images/lockpicking/lockpicking.jpg#center)
 
 > **Lock picking** is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - [Wikipedia](https://en.wikipedia.org/wiki/Lock_picking)
 
