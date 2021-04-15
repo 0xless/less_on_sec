@@ -5,7 +5,7 @@
 <script type="text/javascript" src="{{ $secureJS.RelPermalink }}" integrity="{{ $secureJS.Data.Integrity }}"></script>
 
 <script data-goatcounter="https://lessonsec.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-<img src="https://lessonsec.goatcounter.com/count?p={{ .Page }}&t={{ .Title }}">
+<img src="https://lessonsec.goatcounter.com/count?p={{ .RelPermalink }}&t={{ .Title }}">
 
 {{- if .Site.GoogleAnalytics }}
     {{ template "_internal/google_analytics.html" . }}
