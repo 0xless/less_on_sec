@@ -4,7 +4,8 @@
 {{ $secureJS := slice $main $menu $prism | resources.Concat "bundle.js" | resources.Minify | resources.Fingerprint "sha512" }}
 <script type="text/javascript" src="{{ $secureJS.RelPermalink }}" integrity="{{ $secureJS.Data.Integrity }}"></script>
 
-<script data-goatcounter="https://counter.lessonsec.com/count" async src="https://counter.lessonsec.com/count.js"></script>
+<script data-goatcounter="https://counter.lessonsec.com/count"
+        async src="//counter.lessonsec.com/count.js"></script>
 
 <!--
 <noscript>
