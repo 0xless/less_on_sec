@@ -153,10 +153,11 @@ disableHugoGeneratorInject = false
     #copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
 
 [menu]
-  [[menu.main]]
+  [[menu.about]]
     identifier = "whoami"
     name       = "Whoami"
     url        = "whoami/"
+    
   [[menu.main]]
     identifier = "posts"
     name       = "Posts"
