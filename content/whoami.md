@@ -15,7 +15,8 @@ I often go too deep into technology related "rabbit holes", this blog was born s
 `lessonsec.com` is a diary of my security related projects, ideas and experiences.
 The thoughts page contains tweet-like ideas of some technology, solutions or considerations I discover while doing stuff.
 
-If you want to get in contact with me, feel free to send me an e-mail to less[at]lessonsec[dot]com  
+If you want to get in contact with me, feel free to send an e-mail to: less@lessonsec.com
+
 My PGP key:
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -67,5 +68,5 @@ y3O+VB2Yz7zsjwaX5PI7/MeajWik/wlGH4LW//8kwpjrGGa5L56bbtwGPoB7BLJt
 tdHMYTOLxsyEd+pqILemBEv8nZJlw2WVUWCH19vqVgITHNU/fHGt7j5L7HS05x94
 AJEwOd41SvmUsptP6oq4eiodiHPkpvBeCvkku2Veh1ZToank/akrZaPgBWFvum9x
 /jnRwkmAtg1f/kF89QYcE7zppYiQbljA/WF75yQmf6hp2eERl5lyCQRJ
-=JfdM
+=JfdM  
 -----END PGP PUBLIC KEY BLOCK-----
