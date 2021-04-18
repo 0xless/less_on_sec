@@ -58,7 +58,7 @@ disableHugoGeneratorInject = false
   # 
   description = "less' personal cyber and pyhisical security blog"
   keywords = "cybersecurity, physical security, physec, personal blog"
-  images = [""]
+  images = ["/images/logo.jpeg"]
 
   homeSubtitle = "my take on exploring, hacking and breaking stuff"
 
