@@ -4,6 +4,9 @@ date: 2021-04-20T16:27:00+02:00
 draft: true
 toc: false
 images:
+  - /images/rfid/t55xx.png
+  - /images/rfid/bricked.jpg
+  - /images/rfid/cloned.jpg
 tags:
   - RFID
   - physical security
@@ -30,18 +33,18 @@ RFID is a set of standards and technologies, that's because it includes multiple
 - microwave: 3.1–10 GHz 
 
 In practice, only tags operating in the LF range are commonly called RFID tags, while tags operating in the HF range are called NFC tags.  
-The rest are radio technologies not limited to the near field use like bluetooth.
+The rest are radio technologies not limited to the near field use (i.e. bluetooth).
 
 There's a big difference between RFID and NFC tags, they operate on different frequencies, use different protocols, offer different features and have different uses.
 Further considerations on the difference between these technologies are out of the scope of this article, but it's important not to confuse the two.
 
-LF tags operate in the 120–150 kHz range, that limits the data transmission speed in favor of (theoretical) transmission distance. I say theoretical because the distance range is oftentimes limited by the passive tag implementation. 
-While active tags exist, this article will focus on RFID LF passive tags since it's the most common variant found in everyday life.
+LF tags operate in the 120–150 kHz range, that limits the data transmission speed. RFID LF tags can be both passive, meaning that the tag is powered and interrogated by the reader, or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
+While active tags are used, usually have specific purposes. This article will focus on RFID LF passive tags since it's the most common variant found in everyday life.
 
-RFID LF tags have poor transmission speed and distance but are incredibly cheap to produce and that's the reason they are widely employed where speed or distance are not fundamental.
-One of the main uses of these tags see (industrial uses aside) is as access control tokens. It's common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.
+RFID LF tags have poor transmission speed and distance but are incredibly cheap to produce and that's the reason they are so widely employed where speed or distance are not fundamental.
+One of the main uses of these tags have (industrial uses aside) is as access control tokens. It's common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.
 
-There are numerous models of RFID LF tags, each with it's features and peculiarities but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option.
+There are numerous models of RFID LF tags, each with it's features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option.
 
 In this articles we will see how it's possible to read/write and clone these tags and what are the possible implications of a misuse of this technology.
 
@@ -50,32 +53,33 @@ To work with RFID tags, specialized hardware is necessary.
 
 Different devices exist:
 
-- Chinese cloners
+- Chinese cloners  
   Simple devices that read from one tag and write on another.
-  Generally these hare handheld and feature read and write buttons only.
+  Generally these hare hand-held and feature read and write buttons, and a couple of status LEDs.
   Some are more advanced than others and can feature a little screen.
-  Compatibility for frequencies and standards may vary.
+  Compatibility for frequencies and standards may vary, but these devices are usually enough for simpler tasks.
   
-- RFID Chameleon
+- RFID Chameleon  
   Developed to be used in RFID security assessments.
   Doesn't offer the most advanced features, but it's designed to be used in the field,
   it's battery powered and supports tag simulation and manipulation.
   It is also programmable and you can use it with an app.
   
-  It's probably the best solution for a standalone use.
+  It's probably the best solution for a standalone use.  
   More here: https://kasper-oswald.de/gb/chameleonmini/
 
-- Proxmark3
+- Proxmark3  
   As the website puts it: Proxmark is an RFID swiss-army tool.
   It represent the state of the art when it comes to RFID research.
   It allows interacting with the tags both high and low level.
   Different versions have different features, including bluetooth support, battery pack
   swappable antennas and so on.
   
-  It supports a standalone use, but it's more powerful when connected to a PC. It's to be 
-  intended  as a research tool.
+  It supports a standalone use, but it's more powerful when connected to a PC. 
+  It's to be intended  as a research tool.  
+  More here: https://www.proxmark.com/
   
-- Generic boards
+- Generic boards  
   Other boards exist, these are usually sold as an Arduino add on, but dongles featuring
   the same integrated circuits are available.
   These are not widely used outside the makers world, but many are compatible with
@@ -87,9 +91,9 @@ article will focus on it's use, but the underlying concept about RFID tags shoul
 ### Tags that emulate other tags
 When it comes to working with RFID LF tags, there's one main player: the t55xx tag
 
-These are a family of tags developed to emulate a wide range of regular tags.
+It is a family of tags developed to emulate a wide range of regular tags.
 This means that it's possible to clone most of the RFID tags around on one of these,
-without having to carry writeable cards for each model.
+without having to carry writable cards for each and every tag model.
 
 This tag features 8 x 32 bit blocks in page 0 and 4 x 32 blocks in page 1.
 Page 1 blocks are meant to be used for configuration purposes along with block 0 and 7 in page 0.
@@ -97,13 +101,13 @@ Blocks 1 to 6 in page 0 are dedicated to user data.
 
 ![](/images/rfid/t55xx.png#center)
 
-Of course it's possible to work directly on the configuration blocks, that allows the emulation
-of other tags, but it can lead to a brick!
+Of course it's possible to work directly on the configuration blocks, this is what allows the emulation
+of other tags, but it can lead to a brick! 
 
 ![](/images/rfid/bricked.jpg#center)
 
 ### Cloning tags
-Using the proxmark3 client, reading and writing devices is pretty straightforward.
+Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
 First off you need to look for the device:
 
 ```
@@ -163,19 +167,19 @@ Let's try with another type of tag:
 [+] Valid HID Prox ID found!
 ```
 
-It's an HID Prox tag, let's try and read it's ID:
+It's an HID Prox tag, let's try and read its ID:
 ```
 [+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
 [=] raw: 000000000000002006ec0c86
 ```
 
-And just like that we got the devices ID, that's the authentication token!
+And just like that we got the devices ID. That ID is the authentication token!
 If we can write this token on a t55xx tag, we can emulate the card and possibly gain access
 to a restricted perimeter.
 
-Let's see how it's done.
+Let's see how it's done.  
 First we need to get a t55xx tag and position it on the reader, when empty this device
-can't be found using `lf search`, so we can make sure it's a t55xx using the detect command:
+can't be found using `lf search`, so we can make sure it's a t55xx tag using the detect command:
 
 ```
 [usb] pm3 --> lf t55xx detect
@@ -189,7 +193,7 @@ can't be found using `lf search`, so we can make sure it's a t55xx using the det
 [=]  Downlink mode..... default/fixed bit length
 [=]  Password set...... No
 ```
-Now we can see the content of the TAG:
+Now we can see the content of the device:
 
 ```
 [usb] pm3 --> lf t55xx dump
@@ -213,44 +217,28 @@ Now we can see the content of the TAG:
 [+]  03 | 00A00003 | 00000000101000000000000000000011 | ....
 ```
 
-Note that it's possible to read the device block by block too.
+Note that it's possible to operate on single blocks too, but for the purpose of this article it's easier to dump the whole memory instead.
 
-We see that the card doesn't contain user data, now we can try and emulate tags on it!
-To do that we need to have the ID of the tags we want to emulate, and that's already done.
+We see that the card doesn't contain user data, if it did, wiping the card with the `lf t55xx wipe` command would be suggested.
+We can now try and emulate tags on it!
+To do that we need to have the ID of the tags we want to emulate, and that's done already.
+
 We can now go ahead and clone the tags, let's try the em410x first:
 
 ```
-[usb] pm3 --> lf em 410x clone
-
-Writes EM410x ID to a T55x7 or Q5/T5555 tag
-
-usage:
-    lf em 410x clone [-h] [--clk <dec>] --id <hex> [--q5]
-
-options:
-    -h, --help                     This help
-    --clk <dec>                    <16|32|40|64> clock (default 64)
-    --id <hex>                     ID number (5 hex bytes)
-    --q5                           specify writing to Q5/T5555 tag
-
-examples/notes:
-    lf em 410x clone --id 0F0368568B             -> write id to T55x7 tag
-    lf em 410x clone --id 0F0368568B --q5        -> write id to Q5/T5555 tag
-
 [usb] pm3 --> lf em 410x clone --id 1122334455
 [+] Preparing to clone EM4102 to T55x7 tag with ID 1122334455 (RF/64)
 [#] Clock rate: 64
 [#] Tag T55x7 written with 0xff8c65298c94a940
 ```
 
-We can now read the tag and verify that it emulates an em410x tag:
+Once the command is issued, we can read the device and verify that it emulates an em410x tag:
 ```
 [usb] pm3 --> lf em 410x reader
 [+] EM 410x ID 1122334455
 ```
 
-Of course it's still a t55xx tag (and the `detect` command will tell you that) but it behaves
-exactly like and em410x.
+Of course it's still a t55xx tag (and the `detect` command will tell you that) but it behaves exactly like and em410x.
 
 Now we can try with the HID Prox.
 ```
@@ -270,22 +258,17 @@ We now have two key fob tags copied on t55xx cards!
 
 ![](/images/rfid/cloned.jpg)
 
-In this demo only HID Prox and em410x tags are examined, but it's possible to clone and work
-with many more of these tags.
+In this demo only HID Prox and em410x tags are examined, but it's possible to clone and work with many more of these tags.
 
-Since it's possible to emulate cards knowing the ID only, it's possible to clone some RFID LF cards since these have an ID printed to the card itself. 
+Since it's possible to emulate cards knowing the ID only, we can clone some RFID LF cards "by sight" simply reading the ID printed to the device body. 
 This completely removes the limit of having to read the card.
 
-At this point you might be wondering if it's THAT easy to clone a tag in the real world, the
-answer is no. That's for a simple reason, the tag is passive and if we use the standard antennas
-provided with whichever device, the reading range is limited to a few centimeters.
+At this point you might be wondering if it's THAT easy to clone a tag in the real world, the answer is no. That's for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.
 
-Luckily, it's possible to weaponize a bigger antenna! If we use a bigger and more powerful
-antenna, it's possible to clone a LF tag from a usable distance. Of course the antenna will need to
-be carried in some kind of backpack or messenger bag, but that's the price to be paid.
+Luckily, it's possible to weaponize a bigger antenna! If we use a bigger and more powerful antenna, it's possible to clone a LF tag from a usable distance. Of course the antenna will need to be powered by a big battery pack and carried in some kind of backpack or messenger bag, but that's the price to pay.
 
 More here: https://www.youtube.com/watch?v=wYmVtNQPlF4  
-(NOTE: many implementations exist!)
+(NOTE: many other implementations exist!)
 
 ### Defeating password protection
 When examining the t55xx tag, you may have noticed a parameter "Password set", that's because
@@ -323,7 +306,7 @@ the `detect` command won't work as expected:
 [!] ⚠️  Could not detect modulation automatically. Try setting it manually with 'lf t55xx config'
 ```
 
-But it does if we specify the password:
+But it does if the correct password is specified:
 
 ```
 [usb] pm3 --> lf t55xx detect -p 00001234
@@ -344,8 +327,7 @@ The device is completely locked and without the password it's impossible to do a
 
 Luckily the proxmark allows bruteforce attacks. 
 
-While these works, they are really slow and instable to the point that it's hard to try all the 
-possible passwords before the connection drops. It may seem that the password protection is effective and to be honest that's true if you don't have specialized tools, but with better devices success is granted.
+While these works, they are really slow and instable to the point that it's hard to try all the possible passwords before the connection drops. It may seem that the password protection is effective and to be honest that's true if you don't have specialized tools, but with quality reading devices and access to the target tag, success is granted.
 
 Here's a demo on the tag we just password protected:
 ```
@@ -394,35 +376,34 @@ Downlink Mode used : default/fixed bit length
 [+] time in bruteforce 1215 seconds
 ```
 
-As you can see it took ~20 minutes to crack a 4 hex digit password.
+As you can see it took ~20 minutes to crack a 4 hex digit password. It may seem a reasonable time but we need to consider that the password can be longer and that having access to the card for long periods of time is not always an option.
 
 ### Attacks on RFID readers
 Finally we can talk about attacks on the readers, there are two main attacks:
-- Simulation
-- Exfiltration
+- Tag simulation
+- Data exfiltration
 
-We saw that we can simulate a tag using the proxmark, but what if the ID we have read and simulated
-doesn't have enough permission to grant us access somewhere?
-In this scenario it's possible to use the ID as an upper limit, and simulate every ID lower than the read value hoping to find an ID with higher privileges. This attack is based on the assumption that lower IDs may have higher privileges because higher privileges are associated with users registered earlier into the system, hence the lower ID value.
-As for the bruteforce attack this may take a while so it's not always usable.
+We saw that we can simulate a tag using the proxmark, but what if the ID we have read and simulated doesn't have enough permission to grant us access somewhere?
+In this scenario it's possible to use the read value as an upper limit to the ID space to research, and simulate every ID lower than that value hoping to find an ID with higher privileges. This attack is based on the assumption that lower IDs may have higher privileges because such privileges are associated with users registered earlier into the system, hence the lower ID value.
+As for the bruteforce attack the process may take a while, so it's not always a usable technique.
 
-A sneakier approach it so install a device such as the ESPKey inside the reader.
-This allows to intercept data from the wires and to harvest valid IDs.
+A sneakier way to get valid IDs, is to install a device such as the [ESPKey](https://redteamtools.com/espkey) inside the reader.
+This approach allows the interception of data directly from the wires and can harvest valid IDs.
 But of course require a physical access to the reader.
 
-Using the proxmark is also possible to sniff data from a tag to a reader, but given the antenna range is not a widely used technique and personally I haven't tried it.
+Using the proxmark is also possible to sniff data from a tag to a reader, but given the antenna range, this is not a widely used technique and personally I haven't tried it yet.
 
 ### Conclusions
 
-This article shows how, with the right hardware, is possible to clone RFID tags with relatively low skills.  
+This article shows how, with the right hardware, it is possible to clone RFID tags with relatively low skills.  
 
-What's scary it's how easy it is to "steal" valuable credentials, in an access control context a stolen ID could mean a loss for a business because of an unauthorized entry into a critical infrastructure.
+What's scary it's how easy it is to "steal" valuable credentials. In an access control context, a stolen ID constitutes a danger for a business because of the implications of a possible unauthorized entry into a critical infrastructure.
 
-Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn't work!) and avoiding to keep a tag in sight are often a huge improvement in access token security. 
+Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn't work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security. 
 
-A secure reader is also crucial. Some readers offer tamper detection mechanisms and try to detect and disable t55xx tags to avoid unauthorized entry.
+A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.
 
-RFID credentials cloning, together with social engineering are some of the strongest tool in the arsenal of a phyisical penetration tester.
+RFID credentials cloning can be one of the strongest tools in the arsenal of a phyisical penetration tester.
 
 
 
