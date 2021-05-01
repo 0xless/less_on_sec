@@ -10,14 +10,16 @@ Hi, I'm less (Matteo). I'm a Computer scientist and cybersecurity enthusiast.
 I see hacking as a tool to learn new things and I’ve always been fascinated by breaking stuff.  
 Of course I'm invested in software hacking, but I also enjoy exploring hardware and physical security.
 
-I often go too deep into technology related "rabbit holes", this blog was born so I can share my experiences and get motivated to finish what I started! 
+I often go too deep into technology related "rabbit holes", this blog was born so I can share my experiences and get motivated to finish what I start! 
 
-`lessonsec.com` is a diary of my security related projects, ideas and experiences.
-The thoughts page contains tweet-like ideas of some technology, solutions or considerations I discover while doing stuff.
+`lessonsec.com` is a diary of my projects, ideas and experiences on security.
+The thoughts page contains brief ideas of technology, solutions I found or considerations I make while working on projects.
 
 If you want to get in contact with me, feel free to send an e-mail to: less@lessonsec.com
 
 My PGP key:
+
+```
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
@@ -70,3 +72,6 @@ AJEwOd41SvmUsptP6oq4eiodiHPkpvBeCvkku2Veh1ZToank/akrZaPgBWFvum9x
 /jnRwkmAtg1f/kF89QYcE7zppYiQbljA/WF75yQmf6hp2eERl5lyCQRJ
 =JfdM  
 -----END PGP PUBLIC KEY BLOCK-----
+
+```
+
