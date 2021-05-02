@@ -15,6 +15,8 @@ I often go too deep into technology related "rabbit holes", this blog was born s
 `lessonsec.com` is a diary of my projects, ideas and experiences on security.
 The thoughts page contains brief ideas of technology, solutions I found or considerations I make while working on projects.
 
+Execute `curl -L lessonsec.com/business_card` for more!
+
 If you want to get in contact with me, feel free to send an e-mail to: less@lessonsec.com
 
 My PGP key:
