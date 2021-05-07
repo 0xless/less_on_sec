@@ -13,7 +13,7 @@ image:
   - /images/rfid/main.jpg
 ---
 
-RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day for payments, access control systems and as public transport passes.
+RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital "bar code" in shops.
 Given the diffusion these tags have, it's important to understand how they work and the security implication of their use.
 
 >Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.  
