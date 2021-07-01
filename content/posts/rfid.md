@@ -69,7 +69,7 @@ Different devices exist:
   As the website puts it: Proxmark is an RFID swiss-army tool.
   It represents the state of the art when it comes to RFID research.
   It allows interacting with the tags both high and low level.
-  Different versions have different features, including bluetooth support, battery pack
+  Different versions have different features, including bluetooth support, battery packs,
   swappable antennas and so on.
   
   It supports a standalone use, but it's more powerful when connected to a PC. 
