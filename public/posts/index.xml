@@ -1,5 +1,115 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on less on sec</title><link>https://lessonsec.com/posts/</link><description>Recent content in Posts on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 20 Apr 2021 16:27:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Cloning RFID tags for fun and profit</title><link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link><pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate><guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
-Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description><content type="html"><![CDATA[<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on less on sec</title>
+        <link>https://lessonsec.com/posts/</link>
+        <description>Recent content in Posts on less on sec</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate>
+        <atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Analysis of a Remote Control</title>
+            <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
+            <pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate>
+            
+            <guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
+            <description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+In particular the analysis will comprehend:
+ Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes.</description>
+            <content type="html"><![CDATA[<p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old <strong>RTL-SDR</strong> and put it to good use.
+In this article I will describe step-by-step my experience with <em>studying</em>, <em>reversing</em> and <em>understanding</em> these devices.</p>
+<p>In particular the analysis will comprehend:</p>
+<ul>
+<li>Analysis of the <strong>board</strong></li>
+<li>Analysis of the <strong>behavior</strong></li>
+<li>Analysis of the <strong>signal</strong></li>
+</ul>
+<p>This will allow to have a complete overview of the remotes.</p>
+<p><img src="/images/rc_analysis/complete.jpeg#center" alt="remote"></p>
+<h2 id="board-analysis">Board analysis</h2>
+<p>The first thing I did was to operate the remote: of course whenever the yellow button was pressed, the led on its side would light up signaling that everything was working fine. The device could use different communication methods, but since there is no visible IR LED, it is possible to assume that the device works via radio signals.</p>
+<p>The very next step was to open up the remote and visually inspect the board.</p>
+<p>Inside the plastic casing I found this simple PCB.</p>
+<p><img src="/images/rc_analysis/pcb.png#center" alt="RC pcb board"></p>
+<p>At first glance it&rsquo;s possible to notice that there&rsquo;s and <em>antenna</em>, <em>a crystal oscillator</em>, a <em>trimmer</em> an <em>integrated circuit</em> and of course led, button and battery.
+As expected, there&rsquo;s everything needed for a radio transmitter to work.</p>
+<p><img src="/images/rc_analysis/clock.jpeg#center" alt="crystal oscillator"></p>
+<p>Looking at the components further it&rsquo;s possible to gather insights about how the device works.
+In particular the oscillator gives away that the device probably operates at <em>30.875MHz</em> - this isn&rsquo;t what I was expecting.</p>
+<p>In my country, <strong>Short Range Devices</strong> should work in the ranges:</p>
+<ul>
+<li>27,5000 – 28,0000 MHz</li>
+<li>29,7000 – 30,0050 MHz</li>
+</ul>
+<p>Or, for general purpose applications they can work  in the ranges:</p>
+<ul>
+<li>433,000 – 435,0000 MHz (devices without a specific use)</li>
+<li>862,0000 – 876,0000 MHz (devices without a specific use, wireless audio, alarm systems, social alarms, radio microphones, and RFID devices)</li>
+</ul>
+<p>Radio transmitters are not forced to adopt the crystal oscillator frequency as working frequency, in fact it&rsquo;s not uncommon that they use a multiple of such frequency instead. Said that, at this point it&rsquo;s only a guess, but even if it&rsquo;s not in the expected ranges, it&rsquo;s possible that the working frequency of the remote would be around 30.875MHz.</p>
+<p><img src="/images/rc_analysis/dip_switch.jpeg#center" alt="DIP switch"></p>
+<p>We can also see that there&rsquo;s a 10-position DIP switch.
+This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.</p>
+<p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be 0001000110 or 1110111001.</p>
+<p><img src="/images/rc_analysis/unknown_ic.jpeg#center" alt="ITF CIE9101"></p>
+<p>On the back of the PCB there&rsquo;s the ITF CIE9101 integrated circuit. Sadly I wasn&rsquo;t able to find any datasheets or information about this component (hit me up if you know something about it!).</p>
+<p>Inspecting the PCB it&rsquo;s possible to see that this device is connected to the DIP switch, to the oscillator and to the antenna. We can make an educated guess and say that this IC is probably responsible for the radio transmission (in future it would be worth reverse engineering this IC to better understand how this device work).</p>
+<h2 id="behavior-analysis">Behavior analysis</h2>
+<p>To validate the hypothesis of the device being a radio transmitter, it&rsquo;s fundamental to try to intercept and visualize the communication.</p>
+<p>The goal now is to find the transmitted signal. There is a limited set of possible frequency ranges, but it&rsquo;s not always easy to blindly spot the signal you&rsquo;re looking for, especially in areas in which similar devices are widely employed (think of remote car keys, AC remotes, radio weather stations and so on).</p>
+<p>To figure out the frequency and to work with the raw radio signal I used a Silver dongle <a href="https://www.rtl-sdr.com/about-rtl-sdr/">RTL-SDR</a> and <a href="https://gqrx.dk/">gqrx</a>.</p>
+<p><img src="/images/rc_analysis/rtl_antenna.jpeg#center" alt="rtl-sdr and antenna"></p>
+<p>Once <em>gqrx</em> was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.</p>
+<p>NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&rsquo;s completely normal.</p>
+<p><img src="/images/rc_analysis/gqrx_signal.gif#center" alt="radio signal"></p>
+<p>Once the frequency was found, I was still necessary to check something: the first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it.
+At first I thought that it was an ON - OFF switch, since there is none on the board, but trying to change it&rsquo;s position, the behavior of the remote wouldn&rsquo;t change. So it&rsquo;s safe to assume it&rsquo;s part of the expected data stream.</p>
+<p>Now it&rsquo;s time to analyze the signal.</p>
+<h2 id="signal-analysis">Signal analysis</h2>
+<p>What I did at this point was to record the signal in <em>gqrx</em> to analyze it.
+Opening the signal in audacity shows the recorded waveform.</p>
+<p><img src="/images/rc_analysis/signal.jpeg#center" alt="waveform"></p>
+<p>We can see noise at the beginning and at the end of the recording, while the center part represent the communication.</p>
+<p>It&rsquo;s possible to notice immediately that there are numerous spikes, this is due to the fact that I kept the button pressed for a few seconds while recording.
+Visually it&rsquo;s possible to say that the spikes are identical, so our scope is limited to understanding what one of these spikes represent.</p>
+<p>Now we need to zoom in on one spike to try and decode the actual digital data.</p>
+<p><img src="/images/rc_analysis/signal_zoom.jpeg#center" alt="zoomed waveform"></p>
+<p>Of course it&rsquo;s a digital communication and It&rsquo;s now clear that we are dealing with <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width Modulation (PWM)</a>.
+If we look closely at the signal, we can see that there are &ldquo;short&rdquo; and &ldquo;long&rdquo; pulses. Those represent either 1s or 0s depending on the protocol shared by the remote and the receiver.</p>
+<p>Counting the bits reveals that that&rsquo;s more than a simple 10 bit communication. In fact, we are dealing with 14 bits.
+If we compare the signal to the position of the switches in the remote, we see that the pattern matches, with the exception of the last 4 bits. These bits (either 0000 or 1111) are trailing bits, needed to signal the end of the communication.</p>
+<p>To prove that the signal actually corresponds to the one encoded by the switch + 4 trailing bits, I&rsquo;m using <code>rtl_433</code> to read and decode the signal.
+So we run <code>rtl_433 -f 30888000 -A</code> and we get this output:</p>
+<pre><code>Attempting demodulation... short_width: 748, long_width: 1516, reset_limit: 5420, sync_width: 0
+Use a flex decoder with -X 'n=name,m=OOK_PWM,s=748,l=1516,r=5420,g=1556,t=307,y=0'
+pulse_demod_pwm(): Analyzer Device
+bitbuffer:: Number of rows: 6 
+[00] {14} ee 40     : 11101110 010000
+[01] {14} ee 40     : 11101110 010000
+[02] {14} ee 40     : 11101110 010000
+[03] {14} ee 40     : 11101110 010000
+[04] {14} ee 40     : 11101110 010000
+[05] { 5} e8        : 11101
+</code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact 1110111001 followed by 0000.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>After the analysis, everything about how this board operates is known.
+Since this device was pretty old I wasn&rsquo;t expecting behaviors any more complex that the ones we observed.</p>
+<p>I was left with a deeper understanding on radio communications, in particular of the concept of modulations.
+This was in fact the first time I was confronted with the PWM modulation in a real life scenario.
+Decoding these signals both visually and using specialized software allowed me to learn new tools I&rsquo;ll be using for future experiments.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Cloning RFID tags for fun and profit</title>
+            <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
+            <pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate>
+            
+            <guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
+            <description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
+ Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description>
+            <content type="html"><![CDATA[<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
 Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.</p>
 <blockquote>
 <p>Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.<br>
@@ -305,10 +415,20 @@ Given the antenna range, this is not a widely used technique and personally I ha
 <p>Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.</p>
 <p>A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.</p>
 <p>RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.</p>
-]]></content></item><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+]]></content>
+        </item>
+        
+        <item>
+            <title>Dev Chronicles: Creating an HTTP attack client</title>
+            <link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link>
+            <pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate>
+            
+            <guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid>
+            <description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
 Check it out: https://github.com/0xless/Intrudo
 A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.
-I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description><content type="html"><![CDATA[<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description>
+            <content type="html"><![CDATA[<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
 <p><img src="/images/intrudo/logo.png#center" alt="intrudo logo"></p>
 <p>Check it out: <a href="https://github.com/0xless/Intrudo">https://github.com/0xless/Intrudo</a></p>
 <h3 id="a-little-of-background">A little of background</h3>
@@ -374,9 +494,19 @@ I implemented the payload position logics just like in burp intruder (pitchfork,
 <li>Some serious testing is yet to be done.</li>
 <li>The timeout on requests is to be calculated with an adaptive function to optimize the throughput.</li>
 </ul>
-]]></content></item><item><title>The art of lock picking: Insights from picking locks</title><link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link><pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate><guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid><description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
-Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
-Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description><content type="html"><![CDATA[<blockquote>
+]]></content>
+        </item>
+        
+        <item>
+            <title>The art of lock picking: Insights from picking locks</title>
+            <link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link>
+            <pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate>
+            
+            <guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid>
+            <description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+ Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
+Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
+            <content type="html"><![CDATA[<blockquote>
 <p><strong>Lock picking</strong> is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - <a href="https://en.wikipedia.org/wiki/Lock_picking">Wikipedia</a></p>
 </blockquote>
 <p><img src="/images/lockpicking/lockpicking.jpg#center" alt="lock picks"></p>
@@ -408,4 +538,8 @@ Picking locks brings a new dimension to &ldquo;<em>thinking like the enemy</em>&
 A strong ethic is needed in both cyber and physical security. Considering different approaches with the same concept can add to an individual&rsquo;s experience.</li>
 </ul>
 <p>To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risks faced every day. <em>It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place</em>.</p>
-]]></content></item></channel></rss>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>

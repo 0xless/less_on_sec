@@ -1,4 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HTTP on less on sec</title><link>https://lessonsec.com/tags/http/</link><description>Recent content in HTTP on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 01 Apr 2021 23:23:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/http/index.xml" rel="self" type="application/rss+xml"/><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HTTP on less on sec</title>
+    <link>https://lessonsec.com/tags/http/</link>
+    <description>Recent content in HTTP on less on sec</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 01 Apr 2021 23:23:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dev Chronicles: Creating an HTTP attack client</title>
+      <link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link>
+      <pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid>
+      <description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
 Check it out: https://github.com/0xless/Intrudo
 A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.
-I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description></item></channel></rss>
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description>
+    </item>
+    
+  </channel>
+</rss>
