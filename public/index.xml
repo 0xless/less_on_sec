@@ -1,120 +1,20 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>less on sec</title>
-    <link>https://lessonsec.com/</link>
-    <description>Recent content on less on sec</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate><atom:link href="https://lessonsec.com/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Analysis of a Remote Control</title>
-      <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
-      <pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
-      <description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>less on sec</title><link>https://lessonsec.com/</link><description>Recent content on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate><atom:link href="https://lessonsec.com/index.xml" rel="self" type="application/rss+xml"/><item><title>Analysis of a Remote Control</title><link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link><pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate><guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid><description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes.</description>
-    </item>
-    
-    <item>
-      <title>Docker_privesc</title>
-      <link>https://lessonsec.com/thoughts/docker_privesc/</link>
-      <pubDate>Wed, 05 May 2021 10:06:52 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/docker_privesc/</guid>
-      <description>Yesterday I was playing with linpeas and found a privilege escalation path on my system.
+Analysis of the board Analysis of the behavior Analysis of the signal This will allow to have a complete overview of the remotes.</description></item><item><title>Docker_privesc</title><link>https://lessonsec.com/thoughts/docker_privesc/</link><pubDate>Wed, 05 May 2021 10:06:52 +0200</pubDate><guid>https://lessonsec.com/thoughts/docker_privesc/</guid><description>Yesterday I was playing with linpeas and found a privilege escalation path on my system.
 My user was automatically added to the docker group during the installation of docker. That means that my user has write access to docker.sock and can mount the local file system on a container to gain root access.
-Running this command is all it takes to become root: docker -H unix:///var/run/docker.sock run -v /:/host -it image chroot /host /bin/bash</description>
-    </item>
-    
-    <item>
-      <title>Battmngr</title>
-      <link>https://lessonsec.com/thoughts/battmngr/</link>
-      <pubDate>Thu, 29 Apr 2021 20:09:23 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/battmngr/</guid>
-      <description>Wasn&amp;rsquo;t satisfied about battery management support my laptop had on Linux so I decided to write a tool for that. battmngr allows users to manage performance and battery modes with a simple script without the need to work with acpi_calls manually.
+Running this command is all it takes to become root: docker -H unix:///var/run/docker.sock run -v /:/host -it image chroot /host /bin/bash</description></item><item><title>Battmngr</title><link>https://lessonsec.com/thoughts/battmngr/</link><pubDate>Thu, 29 Apr 2021 20:09:23 +0200</pubDate><guid>https://lessonsec.com/thoughts/battmngr/</guid><description>Wasn&amp;rsquo;t satisfied about battery management support my laptop had on Linux so I decided to write a tool for that. battmngr allows users to manage performance and battery modes with a simple script without the need to work with acpi_calls manually.
 Link: https://github.com/0xless/battmngr
-battmngr is now featured on ArchWiki!</description>
-    </item>
-    
-    <item>
-      <title>Templating</title>
-      <link>https://lessonsec.com/thoughts/templating/</link>
-      <pubDate>Thu, 22 Apr 2021 19:52:32 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/templating/</guid>
-      <description>Discussing with someone on Reddit, I realized that template languages are a powerful tool that can be helpful in many situations.
-I&amp;rsquo;ll experiment with Jinja2 and probably use it to improve Intrudo.</description>
-    </item>
-    
-    <item>
-      <title>Cloning RFID tags for fun and profit</title>
-      <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
-      <pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
-      <description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description>
-    </item>
-    
-    <item>
-      <title>Smart_card</title>
-      <link>https://lessonsec.com/thoughts/smart_card/</link>
-      <pubDate>Sun, 11 Apr 2021 12:13:37 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/smart_card/</guid>
-      <description>Did you know that SIM cards have a processor and host a VM?
+battmngr is now featured on ArchWiki!</description></item><item><title>Templating</title><link>https://lessonsec.com/thoughts/templating/</link><pubDate>Thu, 22 Apr 2021 19:52:32 +0200</pubDate><guid>https://lessonsec.com/thoughts/templating/</guid><description>Discussing with someone on Reddit, I realized that template languages are a powerful tool that can be helpful in many situations.
+I&amp;rsquo;ll experiment with Jinja2 and probably use it to improve Intrudo.</description></item><item><title>Cloning RFID tags for fun and profit</title><link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link><pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate><guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
+Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description></item><item><title>Smart_card</title><link>https://lessonsec.com/thoughts/smart_card/</link><pubDate>Sun, 11 Apr 2021 12:13:37 +0200</pubDate><guid>https://lessonsec.com/thoughts/smart_card/</guid><description>Did you know that SIM cards have a processor and host a VM?
 Here&amp;rsquo;s an interesting overview on smart cards.
 It shows the components, how they work and the security mechanisms in use.
 There&amp;rsquo;s also a a brief analysis on how to attack them, both via software and physically.
-https://opensecuritytraining.info/SmartCards_files/SmartCards.pdf</description>
-    </item>
-    
-    <item>
-      <title>Dev Chronicles: Creating an HTTP attack client</title>
-      <link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link>
-      <pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid>
-      <description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+https://opensecuritytraining.info/SmartCards_files/SmartCards.pdf</description></item><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
 Check it out: https://github.com/0xless/Intrudo
 A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.
-I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description>
-    </item>
-    
-    <item>
-      <title>Whoami</title>
-      <link>https://lessonsec.com/whoami/</link>
-      <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://lessonsec.com/whoami/</guid>
-      <description>Hi, I&amp;rsquo;m less (Matteo). I&amp;rsquo;m a Computer scientist and cybersecurity enthusiast. I see hacking as a tool to learn new things and I’ve always been fascinated by breaking stuff.
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description></item><item><title>Whoami</title><link>https://lessonsec.com/whoami/</link><pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate><guid>https://lessonsec.com/whoami/</guid><description>Hi, I&amp;rsquo;m less (Matteo). I&amp;rsquo;m a Computer scientist and cybersecurity enthusiast. I see hacking as a tool to learn new things and I’ve always been fascinated by breaking stuff.
 Of course I&amp;rsquo;m invested in software hacking, but I also enjoy exploring hardware and physical security.
-I often go too deep into technology related &amp;ldquo;rabbit holes&amp;rdquo;, this blog was born so I can share my experiences and get motivated to finish what I start!</description>
-    </item>
-    
-    <item>
-      <title>Chunked</title>
-      <link>https://lessonsec.com/thoughts/chunked/</link>
-      <pubDate>Mon, 01 Mar 2021 18:07:12 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/chunked/</guid>
-      <description>Was working on something and got curious about the chunked transfer encoding, in particular about the fact that HTTP headers could be defined after the body of the request. Dug a bit deeper and found out it&amp;rsquo;s actually a known attack vector! Check this for more: https://swende.se/blog/HTTPChunked.html</description>
-    </item>
-    
-    <item>
-      <title>The art of lock picking: Insights from picking locks</title>
-      <link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link>
-      <pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid>
-      <description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
- Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
-Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
-    </item>
-    
-  </channel>
-</rss>
+I often go too deep into technology related &amp;ldquo;rabbit holes&amp;rdquo;, this blog was born so I can share my experiences and get motivated to finish what I start!</description></item><item><title>Chunked</title><link>https://lessonsec.com/thoughts/chunked/</link><pubDate>Mon, 01 Mar 2021 18:07:12 +0100</pubDate><guid>https://lessonsec.com/thoughts/chunked/</guid><description>Was working on something and got curious about the chunked transfer encoding, in particular about the fact that HTTP headers could be defined after the body of the request. Dug a bit deeper and found out it&amp;rsquo;s actually a known attack vector! Check this for more: https://swende.se/blog/HTTPChunked.html</description></item><item><title>The art of lock picking: Insights from picking locks</title><link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link><pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate><guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid><description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
+Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description></item></channel></rss>

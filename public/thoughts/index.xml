@@ -1,103 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>less on sec</title>
-    <link>https://lessonsec.com/thoughts/</link>
-    <description>Recent content on less on sec</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Wed, 05 May 2021 10:06:52 +0200</lastBuildDate><atom:link href="https://lessonsec.com/thoughts/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Docker_privesc</title>
-      <link>https://lessonsec.com/thoughts/docker_privesc/</link>
-      <pubDate>Wed, 05 May 2021 10:06:52 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/docker_privesc/</guid>
-      <description>Yesterday I was playing with linpeas and found a privilege escalation path on my system.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Thoughts on less on sec</title><link>https://lessonsec.com/thoughts/</link><description>Recent content in Thoughts on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 05 May 2021 10:06:52 +0200</lastBuildDate><atom:link href="https://lessonsec.com/thoughts/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker_privesc</title><link>https://lessonsec.com/thoughts/docker_privesc/</link><pubDate>Wed, 05 May 2021 10:06:52 +0200</pubDate><guid>https://lessonsec.com/thoughts/docker_privesc/</guid><description>Yesterday I was playing with linpeas and found a privilege escalation path on my system.
 My user was automatically added to the docker group during the installation of docker. That means that my user has write access to docker.sock and can mount the local file system on a container to gain root access.
-Running this command is all it takes to become root: docker -H unix:///var/run/docker.sock run -v /:/host -it image chroot /host /bin/bash</description>
-    </item>
-    
-    <item>
-      <title>Battmngr</title>
-      <link>https://lessonsec.com/thoughts/battmngr/</link>
-      <pubDate>Thu, 29 Apr 2021 20:09:23 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/battmngr/</guid>
-      <description>Wasn&amp;rsquo;t satisfied about battery management support my laptop had on Linux so I decided to write a tool for that. battmngr allows users to manage performance and battery modes with a simple script without the need to work with acpi_calls manually.
+Running this command is all it takes to become root: docker -H unix:///var/run/docker.sock run -v /:/host -it image chroot /host /bin/bash</description></item><item><title>Battmngr</title><link>https://lessonsec.com/thoughts/battmngr/</link><pubDate>Thu, 29 Apr 2021 20:09:23 +0200</pubDate><guid>https://lessonsec.com/thoughts/battmngr/</guid><description>Wasn&amp;rsquo;t satisfied about battery management support my laptop had on Linux so I decided to write a tool for that. battmngr allows users to manage performance and battery modes with a simple script without the need to work with acpi_calls manually.
 Link: https://github.com/0xless/battmngr
-battmngr is now featured on ArchWiki!</description>
-    </item>
-    
-    <item>
-      <title>Templating</title>
-      <link>https://lessonsec.com/thoughts/templating/</link>
-      <pubDate>Thu, 22 Apr 2021 19:52:32 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/templating/</guid>
-      <description>Discussing with someone on Reddit, I realized that template languages are a powerful tool that can be helpful in many situations.
-I&amp;rsquo;ll experiment with Jinja2 and probably use it to improve Intrudo.</description>
-    </item>
-    
-    <item>
-      <title>Smart_card</title>
-      <link>https://lessonsec.com/thoughts/smart_card/</link>
-      <pubDate>Sun, 11 Apr 2021 12:13:37 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/smart_card/</guid>
-      <description>Did you know that SIM cards have a processor and host a VM?
+battmngr is now featured on ArchWiki!</description></item><item><title>Templating</title><link>https://lessonsec.com/thoughts/templating/</link><pubDate>Thu, 22 Apr 2021 19:52:32 +0200</pubDate><guid>https://lessonsec.com/thoughts/templating/</guid><description>Discussing with someone on Reddit, I realized that template languages are a powerful tool that can be helpful in many situations.
+I&amp;rsquo;ll experiment with Jinja2 and probably use it to improve Intrudo.</description></item><item><title>Smart_card</title><link>https://lessonsec.com/thoughts/smart_card/</link><pubDate>Sun, 11 Apr 2021 12:13:37 +0200</pubDate><guid>https://lessonsec.com/thoughts/smart_card/</guid><description>Did you know that SIM cards have a processor and host a VM?
 Here&amp;rsquo;s an interesting overview on smart cards.
 It shows the components, how they work and the security mechanisms in use.
 There&amp;rsquo;s also a a brief analysis on how to attack them, both via software and physically.
-https://opensecuritytraining.info/SmartCards_files/SmartCards.pdf</description>
-    </item>
-    
-    <item>
-      <title>Chunked</title>
-      <link>https://lessonsec.com/thoughts/chunked/</link>
-      <pubDate>Mon, 01 Mar 2021 18:07:12 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/chunked/</guid>
-      <description>Was working on something and got curious about the chunked transfer encoding, in particular about the fact that HTTP headers could be defined after the body of the request. Dug a bit deeper and found out it&amp;rsquo;s actually a known attack vector! Check this for more: https://swende.se/blog/HTTPChunked.html</description>
-    </item>
-    
-    <item>
-      <title>Rake</title>
-      <link>https://lessonsec.com/thoughts/rake/</link>
-      <pubDate>Sat, 27 Feb 2021 11:19:19 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/rake/</guid>
-      <description>Raking is not really my first choice when it comes to covert entry: it&amp;rsquo;s easy to spot with forensic analysis and it only really works with low to moderate security locks. It can be the fastest and best choice for many situations nonetheless. That said, I bumped into this: https://elvencraft.com/lpd/Raking%20Techniques.html
-Awesome material on raking techniques.</description>
-    </item>
-    
-    <item>
-      <title>Http_test</title>
-      <link>https://lessonsec.com/thoughts/http_test/</link>
-      <pubDate>Sun, 14 Feb 2021 11:25:19 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/http_test/</guid>
-      <description>I&amp;rsquo;ve been working on a project and discovered https://httpbin.org/.
-Great tool to test and experiment with HTTP.</description>
-    </item>
-    
-    <item>
-      <title>Bypass PHP addslashes()</title>
-      <link>https://lessonsec.com/thoughts/sqli_charset/</link>
-      <pubDate>Fri, 12 Feb 2021 12:03:55 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/sqli_charset/</guid>
-      <description>So I was working on a CTF and had to try to perform an SQLi through a PHP page on an addslashes() sanitized text field. Turns out the flaw was in a business logic and I was looking in the wrong spot, but I found this interesting article on bypassing this sanitization mechanism abusing GBK character encoding: https://shiflett.org/blog/2006/addslashes-versus-mysql-real-escape-string</description>
-    </item>
-    
-    <item>
-      <title>Hello_world</title>
-      <link>https://lessonsec.com/thoughts/hello_world/</link>
-      <pubDate>Wed, 03 Feb 2021 18:19:43 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/thoughts/hello_world/</guid>
-      <description>This is the very first content on this website, I guess I&amp;rsquo;m expected to say hello world!</description>
-    </item>
-    
-  </channel>
-</rss>
+https://opensecuritytraining.info/SmartCards_files/SmartCards.pdf</description></item><item><title>Chunked</title><link>https://lessonsec.com/thoughts/chunked/</link><pubDate>Mon, 01 Mar 2021 18:07:12 +0100</pubDate><guid>https://lessonsec.com/thoughts/chunked/</guid><description>Was working on something and got curious about the chunked transfer encoding, in particular about the fact that HTTP headers could be defined after the body of the request. Dug a bit deeper and found out it&amp;rsquo;s actually a known attack vector! Check this for more: https://swende.se/blog/HTTPChunked.html</description></item><item><title>Rake</title><link>https://lessonsec.com/thoughts/rake/</link><pubDate>Sat, 27 Feb 2021 11:19:19 +0100</pubDate><guid>https://lessonsec.com/thoughts/rake/</guid><description>Raking is not really my first choice when it comes to covert entry: it&amp;rsquo;s easy to spot with forensic analysis and it only really works with low to moderate security locks. It can be the fastest and best choice for many situations nonetheless. That said, I bumped into this: https://elvencraft.com/lpd/Raking%20Techniques.html
+Awesome material on raking techniques.</description></item><item><title>Http_test</title><link>https://lessonsec.com/thoughts/http_test/</link><pubDate>Sun, 14 Feb 2021 11:25:19 +0100</pubDate><guid>https://lessonsec.com/thoughts/http_test/</guid><description>I&amp;rsquo;ve been working on a project and discovered https://httpbin.org/.
+Great tool to test and experiment with HTTP.</description></item><item><title>Bypass PHP addslashes()</title><link>https://lessonsec.com/thoughts/sqli_charset/</link><pubDate>Fri, 12 Feb 2021 12:03:55 +0100</pubDate><guid>https://lessonsec.com/thoughts/sqli_charset/</guid><description>So I was working on a CTF and had to try to perform an SQLi through a PHP page on an addslashes() sanitized text field. Turns out the flaw was in a business logic and I was looking in the wrong spot, but I found this interesting article on bypassing this sanitization mechanism abusing GBK character encoding: https://shiflett.org/blog/2006/addslashes-versus-mysql-real-escape-string</description></item><item><title>Hello_world</title><link>https://lessonsec.com/thoughts/hello_world/</link><pubDate>Wed, 03 Feb 2021 18:19:43 +0100</pubDate><guid>https://lessonsec.com/thoughts/hello_world/</guid><description>This is the very first content on this website, I guess I&amp;rsquo;m expected to say hello world!</description></item></channel></rss>

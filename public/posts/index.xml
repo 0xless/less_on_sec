@@ -1,23 +1,6 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>Posts on less on sec</title>
-        <link>https://lessonsec.com/posts/</link>
-        <description>Recent content in Posts on less on sec</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>en-us</language>
-        <lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate>
-        <atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml" />
-        
-        <item>
-            <title>Analysis of a Remote Control</title>
-            <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
-            <pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate>
-            
-            <guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
-            <description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on less on sec</title><link>https://lessonsec.com/posts/</link><description>Recent content in Posts on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate><atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Analysis of a Remote Control</title><link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link><pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate><guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid><description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes.</description>
-            <content type="html"><![CDATA[<p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old <strong>RTL-SDR</strong> and put it to good use.
+Analysis of the board Analysis of the behavior Analysis of the signal This will allow to have a complete overview of the remotes.</description><content type="html"><![CDATA[<p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old <strong>RTL-SDR</strong> and put it to good use.
 In this article I will describe step-by-step my experience with <em>studying</em>, <em>reversing</em> and <em>understanding</em> these devices.</p>
 <p>In particular the analysis will comprehend:</p>
 <ul>
@@ -98,18 +81,8 @@ Since this device was pretty old I wasn&rsquo;t expecting behaviors any more com
 <p>I was left with a deeper understanding on radio communications, in particular of the concept of modulations.
 This was in fact the first time I was confronted with the PWM modulation in a real life scenario.
 Decoding these signals both visually and using specialized software allowed me to learn new tools I&rsquo;ll be using for future experiments.</p>
-]]></content>
-        </item>
-        
-        <item>
-            <title>Cloning RFID tags for fun and profit</title>
-            <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
-            <pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate>
-            
-            <guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
-            <description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description>
-            <content type="html"><![CDATA[<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
+]]></content></item><item><title>Cloning RFID tags for fun and profit</title><link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link><pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate><guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
+Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description><content type="html"><![CDATA[<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
 Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.</p>
 <blockquote>
 <p>Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.<br>
@@ -415,20 +388,10 @@ Given the antenna range, this is not a widely used technique and personally I ha
 <p>Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.</p>
 <p>A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.</p>
 <p>RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.</p>
-]]></content>
-        </item>
-        
-        <item>
-            <title>Dev Chronicles: Creating an HTTP attack client</title>
-            <link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link>
-            <pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate>
-            
-            <guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid>
-            <description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+]]></content></item><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
 Check it out: https://github.com/0xless/Intrudo
 A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.
-I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description>
-            <content type="html"><![CDATA[<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description><content type="html"><![CDATA[<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
 <p><img src="/images/intrudo/logo.png#center" alt="intrudo logo"></p>
 <p>Check it out: <a href="https://github.com/0xless/Intrudo">https://github.com/0xless/Intrudo</a></p>
 <h3 id="a-little-of-background">A little of background</h3>
@@ -494,19 +457,9 @@ I implemented the payload position logics just like in burp intruder (pitchfork,
 <li>Some serious testing is yet to be done.</li>
 <li>The timeout on requests is to be calculated with an adaptive function to optimize the throughput.</li>
 </ul>
-]]></content>
-        </item>
-        
-        <item>
-            <title>The art of lock picking: Insights from picking locks</title>
-            <link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link>
-            <pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate>
-            
-            <guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid>
-            <description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
- Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
-Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description>
-            <content type="html"><![CDATA[<blockquote>
+]]></content></item><item><title>The art of lock picking: Insights from picking locks</title><link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link><pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate><guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid><description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
+Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description><content type="html"><![CDATA[<blockquote>
 <p><strong>Lock picking</strong> is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - <a href="https://en.wikipedia.org/wiki/Lock_picking">Wikipedia</a></p>
 </blockquote>
 <p><img src="/images/lockpicking/lockpicking.jpg#center" alt="lock picks"></p>
@@ -538,8 +491,4 @@ Picking locks brings a new dimension to &ldquo;<em>thinking like the enemy</em>&
 A strong ethic is needed in both cyber and physical security. Considering different approaches with the same concept can add to an individual&rsquo;s experience.</li>
 </ul>
 <p>To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risks faced every day. <em>It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place</em>.</p>
-]]></content>
-        </item>
-        
-    </channel>
-</rss>
+]]></content></item></channel></rss>
