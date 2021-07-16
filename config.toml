@@ -60,7 +60,12 @@ disableHugoGeneratorInject = false
   keywords = "cybersecurity, physical security, physec, personal blog"
   #image = "/images/logo.jpeg"
 
-  homeSubtitle = "my take on exploring, hacking and breaking stuff"
+  homeSubtitle = "my take on"
+  homeSubtitle_b = "exploring"
+  homeSubtitle2_b = "hacking"
+  homeSubtitle3 = "and"
+  homeSubtitle3_b = "breaking"
+  homeSubtitle4 = "stuff"
 
   # Set a background for the homepage
   # backgroundImage = "assets/images/background.jpg"

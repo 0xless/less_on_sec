@@ -10,15 +10,39 @@
             {{ end }}
 
             <h1 style="color:#A9A9B3">{{ .Site.Title }}</h1>
-            {{- with .Site.Params.homeSubtitle }}
-                <p>{{.}}</p>
-            {{- end }}
+            <p style="text-align:right">
+		    {{- with .Site.Params.homeSubtitle }}
+		        {{. }}
+		    {{- end }}
+		    {{- with .Site.Params.homeSubtitle_b }}
+		       <b> {{. }} </b><br>
+		    {{- end }}
+		    
+		    {{- with .Site.Params.homeSubtitle2_b }}
+		       <b> {{. }} </b><br>
+		    {{- end }}
+	 
+		    {{- with .Site.Params.homeSubtitle3 }}
+		    	{{.}}
+		    {{- end }}
+		    {{- with .Site.Params.homeSubtitle3_b }}
+		       <b> {{. }} </b><br>
+		    {{- end }}
+		    
+		    {{- with .Site.Params.homeSubtitle4 }}
+		    	{{.}} <br>
+		    {{- end }}
+	    </p>
+            
 
             {{- with .Site.Params.social }}
                 <div>
                     {{ partial "social-icons.html" . }}
                 </div>
             {{- end }}
+            
+            <br>
+            <div><a href="https://lessonsec.com/posts/"><code>Go to posts &#10140;</code></a></div>
         </div>
     </main>
 {{ end }}

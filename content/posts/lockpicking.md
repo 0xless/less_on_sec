@@ -3,8 +3,8 @@ title: "The art of lock picking: Insights from picking locks"
 date: 2021-03-01T18:06:36+01:00
 toc: false
 tags:
-  - lockpicking
-  - physical security
+  - Lockpicking
+  - Physical security
 image:
   - /images/lockpicking/lockpicking.jpg
 ---

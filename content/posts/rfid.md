@@ -8,7 +8,8 @@ images:
   - /images/rfid/cloned.jpg
 tags:
   - RFID
-  - physical security
+  - Radio
+  - Physical security
 image:
   - /images/rfid/main.jpg
 ---
