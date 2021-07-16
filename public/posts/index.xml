@@ -15,7 +15,7 @@ In this article I will describe step-by-step my experience with <em>studying</em
 <p>The very next step was to open up the remote and visually inspect the board.</p>
 <p>Inside the plastic casing I found this simple PCB.</p>
 <p><img src="/images/rc_analysis/pcb.png#center" alt="RC pcb board"></p>
-<p>At first glance it&rsquo;s possible to notice that there&rsquo;s and <em>antenna</em>, <em>a crystal oscillator</em>, a <em>trimmer</em> an <em>integrated circuit</em> and of course led, button and battery.
+<p>At first glance it&rsquo;s possible to notice that there&rsquo;s an <em>antenna</em>, <em>a crystal oscillator</em>, a <em>trimmer</em> an <em>integrated circuit</em> and of course led, button and battery.
 As expected, there&rsquo;s everything needed for a radio transmitter to work.</p>
 <p><img src="/images/rc_analysis/clock.jpeg#center" alt="crystal oscillator"></p>
 <p>Looking at the components further it&rsquo;s possible to gather insights about how the device works.
@@ -46,7 +46,7 @@ This component suggests us that the remote sends at least 10 bits of data. I say
 <p>Once <em>gqrx</em> was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.</p>
 <p>NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&rsquo;s completely normal.</p>
 <p><img src="/images/rc_analysis/gqrx_signal.gif#center" alt="radio signal"></p>
-<p>Once the frequency was found, I was still necessary to check something: the first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it.
+<p>Once the frequency was found, it was still necessary to check something: the first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it.
 At first I thought that it was an ON - OFF switch, since there is none on the board, but trying to change it&rsquo;s position, the behavior of the remote wouldn&rsquo;t change. So it&rsquo;s safe to assume it&rsquo;s part of the expected data stream.</p>
 <p>Now it&rsquo;s time to analyze the signal.</p>
 <h2 id="signal-analysis">Signal analysis</h2>

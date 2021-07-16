@@ -43,7 +43,7 @@ Inside the plastic casing I found this simple PCB.
 
 ![RC pcb board](/images/rc_analysis/pcb.png#center)
 
-At first glance it's possible to notice that there's and *antenna*, *a crystal oscillator*, a *trimmer* an *integrated circuit* and of course led, button and battery. 
+At first glance it's possible to notice that there's an *antenna*, *a crystal oscillator*, a *trimmer* an *integrated circuit* and of course led, button and battery. 
 As expected, there's everything needed for a radio transmitter to work.
 
 ![crystal oscillator](/images/rc_analysis/clock.jpeg#center)
@@ -92,7 +92,7 @@ NOTE: I could work with 3 of these remotes, and each one was using a slightly di
 
 ![radio signal](/images/rc_analysis/gqrx_signal.gif#center)
 
-Once the frequency was found, I was still necessary to check something: the first pin (1) of the DIP switch has written "ON" on top of it. 
+Once the frequency was found, it was still necessary to check something: the first pin (1) of the DIP switch has written "ON" on top of it. 
 At first I thought that it was an ON - OFF switch, since there is none on the board, but trying to change it's position, the behavior of the remote wouldn't change. So it's safe to assume it's part of the expected data stream.
 
 Now it's time to analyze the signal.
