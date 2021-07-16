@@ -11,9 +11,13 @@
 <link rel="canonical" href="{{ .Permalink }}" />
 
 {{ block "title" . }}
-    <title>
-        {{ $.Title }} - {{ $.Site.Title }}
-    </title>
+<title>
+        {{ if .IsHome }}
+		{{ $.Site.Title }}
+        {{ else}}
+        	{{ $.Title }} - {{ $.Site.Title }}
+        {{end}}
+</title>
 {{ end }}
 
 <!-- CSS -->
