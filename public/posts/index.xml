@@ -101,13 +101,14 @@ An RFID system consists of a tiny radio transponder, a radio receiver and transm
 </ul>
 <p>In practice, only tags operating in the LF range are commonly called RFID tags while tags operating in the HF range are called NFC tags.<br>
 The rest are radio technologies not limited to the near field use (i.e. bluetooth).</p>
-<p>There&rsquo;s a big difference between RFID and NFC tags. They operate on different frequencies, use different protocols, offer different features and have different uses.
-Further considerations on the difference between these technologies are out of the scope of this article, but it&rsquo;s important not to confuse the two.</p>
-<p>LF tags operate in the 120–150 kHz range, that limits the data transmission speed. RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
+<p>There&rsquo;s a big difference between RFID and NFC tags and it hides in the specifications. They operate on different frequencies, use different protocols, offer different features and have different uses. Some RFID devices can be compatible with NFC readers, but that doesn&rsquo;t mean that they strictly follow the NFC specs. Further considerations on the difference between these technologies are out of the scope of this article, but it&rsquo;s important not to confuse the two.</p>
+<p>LF tags operate in the 120–150 kHz range, but the most commonly used frequencies are 125kHz for access control tags and 134kHz for uses like pet chips. Other frequencies can be used but the vast majority of tags use either 125kHz or 134kHz. Such low frequencies can limit the data transmission speed.</p>
+<p>RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
 While active tags are used, they often have specific purposes. This article will focus on RFID LF passive tags since it&rsquo;s the most common variant found in everyday life.</p>
-<p>RFID LF tags have poor transmission speed and distance but are incredibly cheap to produce. Due to this, they are so widely employed where speed or distance are not fundamental.
-Industrial uses aside, one of the main uses of these tags is as access control tokens. It&rsquo;s common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.</p>
-<p>There are numerous models of RFID LF tags each with it&rsquo;s specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option.</p>
+<p>RFID LF tags have poor transmission speed but are incredibly cheap to produce. Due to this, they are so widely employed where speed is not fundamental.
+The reading distance of LF tags is usually better compared to HF reading distance. In fact, LF is referred as a vicinity technology, while HF is generally called a proximity technology.</p>
+<p>Industrial uses aside, one of the main uses of these tags is as access control tokens. It&rsquo;s common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.</p>
+<p>There are numerous models of RFID LF tags each with it&rsquo;s specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option. (note that are exceptions: some tags can employ a password or crypto mode, one of the very few examples are <a href="https://www.nxp.com/products/rfid-nfc/hitag-lf:MC_42027">Hitag2</a> tags and these security measures <a href="https://www.cs.bham.ac.uk/~tpc/isecsem/talks/EZ.pdf">can still be circumvented</a>!)</p>
 <p>In this article, we will see how it&rsquo;s possible to read, write and clone these tags and learn about possible implications due to misuse of this technology.</p>
 <h3 id="how-to-work-with-rfid-tags">How to work with RFID tags</h3>
 <p>To work with RFID tags, specialized hardware is necessary.</p>
@@ -150,7 +151,7 @@ These are not widely used outside the makers world, but many are compatible with
 <p>The only device that I have available is a Proxmark3 easy (cheap Chinese version) so this
 article will focus on its use. The underlying concepts about RFID tags should translate to other devices.</p>
 <h3 id="tags-that-emulate-other-tags">Tags that emulate other tags</h3>
-<p>When it comes to working with RFID LF tags, there&rsquo;s one main player: the t55xx tag</p>
+<p>When it comes to working with RFID LF tags, there&rsquo;s one main player: the <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-9187-RFID-ATA5577C_Datasheet.pdf">t55xx</a> tag</p>
 <p>They are a family of tags developed to emulate a wide range of regular tags.
 This means that it&rsquo;s possible to clone most of the RFID tags around using one of these
 without having to carry writable cards for each and every tag model.</p>
@@ -161,6 +162,7 @@ Blocks 1 to 6 in page 0 are dedicated to user data.</p>
 <p>Of course, it&rsquo;s possible to work directly on the configuration blocks, and this is what allows the emulation
 of other type of tags, but doing so carelessly can easily lead to a brick!</p>
 <p><img src="/images/rfid/bricked.jpg#center" alt="bricked tag"></p>
+<p>Original Atmel T5577 tags have a test mode and that can be helpful to recover soft-bricked cards.</p>
 <h3 id="cloning-tags">Cloning tags</h3>
 <p>Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
 First off you need to look for the device:</p>
@@ -229,7 +231,8 @@ can&rsquo;t be found using <code>lf search</code>, so we can make sure it&rsquo;
 [=]  Block0............ 00088048 (auto detect)
 [=]  Downlink mode..... default/fixed bit length
 [=]  Password set...... No
-</code></pre><p>Now we can see the content of the device:</p>
+</code></pre><p>The <code>lf t55 detect</code> command is also necessary before using this tag because it detects the configuration in use and helps avoiding problems running other <code>lf t55</code> commands.</p>
+<p>Now we can see the content of the device:</p>
 <pre><code>[usb] pm3 --&gt; lf t55xx dump
 [+] Reading Page 0:
 [+] blk | hex data | binary                           | ascii
@@ -274,7 +277,8 @@ To do that we only need to have the ID of the tags we want to emulate. We alread
 <p><img src="/images/rfid/cloned.jpg" alt=""></p>
 <p>In this demo only HID Prox and em410x tags are examined, but it&rsquo;s possible to clone and work with many more of these tags.</p>
 <p>Since it&rsquo;s possible to emulate cards knowing the ID, we can clone some RFID LF cards &ldquo;by sight&rdquo; simply reading the ID printed to the device body.
-This completely removes the limit of having to read the card with a specialized tool.</p>
+This completely removes the limit of having to read the card with a specialized tool.
+Some of these printed ID are &ldquo;encoded&rdquo; (or shifted by some value). This allows organizations to &ldquo;decode&rdquo; it, but prevents attackers from obtaining the ID by sight.</p>
 <p>At this point you might be wondering if it&rsquo;s THAT easy to clone a tag in the real world, the answer is no. That&rsquo;s for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.</p>
 <p>Luckily, it&rsquo;s possible to weaponize a bigger antenna! If we use a bigger and more powerful antenna, it&rsquo;s possible to clone a LF tag from a usable distance. Of course the antenna will need to be powered by a big battery pack and carried in some kind of backpack or messenger bag, but that&rsquo;s the price to pay.</p>
 <p>More here: <a href="https://www.youtube.com/watch?v=wYmVtNQPlF4">https://www.youtube.com/watch?v=wYmVtNQPlF4</a><br>

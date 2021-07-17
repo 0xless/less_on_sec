@@ -34,16 +34,19 @@ RFID is a set of standards and technologies because it includes multiple frequen
 In practice, only tags operating in the LF range are commonly called RFID tags while tags operating in the HF range are called NFC tags.  
 The rest are radio technologies not limited to the near field use (i.e. bluetooth).
 
-There's a big difference between RFID and NFC tags. They operate on different frequencies, use different protocols, offer different features and have different uses.
-Further considerations on the difference between these technologies are out of the scope of this article, but it's important not to confuse the two.
+There's a big difference between RFID and NFC tags and it hides in the specifications. They operate on different frequencies, use different protocols, offer different features and have different uses. Some RFID devices can be compatible with NFC readers, but that doesn't mean that they strictly follow the NFC specs. Further considerations on the difference between these technologies are out of the scope of this article, but it's important not to confuse the two.
 
-LF tags operate in the 120–150 kHz range, that limits the data transmission speed. RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
+LF tags operate in the 120–150 kHz range, but the most commonly used frequencies are 125kHz for access control tags and 134kHz for uses like pet chips. Other frequencies can be used but the vast majority of tags use either 125kHz or 134kHz. Such low frequencies can limit the data transmission speed. 
+
+RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
 While active tags are used, they often have specific purposes. This article will focus on RFID LF passive tags since it's the most common variant found in everyday life.
 
-RFID LF tags have poor transmission speed and distance but are incredibly cheap to produce. Due to this, they are so widely employed where speed or distance are not fundamental.
+RFID LF tags have poor transmission speed but are incredibly cheap to produce. Due to this, they are so widely employed where speed is not fundamental.
+The reading distance of LF tags is usually better compared to HF reading distance. In fact, LF is referred as a vicinity technology, while HF is generally called a proximity technology. 
+
 Industrial uses aside, one of the main uses of these tags is as access control tokens. It's common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.
 
-There are numerous models of RFID LF tags each with it's specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option.
+There are numerous models of RFID LF tags each with it's specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option. (note that are exceptions: some tags can employ a password or crypto mode, one of the very few examples are [Hitag2](https://www.nxp.com/products/rfid-nfc/hitag-lf:MC_42027) tags and these security measures [can still be circumvented](https://www.cs.bham.ac.uk/~tpc/isecsem/talks/EZ.pdf)!)
 
 In this article, we will see how it's possible to read, write and clone these tags and learn about possible implications due to misuse of this technology. 
 
@@ -87,7 +90,7 @@ The only device that I have available is a Proxmark3 easy (cheap Chinese version
 article will focus on its use. The underlying concepts about RFID tags should translate to other devices.
 
 ### Tags that emulate other tags
-When it comes to working with RFID LF tags, there's one main player: the t55xx tag
+When it comes to working with RFID LF tags, there's one main player: the [t55xx](http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-9187-RFID-ATA5577C_Datasheet.pdf) tag
 
 They are a family of tags developed to emulate a wide range of regular tags.
 This means that it's possible to clone most of the RFID tags around using one of these
@@ -103,6 +106,8 @@ Of course, it's possible to work directly on the configuration blocks, and this 
 of other type of tags, but doing so carelessly can easily lead to a brick! 
 
 ![bricked tag](/images/rfid/bricked.jpg#center)
+
+Original Atmel T5577 tags have a test mode and that can be helpful to recover soft-bricked cards.
 
 ### Cloning tags
 Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
@@ -191,6 +196,8 @@ can't be found using `lf search`, so we can make sure it's a t55xx tag using the
 [=]  Downlink mode..... default/fixed bit length
 [=]  Password set...... No
 ```
+The ` lf t55 detect ` command is also necessary before using this tag because it detects the configuration in use and helps avoiding problems running other `lf t55` commands.
+
 Now we can see the content of the device:
 
 ```
@@ -259,7 +266,8 @@ We now have two key fob tags copied on t55xx cards!
 In this demo only HID Prox and em410x tags are examined, but it's possible to clone and work with many more of these tags.
 
 Since it's possible to emulate cards knowing the ID, we can clone some RFID LF cards "by sight" simply reading the ID printed to the device body. 
-This completely removes the limit of having to read the card with a specialized tool.
+This completely removes the limit of having to read the card with a specialized tool. 
+Some of these printed ID are "encoded" (or shifted by some value). This allows organizations to "decode" it, but prevents attackers from obtaining the ID by sight.
 
 At this point you might be wondering if it's THAT easy to clone a tag in the real world, the answer is no. That's for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.
 
