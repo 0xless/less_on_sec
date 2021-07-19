@@ -66,6 +66,8 @@ Radio transmitters are not forced to adopt the crystal oscillator frequency as w
 ![DIP switch](/images/rc_analysis/dip_switch.jpeg#center)
 
 We can also see that there's a 10-position DIP switch. 
+
+The first pin (1) of the DIP switch has written "ON" on top of it, meaning that the switch closes the circuit when the lever is in the "high" position.
 This component suggests us that the remote sends at least 10 bits of data. I say at least, because it's possible that the device sends preamble/ending bits and/or checksum or parity bits.
 
 Also, given the position of the switches, it's possible to assume that the code sent by the remote would either be 0001000110 or 1110111001.
@@ -91,9 +93,6 @@ Once *gqrx* was open, it was necessary to spot the correct frequency. Since ther
 NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that's why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it's completely normal.
 
 ![radio signal](/images/rc_analysis/gqrx_signal.gif#center)
-
-Once the frequency was found, it was still necessary to check something: the first pin (1) of the DIP switch has written "ON" on top of it. 
-At first I thought that it was an ON - OFF switch, since there is none on the board, but trying to change it's position, the behavior of the remote wouldn't change. So it's safe to assume it's part of the expected data stream.
 
 Now it's time to analyze the signal.
 
@@ -132,10 +131,47 @@ bitbuffer:: Number of rows: 6
 [02] {14} ee 40     : 11101110 010000
 [03] {14} ee 40     : 11101110 010000
 [04] {14} ee 40     : 11101110 010000
-[05] { 5} e8        : 11101
 ```
 
 And we confirm that the signal uses a PWM modulation and is in fact 1110111001 followed by 0000.
+
+To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
+I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.
+
+Changing bit 9 from 0 to 1 produced the following signal:
+
+```
+[00] {14} ee c0     : 11101110 110000
+[01] {14} ee c0     : 11101110 110000
+[02] {14} ee c0     : 11101110 110000
+[03] {14} ee c0     : 11101110 110000
+[04] {14} ee c0     : 11101110 110000
+[05] {14} ee c0     : 11101110 110000
+```
+
+Similarly, changing bit 8, produced this signal:
+
+```
+[00] {14} ef c0     : 11101111 110000
+[01] {14} ef c0     : 11101111 110000
+[02] {14} ef c0     : 11101111 110000
+[03] {14} ef c0     : 11101111 110000
+[04] {14} ef c0     : 11101111 110000
+[05] {14} ef c0     : 11101111 110000
+```
+
+Finally I changed bit 4 and I decoded signal was:
+
+```
+[00] {14} ff c0     : 11111111 110000
+[01] {14} ff c0     : 11111111 110000
+[02] {14} ff c0     : 11111111 110000
+[03] {14} ff c0     : 11111111 110000
+[04] {14} ff c0     : 11111111 110000
+[05] {14} ff c0     : 11111111 110000
+```
+
+As I suspected the last 4 bits don't change even if the signal changes. This means that they are simple trailing 0s and not parity bits or a form of checksum.
 
 ## Conclusions
 

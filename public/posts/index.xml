@@ -32,7 +32,8 @@ In particular the oscillator gives away that the device probably operates at <em
 </ul>
 <p>Radio transmitters are not forced to adopt the crystal oscillator frequency as working frequency, in fact it&rsquo;s not uncommon that they use a multiple of such frequency instead. Said that, at this point it&rsquo;s only a guess, but even if it&rsquo;s not in the expected ranges, it&rsquo;s possible that the working frequency of the remote would be around 30.875MHz.</p>
 <p><img src="/images/rc_analysis/dip_switch.jpeg#center" alt="DIP switch"></p>
-<p>We can also see that there&rsquo;s a 10-position DIP switch.
+<p>We can also see that there&rsquo;s a 10-position DIP switch.</p>
+<p>The first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it, meaning that the switch closes the circuit when the lever is in the &ldquo;high&rdquo; position.
 This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.</p>
 <p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be 0001000110 or 1110111001.</p>
 <p><img src="/images/rc_analysis/unknown_ic.jpeg#center" alt="ITF CIE9101"></p>
@@ -46,8 +47,6 @@ This component suggests us that the remote sends at least 10 bits of data. I say
 <p>Once <em>gqrx</em> was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.</p>
 <p>NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&rsquo;s completely normal.</p>
 <p><img src="/images/rc_analysis/gqrx_signal.gif#center" alt="radio signal"></p>
-<p>Once the frequency was found, it was still necessary to check something: the first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it.
-At first I thought that it was an ON - OFF switch, since there is none on the board, but trying to change it&rsquo;s position, the behavior of the remote wouldn&rsquo;t change. So it&rsquo;s safe to assume it&rsquo;s part of the expected data stream.</p>
 <p>Now it&rsquo;s time to analyze the signal.</p>
 <h2 id="signal-analysis">Signal analysis</h2>
 <p>What I did at this point was to record the signal in <em>gqrx</em> to analyze it.
@@ -73,8 +72,31 @@ bitbuffer:: Number of rows: 6
 [02] {14} ee 40     : 11101110 010000
 [03] {14} ee 40     : 11101110 010000
 [04] {14} ee 40     : 11101110 010000
-[05] { 5} e8        : 11101
 </code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact 1110111001 followed by 0000.</p>
+<p>To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
+I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.</p>
+<p>Changing bit 9 from 0 to 1 produced the following signal:</p>
+<pre><code>[00] {14} ee c0     : 11101110 110000
+[01] {14} ee c0     : 11101110 110000
+[02] {14} ee c0     : 11101110 110000
+[03] {14} ee c0     : 11101110 110000
+[04] {14} ee c0     : 11101110 110000
+[05] {14} ee c0     : 11101110 110000
+</code></pre><p>Similarly, changing bit 8, produced this signal:</p>
+<pre><code>[00] {14} ef c0     : 11101111 110000
+[01] {14} ef c0     : 11101111 110000
+[02] {14} ef c0     : 11101111 110000
+[03] {14} ef c0     : 11101111 110000
+[04] {14} ef c0     : 11101111 110000
+[05] {14} ef c0     : 11101111 110000
+</code></pre><p>Finally I changed bit 4 and I decoded signal was:</p>
+<pre><code>[00] {14} ff c0     : 11111111 110000
+[01] {14} ff c0     : 11111111 110000
+[02] {14} ff c0     : 11111111 110000
+[03] {14} ff c0     : 11111111 110000
+[04] {14} ff c0     : 11111111 110000
+[05] {14} ff c0     : 11111111 110000
+</code></pre><p>As I suspected the last 4 bits don&rsquo;t change even if the signal changes. This means that they are simple trailing 0s and not parity bits or a form of checksum.</p>
 <h2 id="conclusions">Conclusions</h2>
 <p>After the analysis, everything about how this board operates is known.
 Since this device was pretty old I wasn&rsquo;t expecting behaviors any more complex that the ones we observed.</p>
@@ -392,6 +414,8 @@ Given the antenna range, this is not a widely used technique and personally I ha
 <p>Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.</p>
 <p>A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.</p>
 <p>RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.</p>
+<hr>
+<p>This article was reviewed by an external source, big thanks to them!</p>
 ]]></content></item><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
 Check it out: https://github.com/0xless/Intrudo
 A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.

@@ -412,7 +412,9 @@ A secure reader is also crucial. Some readers offer tamper detection mechanisms 
 
 RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.
 
+--------------------------------------------------
 
+This article was reviewed by an external source, big thanks to them!
 
 
 
