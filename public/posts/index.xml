@@ -35,7 +35,7 @@ In particular the oscillator gives away that the device probably operates at <em
 <p>We can also see that there&rsquo;s a 10-position DIP switch.</p>
 <p>The first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it, meaning that the switch closes the circuit when the lever is in the &ldquo;high&rdquo; position.
 This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.</p>
-<p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be 0001000110 or 1110111001.</p>
+<p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be <code>0001000110</code> or <code>1110111001</code>.</p>
 <p><img src="/images/rc_analysis/unknown_ic.jpeg#center" alt="ITF CIE9101"></p>
 <p>On the back of the PCB there&rsquo;s the ITF CIE9101 integrated circuit. Sadly I wasn&rsquo;t able to find any datasheets or information about this component (hit me up if you know something about it!).</p>
 <p>Inspecting the PCB it&rsquo;s possible to see that this device is connected to the DIP switch, to the oscillator and to the antenna. We can make an educated guess and say that this IC is probably responsible for the radio transmission (in future it would be worth reverse engineering this IC to better understand how this device work).</p>
@@ -72,7 +72,7 @@ bitbuffer:: Number of rows: 6
 [02] {14} ee 40     : 11101110 010000
 [03] {14} ee 40     : 11101110 010000
 [04] {14} ee 40     : 11101110 010000
-</code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact 1110111001 followed by 0000.</p>
+</code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact <code>1110111001</code> followed by <code>0000</code>.</p>
 <p>To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
 I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.</p>
 <p>Changing bit 9 from 0 to 1 produced the following signal:</p>
@@ -96,7 +96,7 @@ I proceeded to do so and one-by-one I lifted the switches corresponding to the 0
 [03] {14} ff c0     : 11111111 110000
 [04] {14} ff c0     : 11111111 110000
 [05] {14} ff c0     : 11111111 110000
-</code></pre><p>As I suspected the last 4 bits don&rsquo;t change even if the signal changes. This means that they are simple trailing 0s and not parity bits or a form of checksum.</p>
+</code></pre><p>As I suspected the last 4 bits don&rsquo;t change even if the signal changes. This means that they are simple trailing bits and not parity bits or a form of checksum.</p>
 <h2 id="conclusions">Conclusions</h2>
 <p>After the analysis, everything about how this board operates is known.
 Since this device was pretty old I wasn&rsquo;t expecting behaviors any more complex that the ones we observed.</p>

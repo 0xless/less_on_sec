@@ -70,7 +70,7 @@ We can also see that there's a 10-position DIP switch.
 The first pin (1) of the DIP switch has written "ON" on top of it, meaning that the switch closes the circuit when the lever is in the "high" position.
 This component suggests us that the remote sends at least 10 bits of data. I say at least, because it's possible that the device sends preamble/ending bits and/or checksum or parity bits.
 
-Also, given the position of the switches, it's possible to assume that the code sent by the remote would either be 0001000110 or 1110111001.
+Also, given the position of the switches, it's possible to assume that the code sent by the remote would either be `0001000110` or `1110111001`.
 
 ![ITF CIE9101](/images/rc_analysis/unknown_ic.jpeg#center)
 
@@ -133,7 +133,7 @@ bitbuffer:: Number of rows: 6
 [04] {14} ee 40     : 11101110 010000
 ```
 
-And we confirm that the signal uses a PWM modulation and is in fact 1110111001 followed by 0000.
+And we confirm that the signal uses a PWM modulation and is in fact `1110111001` followed by `0000`.
 
 To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
 I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.
@@ -171,7 +171,7 @@ Finally I changed bit 4 and I decoded signal was:
 [05] {14} ff c0     : 11111111 110000
 ```
 
-As I suspected the last 4 bits don't change even if the signal changes. This means that they are simple trailing 0s and not parity bits or a form of checksum.
+As I suspected the last 4 bits don't change even if the signal changes. This means that they are simple trailing bits and not parity bits or a form of checksum.
 
 ## Conclusions
 
