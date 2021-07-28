@@ -7,5 +7,5 @@ Wasn't satisfied about battery management support my laptop had on Linux so I de
 
 Link: [https://github.com/0xless/battmngr](https://github.com/0xless/battmngr)  
 
-`battmngr` is now featured on [ArchWiki](https://wiki.archlinux.org/title/Lenovo_IdeaPad_5_15are05#Power_management)! 
+`battmngr` is now featured on [ArchWiki](https://wiki.archlinux.org/title/Lenovo_IdeaPad_5_15are05#Power_management) and it's available via [AUR](https://aur.archlinux.org/packages/battmngr/)!
 
