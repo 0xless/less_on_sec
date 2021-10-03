@@ -1,6 +1,10 @@
 ---
 title: "Walkthrough: CryptoHack CTF"
 date: 2021-10-03T12:41:44+02:00
+tags:
+  - CTFs
+  - Cryptography
+
 ---
 
 Recently I've been meaning to get into cryptography more seriously, and to be honest I've also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!
