@@ -230,7 +230,7 @@ vector_dot(scalar_times(vector_minus(scalar_times(v, <span style="color:#ae81ff"
 <h2 id="symmetric-ciphers">Symmetric Ciphers</h2>
 <p><!-- raw HTML omitted --><strong>How AES Works</strong><!-- raw HTML omitted --></p>
 <h4 id="keyed-permutations-5-pts">Keyed Permutations (5 pts.)</h4>
-<p>In this challenge we are asked to ask a question: <em>What is the mathematical term for a one-to-one correspondence?</em>
+<p>In this challenge we are asked to answer a question: <em>What is the mathematical term for a one-to-one correspondence?</em>
 Google is your friend for this one!</p>
 <h4 id="resisting-bruteforce-10-pts">Resisting Bruteforce (10 pts.)</h4>
 <p>This time we are asked: <em>What is the name for the best single-key attack against AES?</em>                <br>

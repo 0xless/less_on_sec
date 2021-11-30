@@ -292,7 +292,7 @@ vector_dot(scalar_times(vector_minus(scalar_times(v, 2), w), 3), scalar_times(u,
 
 #### Keyed Permutations (5 pts.)
 
-In this challenge we are asked to ask a question: *What is the mathematical term for a one-to-one correspondence?* 
+In this challenge we are asked to answer a question: *What is the mathematical term for a one-to-one correspondence?* 
 Google is your friend for this one!                                   
 
 #### Resisting Bruteforce (10 pts.)
