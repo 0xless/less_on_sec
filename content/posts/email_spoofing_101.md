@@ -325,3 +325,6 @@ I think that the main take-away from this article should be an increased awarene
 
 Sadly I couldn't experiment much at the moment, but I will for sure try and send emails from a VPS or Virtual Machine in the cloud that use a non-residential IP, I'm confident this approach would work in sending spoofed emails on vulnerable domains.  
 
+--------------------------
+
+This article was reviewed by Nicola Selenu from [topdeliverability.com](http://topdeliverability.com), big thanks to him!
