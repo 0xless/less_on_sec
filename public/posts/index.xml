@@ -19,15 +19,16 @@ This part of message is destined to the server, it&rsquo;s generally not shown t
 </ul>
 <p>Other headers are often present, this set of information represent what the receiver will see when reading the email inside of a client.
 The addresses in each header will be present in the form of: <code>Foo Bar &lt;foobar@spam.com&gt;</code>.</p>
-<p>In particular, these headers are: <code>From</code>, <code>Reply-to</code>, <code>Sender</code>. Each of these headers represents the address visible to the receiving part.</p>
+<p>In particular, these headers are: <code>From:</code>, <code>Reply-to:</code>, <code>Sender:</code>. Each of these headers represents the address visible to the receiving part.</p>
+<p>In general, it&rsquo;s important to notice the difference between the envelope <code>MAIL FROM</code> or <a href="https://datatracker.ietf.org/doc/html/rfc5321">RFC5321</a>.MailFrom and the header <code>From:</code>or <a href="https://datatracker.ietf.org/doc/html/rfc5322">RFC5322</a>.From since the latter is shown to the user and can be easily spoofed and it&rsquo;s shown to the recipient of the email by the client.</p>
 <p>As anticipated, SMTP doesn&rsquo;t check whether an user is authorized or not to use a particular address in these fields and this is the reason why it&rsquo;s so easy to spoof emails. The only reliable information we can harvest from a spoofed email is the IP from which the email was sent.</p>
 <h2 id="available-security-measures">Available security measures</h2>
 <p>There are three main security measured against email spoofing:</p>
 <ul>
 <li>
-<p><strong>Sender Policy Framework (SPF)</strong>
-This method allows the detection of forged sender addresses.
-In particular SPF information are contained inside a <code>TXT</code> DNS record. These info specify which IP addresses are allowed to send emails on the behalf of the  domain. Allowed senders can be listed explicitly specifying authorized IP ranges, or checking if <code>A</code>, <code>AAAA</code>, <code>MX</code> or <code>PTR</code> records resolve to the sender&rsquo;s address.</p>
+<p><strong><a href="https://datatracker.ietf.org/doc/html/rfc7208">Sender Policy Framework</a> (SPF)</strong>
+This method allows the detection of forged sender addresses and it&rsquo;s based on envelope information.
+In particular SPF information are contained inside a <code>TXT</code> DNS record. These info specify which IP addresses are allowed to send emails on the behalf of the  domain. Allowed senders can be listed explicitly specifying authorized IP ranges, or checking if <code>A</code>, <code>AAAA</code> or <code>MX</code> records resolve to the sender&rsquo;s address.</p>
 <p>SPF also use 4 qualifiers, these represent the status of the SPF validation.
 Qualifiers can be:</p>
 <ul>
@@ -36,16 +37,16 @@ Qualifiers can be:</p>
 <li>FAIL (-) : if the check wasn&rsquo;t successful. The email should be rejected.</li>
 <li>SOFTFAIL (~) : like fail, but used for debugging. In general emails with SOFTFAIL qualifier are accepted but flagged.</li>
 </ul>
-<p>The SPF <code>TXT</code> DNS record is composed of SPF version (with the tag <code>v:</code>) and one of more <em>mechanisms</em>.
+<p>The SPF <code>TXT</code> DNS record is composed of SPF version (specified with the tag <code>v=</code> <a href="http://www.open-spf.org/SPF_vs_Sender_ID/#0.1.3">it can only be followed by the value <code>spf1</code></a>) and one of more <em>mechanisms</em>.
 Mechanisms are used to specify if a domain can send the email. Mechanisms include specifying IPv4/IPv6 address ranges or checking if A, MX or PTR records resolve to the domain. Other mechanisms exist but are rarely used.</p>
 <p>SPF alone is not enough to detect email forging because it checks envelope information only, it would still be possible to keep the original sender in the envelope information and forge only the headers that are interpreted by the client and can&rsquo;t be checked with SPF.
 Usually a failed SPF check is enough to mark the email as spam or even reject it.
 It&rsquo;s worth noting that SPF policies could cause troubles in case of email forwarding even if the sender is authorized. That&rsquo;s because the &ldquo;forwarder&rdquo; is technically not authorized to send emails on the behalf the original domain.</p>
 </li>
 <li>
-<p><strong>DomainKeys Identified Mail (DKIM)</strong>
-DKIM is an authentication method that allows the receiver to check if the email was authorized by the owner of the domain.
-This check is possible thanks to an additional header containing a digital signature. A public key, that makes the signature validation possible, is available in a dedicated <code>TXT</code> DNS record. This method only checks the validity of email&rsquo;s header and body, the envelope addresses are ignored. It&rsquo;s possible to specify which headers to check, but the <code>From:</code> header must always be checked.
+<p><strong><a href="https://datatracker.ietf.org/doc/html/rfc6376/">DomainKeys Identified Mail</a> (DKIM)</strong>
+DKIM is an authentication method that allows the receiver to check if the email was authorized by the owner of the domain and functions as an integrity check to make sure the message hasn&rsquo;t been modified.
+This check is possible thanks to an additional header containing a digital signature. A public key, that makes the signature validation possible, is available in a dedicated <code>TXT</code> DNS record. This method only checks the validity of email&rsquo;s header and body, the envelope addresses are ignored. It&rsquo;s possible to specify which headers to check, but the <code>RFC5322.From</code> header must always be checked.
 DKIM checks can and should be done at every SMTP hop and should resist relaying across <a href="https://en.wikipedia.org/wiki/Message_transfer_agent">MTAs</a> .</p>
 <p>Important info contained in the DKIM headers of an email are:</p>
 <ul>
@@ -66,12 +67,12 @@ DKIM checks can and should be done at every SMTP hop and should resist relaying 
 <p>DKIM records are published at <code>selector._domainkey.example.com</code>.</p>
 </li>
 <li>
-<p><strong>Domain-based Message Authentication, Reporting and Conformance (DMARC)</strong>
+<p><strong><a href="https://datatracker.ietf.org/doc/html/rfc7489">Domain-based Message Authentication, Reporting and Conformance</a> (DMARC)</strong>
 DMARC is an email authentication protocol. Using a <code>TXT</code> DNS record, it dictates the conditions under which an email is considered authenticated.
-It&rsquo;s basically an extension of DKIM and SPF, these two methods offer different measures of the authenticity of an email; with DMARC it&rsquo;s possible to specify how to employ DKIM and SPF (singularly or in combination), how the <code>Form:</code> field is presented to the client and how to deal with authentication failures.</p>
-<p>When DMARC is in place, an email needs to pass 3 alignments to be valid: SPF alignment, DKIM alignment and DMARC alignment.</p>
-<p>DMARC alignment basically checks that the domain name in the <code>Form:</code> field, is &ldquo;aligned&rdquo; with either DKIM or SPF aligned ones.
-There are two types of alignment in DMARC, strict or relaxed.
+It works on top of DKIM and SPF: these two mechanisms, as shown above, offer different checks on the authenticity of an email sender.<br>
+Both DKIM and SPF can offer authenticated identifiers in DMARC, meaning that DKIM <code>d=</code> tag of a validated DKIM-Signature header field and SPF validated <code>MAIL FROM</code> field can be used to validate an email&rsquo;s sender.</p>
+<p>DMARC alignment basically checks that the domain name in the <code>RFC5322.From</code> field, is &ldquo;aligned&rdquo; (matches) with either DKIM or SPF authenticated identifier.
+There are two types of alignment in DMARC, <em>strict</em> or <em>relaxed</em>.
 With strict alignment, the domain needs to be identical, while with relaxed alignment, a domain is considered aligned if the top-level domain match.</p>
 <p>It&rsquo;s also possible to define policies to specify how to deal with authentication failures.
 These policies are:</p>
@@ -105,14 +106,14 @@ This means that a malicious user can send an email from a whitelisted domain and
 <h2 id="vulnerable-configurations">Vulnerable configurations</h2>
 <p>When it comes to email security implemented with DMARC, there are 4 main vulnerable scenarios to consider:</p>
 <ul>
-<li>Case 1
+<li>Case 1<br>
 There is a DMARC DNS record, this entry describes a DMARC entry and it has a policy different than &ldquo;none&rdquo;.
 In this case it&rsquo;s impossible to spoof an email from this domain.</li>
-<li>Case 2
+<li>Case 2<br>
 There is a DMARC DNS record and a valid DMARC entry, but the policy is set to &ldquo;none&rdquo;, meaning that, even if feedback reports will be sent, the domain is spoofable in emails.</li>
-<li>Case 3
+<li>Case 3<br>
 There is no DMARC DNS record in a domain that is used to send emails. This is the worst possible scenario because the domain is completely unprotected.</li>
-<li>Case 4
+<li>Case 4<br>
 There is no DMARC DNS record in a domain not used to send emails. The domain is spoofable, but the impact is not as big as in case 3.
 It is suggested to have DMARC in place even for domain not used to send emails, but it&rsquo;s not fundamental.</li>
 </ul>
@@ -247,8 +248,8 @@ email_text <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#3
 <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
     <span style="color:#66d9ef">print</span>(e)
     <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Email not sent!&#34;</span>)
-</code></pre></div><h3 id="second-attempt-setting-up-your-personal-smpt-server">Second attempt: setting up your personal SMPT server</h3>
-<p>Installing an SMTP server on your machine would make possible to send emails from your computer using a script similar to the one used for google. Sadly this experiment won&rsquo;t let you send emails, this is for different reasons: for starters the IP address from which the email is sent is from a residential IP range. This means that if your ISP doesn&rsquo;t block the email (very possible), the receiving client will ignore the email because of the poor IP reputation.</p>
+</code></pre></div><h3 id="second-attempt-setting-up-your-personal-smtp-server">Second attempt: setting up your personal SMTP server</h3>
+<p>Installing an SMTP server on your machine would make it possible to send emails from your computer using a script similar to the one used for google. Sadly this experiment won&rsquo;t let you send emails, this is for different reasons: for starters the IP address from which the email is sent is from a residential IP range. This means that if your ISP doesn&rsquo;t block the email (very possible), the receiving client will ignore the email because of the poor IP reputation.</p>
 <p>I think it&rsquo;s possible to send emails using this technique if an AWS, GCP or Azure VM is used, this simply because the IP wouldn&rsquo;t be from a residential range anymore. I didn&rsquo;t try this yet, but I&rsquo;m confident that emails would be at least delivered.</p>
 <h3 id="third-attempt-using-online-services">Third attempt: using online services</h3>
 <p>With this approach I was able to send spoofed emails! I&rsquo;m not linking any of the services I tried using, but there are free or paid services that actually work and let you specify the headers we are interested into.</p>
@@ -256,7 +257,7 @@ email_text <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#3
 But it&rsquo;s a fun experiment to see how the emails are treated. Using a client with less protections (like online temporary email addresses ones) will allow the reception of the email.</p>
 <h2 id="conclusions">Conclusions</h2>
 <p>I think that the main take-away from this article should be an increased awareness about email security, mainly because of a deeper understanding of spoofing techniques.  For me personally, experimenting and researching on this topic was useful because I could work with DNS queries and gather insights about DNS security, a topic I&rsquo;d love to further explore.</p>
-<p>Sadly I couldn&rsquo;t experiment much at the moment, but I will for sure try and send emails from a VPS or a Virtual Machine that use a non-residential IP, I&rsquo;m confident this approach would work in sending spoofed emails on vulnerable domains.</p>
+<p>Sadly I couldn&rsquo;t experiment much at the moment, but I will for sure try and send emails from a VPS or Virtual Machine in the cloud that use a non-residential IP, I&rsquo;m confident this approach would work in sending spoofed emails on vulnerable domains.</p>
 ]]></content></item><item><title>Walkthrough: CryptoHack CTF</title><link>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</link><pubDate>Sun, 03 Oct 2021 12:41:44 +0200</pubDate><guid>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</guid><description>Recently I&amp;rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&amp;rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!
 I&amp;rsquo;m approaching this cryptography deep dive with https://cryptohack.org/. Cryptohack it&amp;rsquo;s website offering CTF style challenges to understand and try to break modern cryptography. I really like this gamified approach so I decided to give it a shot.</description><content type="html"><![CDATA[<p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
 <p>I&rsquo;m approaching this cryptography deep dive with <a href="https://cryptohack.org/">https://cryptohack.org/</a>.
