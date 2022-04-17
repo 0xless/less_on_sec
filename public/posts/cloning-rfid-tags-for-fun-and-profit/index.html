@@ -1,32 +1,248 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=author content="less "><meta name=description content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects."><meta name=keywords content="cybersecurity,physical security,physec,personal blog,RFID,Radio,Physical security"><meta property="og:image" content><meta name=robots content="noodp"><meta name=theme-color content><link rel=canonical href=https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/><title>Cloning RFID tags for fun and profit - less on sec</title><link href=https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css rel=stylesheet type=text/css><link rel=stylesheet href=https://lessonsec.com/main.2fd31a1cd96e9e2ff681ec3d5ee299b6f4e862dbdc77c9f855664a7b84497e31.css><link rel=apple-touch-icon sizes=180x180 href=https://lessonsec.com/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://lessonsec.com/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://lessonsec.com/favicon-16x16.png><link rel=manifest href=https://lessonsec.com/site.webmanifest><link rel=mask-icon href=https://lessonsec.com/safari-pinned-tab.svg color=#1b1c1d><link rel="shortcut icon" href=https://lessonsec.com/favicon.ico><meta name=msapplication-TileColor content="#1b1c1d"><meta name=theme-color content="#1b1c1d"><meta itemprop=name content="Cloning RFID tags for fun and profit"><meta itemprop=description content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops. Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects."><meta itemprop=datePublished content="2021-04-20T16:27:00+02:00"><meta itemprop=dateModified content="2021-04-20T16:27:00+02:00"><meta itemprop=wordCount content="3005"><meta itemprop=image content="https://lessonsec.com/images/rfid/t55xx.png"><meta itemprop=image content="https://lessonsec.com/images/rfid/bricked.jpg"><meta itemprop=image content="https://lessonsec.com/images/rfid/cloned.jpg"><meta itemprop=keywords content="RFID,Radio,Physical security,"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://lessonsec.com/images/rfid/t55xx.png"><meta name=twitter:title content="Cloning RFID tags for fun and profit"><meta name=twitter:description content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops. Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects."><meta property="og:title" content="Cloning RFID tags for fun and profit"><meta property="og:description" content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops. Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects."><meta property="og:type" content="article"><meta property="og:url" content="https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/"><meta property="og:image" content="https://lessonsec.com/images/rfid/t55xx.png"><meta property="og:image" content="https://lessonsec.com/images/rfid/bricked.jpg"><meta property="og:image" content="https://lessonsec.com/images/rfid/cloned.jpg"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-04-20T16:27:00+02:00"><meta property="article:modified_time" content="2021-04-20T16:27:00+02:00"><meta property="article:published_time" content="2021-04-20 16:27:00 +0200 CEST"></head><body><div class=container><link rel=apple-touch-icon sizes=60x60 href=https://lessonsec.com/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://lessonsec.com/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://lessonsec.com/favicon-16x16.png><link rel=manifest href=https://lessonsec.com/site.webmanifest><link rel=mask-icon href=https://lessonsec.com/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><header class=header><span class=header__inner><a href=https://lessonsec.com/ style=text-decoration:none><div class=logo><span class=logo__mark></span><span class=logo__text>less@machine:~#</span>
-<span class=logo__cursor style=background-color:#a9a9b3;animation-duration:2s></span></div></a><span class=header__right><nav class=menu><ul class=menu__inner><li><a href=https://lessonsec.com/whoami/>Whoami</a></li><li><a href=https://lessonsec.com/posts/>Posts</a></li><li><a href=https://lessonsec.com/thoughts/>Thoughts</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span></span></span></header><div class=content><main class=post><div class=post-info><p></p></div><article><h1 class=post-title><a href=https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/>Cloning RFID tags for fun and profit</a></h1><div class=post-content><p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
-Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.</p><blockquote><p>Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.<br>An RFID system consists of a tiny radio transponder, a radio receiver and transmitter. When triggered by an electromagnetic interrogation pulse from a nearby RFID reader device, the tag transmits digital data, back to the reader. - <a href=https://en.wikipedia.org/wiki/Radio-frequency_identification>Wikipedia</a></p></blockquote><p><img src=https://lessonsec.com/images/rfid/main.jpg alt="rfid tools"></p><h3 id=whats-rfid>What&rsquo;s RFID?</h3><p>RFID is a set of standards and technologies because it includes multiple frequency ranges such as:</p><ul><li>LF: 120–150 kHz</li><li>HF: 13.56 MHz</li><li>UHF: 433 MHz</li><li>UHF: 865–868 MHz (Europe) 902–928 MHz (North America)</li><li>microwave: 2450–5800 MHz</li><li>microwave: 3.1–10 GHz</li></ul><p>In practice, only tags operating in the LF range are commonly called RFID tags while tags operating in the HF range are called NFC tags.<br>The rest are radio technologies not limited to the near field use (i.e. bluetooth).</p><p>There&rsquo;s a big difference between RFID and NFC tags and it hides in the specifications. They operate on different frequencies, use different protocols, offer different features and have different uses. Some RFID devices can be compatible with NFC readers, but that doesn&rsquo;t mean that they strictly follow the NFC specs. Further considerations on the difference between these technologies are out of the scope of this article, but it&rsquo;s important not to confuse the two.</p><p>LF tags operate in the 120–150 kHz range, but the most commonly used frequencies are 125kHz for access control tags and 134kHz for uses like pet chips. Other frequencies can be used but the vast majority of tags use either 125kHz or 134kHz. Such low frequencies can limit the data transmission speed.</p><p>RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
-While active tags are used, they often have specific purposes. This article will focus on RFID LF passive tags since it&rsquo;s the most common variant found in everyday life.</p><p>RFID LF tags have poor transmission speed but are incredibly cheap to produce. Due to this, they are so widely employed where speed is not fundamental.
-The reading distance of LF tags is usually better compared to HF reading distance. In fact, LF is referred as a vicinity technology, while HF is generally called a proximity technology.</p><p>Industrial uses aside, one of the main uses of these tags is as access control tokens. It&rsquo;s common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.</p><p>There are numerous models of RFID LF tags each with it&rsquo;s specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option. (note that are exceptions: some tags can employ a password or crypto mode, one of the very few examples are <a href=https://www.nxp.com/products/rfid-nfc/hitag-lf:MC_42027>Hitag2</a> tags and these security measures <a href=https://www.cs.bham.ac.uk/~tpc/isecsem/talks/EZ.pdf>can still be circumvented</a>!)</p><p>In this article, we will see how it&rsquo;s possible to read, write and clone these tags and learn about possible implications due to misuse of this technology.</p><h3 id=how-to-work-with-rfid-tags>How to work with RFID tags</h3><p>To work with RFID tags, specialized hardware is necessary.</p><p>Different devices exist:</p><ul><li><p>Chinese cloners<br>Simple devices that read from one tag and write on another.
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="less ">
+<meta name="description" content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
+ Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects." />
+<meta name="keywords" content="cybersecurity, physical security, physec, personal blog, RFID, Radio, Physical security" />
+<meta property="og:image" content="" />
+
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/" />
+
+
+<title>
+        
+        	Cloning RFID tags for fun and profit - less on sec
+        
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="https://lessonsec.com/main.2fd31a1cd96e9e2ff681ec3d5ee299b6f4e862dbdc77c9f855664a7b84497e31.css">
+
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="https://lessonsec.com/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://lessonsec.com/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://lessonsec.com/favicon-16x16.png">
+    <link rel="manifest" href="https://lessonsec.com/site.webmanifest">
+    <link rel="mask-icon" href="https://lessonsec.com/safari-pinned-tab.svg" color="#1b1c1d">
+    <link rel="shortcut icon" href="https://lessonsec.com/favicon.ico">
+    <meta name="msapplication-TileColor" content="#1b1c1d">
+    <meta name="theme-color" content="#1b1c1d">
+
+
+
+<meta itemprop="name" content="Cloning RFID tags for fun and profit">
+<meta itemprop="description" content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops. Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.
+ Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects."><meta itemprop="datePublished" content="2021-04-20T16:27:00&#43;02:00" />
+<meta itemprop="dateModified" content="2021-04-20T16:27:00&#43;02:00" />
+<meta itemprop="wordCount" content="3005"><meta itemprop="image" content="https://lessonsec.com/images/rfid/t55xx.png"><meta itemprop="image" content="https://lessonsec.com/images/rfid/bricked.jpg"><meta itemprop="image" content="https://lessonsec.com/images/rfid/cloned.jpg">
+<meta itemprop="keywords" content="RFID,Radio,Physical security," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://lessonsec.com/images/rfid/t55xx.png"/>
+
+<meta name="twitter:title" content="Cloning RFID tags for fun and profit"/>
+<meta name="twitter:description" content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops. Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.
+ Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects."/>
+
+
+
+
+    <meta property="og:title" content="Cloning RFID tags for fun and profit" />
+<meta property="og:description" content="RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops. Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.
+ Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/" /><meta property="og:image" content="https://lessonsec.com/images/rfid/t55xx.png" /><meta property="og:image" content="https://lessonsec.com/images/rfid/bricked.jpg" /><meta property="og:image" content="https://lessonsec.com/images/rfid/cloned.jpg" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-04-20T16:27:00&#43;02:00" />
+<meta property="article:modified_time" content="2021-04-20T16:27:00&#43;02:00" />
+
+
+
+
+
+
+
+    <meta property="article:published_time" content="2021-04-20 16:27:00 &#43;0200 CEST" />
+
+
+
+
+
+
+
+
+    </head>
+
+    
+        <body>
+    
+    
+        <div class="container">
+            <link rel="apple-touch-icon" sizes="60x60" href="https://lessonsec.com/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://lessonsec.com/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://lessonsec.com/favicon-16x16.png">
+<link rel="manifest" href="https://lessonsec.com/site.webmanifest">
+<link rel="mask-icon" href="https://lessonsec.com/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
+<header class="header">
+    <span class="header__inner">
+        <a href="https://lessonsec.com/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark"> </span>
+            <span class="logo__text">less@machine:~#</span>
+            <span class="logo__cursor" style=
+                  "
+                   background-color:#a9a9b3;
+                   animation-duration:2s;">
+            </span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="https://lessonsec.com/whoami/">Whoami</a></li>
+
+        <li><a href="https://lessonsec.com/posts/">Posts</a></li><li><a href="https://lessonsec.com/thoughts/">Thoughts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+  <main class="post">
+
+    <div class="post-info">
+      <p>
+
+
+        
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/">Cloning RFID tags for fun and profit</a>
+      </h1>
+
+      
+
+      
+
+      <div class="post-content">
+        <p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
+Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.</p>
+<blockquote>
+<p>Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.<br>
+An RFID system consists of a tiny radio transponder, a radio receiver and transmitter. When triggered by an electromagnetic interrogation pulse from a nearby RFID reader device,  the tag transmits digital data, back to the reader. - <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification">Wikipedia</a></p>
+</blockquote>
+<p><img src="https://lessonsec.com/images/rfid/main.jpg" alt="rfid tools"></p>
+<h3 id="whats-rfid">What&rsquo;s RFID?</h3>
+<p>RFID is a set of standards and technologies because it includes multiple frequency ranges such as:</p>
+<ul>
+<li>LF: 120–150 kHz</li>
+<li>HF: 13.56 MHz</li>
+<li>UHF: 433 MHz</li>
+<li>UHF: 865–868 MHz (Europe) 902–928 MHz (North America)</li>
+<li>microwave: 2450–5800 MHz</li>
+<li>microwave: 3.1–10 GHz</li>
+</ul>
+<p>In practice, only tags operating in the LF range are commonly called RFID tags while tags operating in the HF range are called NFC tags.<br>
+The rest are radio technologies not limited to the near field use (i.e. bluetooth).</p>
+<p>There&rsquo;s a big difference between RFID and NFC tags and it hides in the specifications. They operate on different frequencies, use different protocols, offer different features and have different uses. Some RFID devices can be compatible with NFC readers, but that doesn&rsquo;t mean that they strictly follow the NFC specs. Further considerations on the difference between these technologies are out of the scope of this article, but it&rsquo;s important not to confuse the two.</p>
+<p>LF tags operate in the 120–150 kHz range, but the most commonly used frequencies are 125kHz for access control tags and 134kHz for uses like pet chips. Other frequencies can be used but the vast majority of tags use either 125kHz or 134kHz. Such low frequencies can limit the data transmission speed.</p>
+<p>RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
+While active tags are used, they often have specific purposes. This article will focus on RFID LF passive tags since it&rsquo;s the most common variant found in everyday life.</p>
+<p>RFID LF tags have poor transmission speed but are incredibly cheap to produce. Due to this, they are so widely employed where speed is not fundamental.
+The reading distance of LF tags is usually better compared to HF reading distance. In fact, LF is referred as a vicinity technology, while HF is generally called a proximity technology.</p>
+<p>Industrial uses aside, one of the main uses of these tags is as access control tokens. It&rsquo;s common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.</p>
+<p>There are numerous models of RFID LF tags each with it&rsquo;s specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option. (note that are exceptions: some tags can employ a password or crypto mode, one of the very few examples are <a href="https://www.nxp.com/products/rfid-nfc/hitag-lf:MC_42027">Hitag2</a> tags and these security measures <a href="https://www.cs.bham.ac.uk/~tpc/isecsem/talks/EZ.pdf">can still be circumvented</a>!)</p>
+<p>In this article, we will see how it&rsquo;s possible to read, write and clone these tags and learn about possible implications due to misuse of this technology.</p>
+<h3 id="how-to-work-with-rfid-tags">How to work with RFID tags</h3>
+<p>To work with RFID tags, specialized hardware is necessary.</p>
+<p>Different devices exist:</p>
+<ul>
+<li>
+<p>Chinese cloners<br>
+Simple devices that read from one tag and write on another.
 Generally, these are hand-held, feature read and write buttons, and have a couple of status LEDs.
 Some are more advanced than others and can feature a little screen.
-Compatibility for frequencies and standards may vary, but these devices are usually good enough for simpler tasks.</p></li><li><p>RFID Chameleon<br>Developed to be used in RFID security assessments.
+Compatibility for frequencies and standards may vary, but these devices are usually good enough for simpler tasks.</p>
+</li>
+<li>
+<p>RFID Chameleon<br>
+Developed to be used in RFID security assessments.
 Doesn&rsquo;t offer the most advanced features, but is designed to be used in the field, is battery powered and supports tag simulation and manipulation.
-It is also programmable and you can use it with an app.</p><p>It&rsquo;s probably the best solution for a standalone use.<br>More here: <a href=https://kasper-oswald.de/gb/chameleonmini/>https://kasper-oswald.de/gb/chameleonmini/</a></p></li><li><p>Proxmark3<br>As the website puts it: Proxmark is an RFID swiss-army tool.
+It is also programmable and you can use it with an app.</p>
+<p>It&rsquo;s probably the best solution for a standalone use.<br>
+More here: <a href="https://kasper-oswald.de/gb/chameleonmini/">https://kasper-oswald.de/gb/chameleonmini/</a></p>
+</li>
+<li>
+<p>Proxmark3<br>
+As the website puts it: Proxmark is an RFID swiss-army tool.
 It represents the state of the art when it comes to RFID research.
 It allows interacting with the tags both high and low level.
 Different versions have different features, including bluetooth support, battery packs,
-swappable antennas and so on.</p><p>It supports a standalone use, but it&rsquo;s more powerful when connected to a PC.
-It&rsquo;s to be intended as a research tool.<br>More here: <a href=https://www.proxmark.com/>https://www.proxmark.com/</a></p></li><li><p>Generic boards<br>Other boards exist. These are usually sold as an Arduino add on, but dongles featuring
+swappable antennas and so on.</p>
+<p>It supports a standalone use, but it&rsquo;s more powerful when connected to a PC.
+It&rsquo;s to be intended  as a research tool.<br>
+More here: <a href="https://www.proxmark.com/">https://www.proxmark.com/</a></p>
+</li>
+<li>
+<p>Generic boards<br>
+Other boards exist. These are usually sold as an Arduino add on, but dongles featuring
 the same integrated circuits are available.
 These are not widely used outside the makers world, but many are compatible with
-<a href=http://www.nfc-tools.org/index.php/Libnfc><code>libnfc</code></a> and can be useful to perform simple to advanced operations.</p></li></ul><p>The only device that I have available is a Proxmark3 easy (cheap Chinese version) so this
-article will focus on its use. The underlying concepts about RFID tags should translate to other devices.</p><h3 id=tags-that-emulate-other-tags>Tags that emulate other tags</h3><p>When it comes to working with RFID LF tags, there&rsquo;s one main player: the <a href=http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-9187-RFID-ATA5577C_Datasheet.pdf>t55xx</a> tag</p><p>They are a family of tags developed to emulate a wide range of regular tags.
+<a href="http://www.nfc-tools.org/index.php/Libnfc"><code>libnfc</code></a> and can be useful to perform simple to advanced operations.</p>
+</li>
+</ul>
+<p>The only device that I have available is a Proxmark3 easy (cheap Chinese version) so this
+article will focus on its use. The underlying concepts about RFID tags should translate to other devices.</p>
+<h3 id="tags-that-emulate-other-tags">Tags that emulate other tags</h3>
+<p>When it comes to working with RFID LF tags, there&rsquo;s one main player: the <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-9187-RFID-ATA5577C_Datasheet.pdf">t55xx</a> tag</p>
+<p>They are a family of tags developed to emulate a wide range of regular tags.
 This means that it&rsquo;s possible to clone most of the RFID tags around using one of these
-without having to carry writable cards for each and every tag model.</p><p>This tag features 8 x 32 bit blocks in page 0 and 4 x 32 blocks in page 1.
+without having to carry writable cards for each and every tag model.</p>
+<p>This tag features 8 x 32 bit blocks in page 0 and 4 x 32 blocks in page 1.
 Page 1 blocks are meant to be used for configuration purposes along with block 0 and 7 in page 0.
-Blocks 1 to 6 in page 0 are dedicated to user data.</p><p><img src=https://lessonsec.com/images/rfid/t55xx.png#center alt=t55xx></p><p>Of course, it&rsquo;s possible to work directly on the configuration blocks, and this is what allows the emulation
-of other type of tags, but doing so carelessly can easily lead to a brick!</p><p><img src=https://lessonsec.com/images/rfid/bricked.jpg#center alt="bricked tag"></p><p>Original Atmel T5577 tags have a test mode and that can be helpful to recover soft-bricked cards.</p><h3 id=cloning-tags>Cloning tags</h3><p>Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
-First off you need to look for the device:</p><pre><code>[usb] pm3 --&gt; lf search
+Blocks 1 to 6 in page 0 are dedicated to user data.</p>
+<p><img src="https://lessonsec.com/images/rfid/t55xx.png#center" alt="t55xx"></p>
+<p>Of course, it&rsquo;s possible to work directly on the configuration blocks, and this is what allows the emulation
+of other type of tags, but doing so carelessly can easily lead to a brick!</p>
+<p><img src="https://lessonsec.com/images/rfid/bricked.jpg#center" alt="bricked tag"></p>
+<p>Original Atmel T5577 tags have a test mode and that can be helpful to recover soft-bricked cards.</p>
+<h3 id="cloning-tags">Cloning tags</h3>
+<p>Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
+First off you need to look for the device:</p>
+<pre><code>[usb] pm3 --&gt; lf search
 
 [=] NOTE: some demods output possible binary
 [=] if it finds something that looks like a tag
@@ -56,9 +272,11 @@ First off you need to look for the device:</p><pre><code>[usb] pm3 --&gt; lf sea
 [=] ------------------------------------------------
 
 [+] Valid EM410x ID found!
-</code></pre><p>The proxmark found an EM410x tag! We can now try to read it:</p><pre><code>[usb] pm3 --&gt; lf em 410x reader
+</code></pre><p>The proxmark found an EM410x tag! We can now try to read it:</p>
+<pre><code>[usb] pm3 --&gt; lf em 410x reader
 [+] EM 410x ID 1122334455
-</code></pre><p>Let&rsquo;s try with another type of tag:</p><pre><code>[usb] pm3 --&gt; lf search
+</code></pre><p>Let&rsquo;s try with another type of tag:</p>
+<pre><code>[usb] pm3 --&gt; lf search
 
 [=] NOTE: some demods output possible binary
 [=] if it finds something that looks like a tag
@@ -70,12 +288,16 @@ First off you need to look for the device:</p><pre><code>[usb] pm3 --&gt; lf sea
 [=] raw: 000000000000002006ec0c86
 
 [+] Valid HID Prox ID found!
-</code></pre><p>It&rsquo;s an HID Prox tag, let&rsquo;s try and read its ID:</p><pre><code>[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+</code></pre><p>It&rsquo;s an HID Prox tag, let&rsquo;s try and read its ID:</p>
+<pre><code>[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
 [=] raw: 000000000000002006ec0c86
 </code></pre><p>And just like that we got the devices ID. That ID is the authentication token!
 If we can write this token on a t55xx tag, we can emulate the card and possibly gain access
-to a restricted perimeter.</p><p>Let&rsquo;s see how it&rsquo;s done.<br>First we need to get a t55xx tag and position it on the reader. When empty this device
-can&rsquo;t be found using <code>lf search</code>, so we can make sure it&rsquo;s a t55xx tag using the detect command:</p><pre><code>[usb] pm3 --&gt; lf t55xx detect
+to a restricted perimeter.</p>
+<p>Let&rsquo;s see how it&rsquo;s done.<br>
+First we need to get a t55xx tag and position it on the reader. When empty this device
+can&rsquo;t be found using <code>lf search</code>, so we can make sure it&rsquo;s a t55xx tag using the detect command:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx detect
 [=]  Chip type......... T55x7
 [=]  Modulation........ ASK
 [=]  Bit rate.......... 2 - RF/32
@@ -85,7 +307,9 @@ can&rsquo;t be found using <code>lf search</code>, so we can make sure it&rsquo;
 [=]  Block0............ 00088048 (auto detect)
 [=]  Downlink mode..... default/fixed bit length
 [=]  Password set...... No
-</code></pre><p>The <code>lf t55 detect</code> command is also necessary before using this tag because it detects the configuration in use and helps avoiding problems running other <code>lf t55</code> commands.</p><p>Now we can see the content of the device:</p><pre><code>[usb] pm3 --&gt; lf t55xx dump
+</code></pre><p>The <code>lf t55 detect</code> command is also necessary before using this tag because it detects the configuration in use and helps avoiding problems running other <code>lf t55</code> commands.</p>
+<p>Now we can see the content of the device:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx dump
 [+] Reading Page 0:
 [+] blk | hex data | binary                           | ascii
 [+] ----+----------+----------------------------------+-------
@@ -104,24 +328,41 @@ can&rsquo;t be found using <code>lf search</code>, so we can make sure it&rsquo;
 [+]  01 | E03900D0 | 11100000001110010000000011010000 | .9..
 [+]  02 | C60337D7 | 11000110000000110011011111010111 | ..7.
 [+]  03 | 00A00003 | 00000000101000000000000000000011 | ....
-</code></pre><p>Note that it&rsquo;s possible to operate on single blocks too, but for the purpose of this article, it&rsquo;s easier to dump the whole memory instead.</p><p>We see that the card doesn&rsquo;t contain user data. If it did, wiping the card with the <code>lf t55xx wipe</code> command would be suggested.
+</code></pre><p>Note that it&rsquo;s possible to operate on single blocks too, but for the purpose of this article, it&rsquo;s easier to dump the whole memory instead.</p>
+<p>We see that the card doesn&rsquo;t contain user data. If it did, wiping the card with the <code>lf t55xx wipe</code> command would be suggested.
 We can now try and emulate tags on it!
-To do that we only need to have the ID of the tags we want to emulate. We already saw how that&rsquo;s done.</p><p>We can now go ahead and clone the tags, let&rsquo;s try the em410x first:</p><pre><code>[usb] pm3 --&gt; lf em 410x clone --id 1122334455
+To do that we only need to have the ID of the tags we want to emulate. We already saw how that&rsquo;s done.</p>
+<p>We can now go ahead and clone the tags, let&rsquo;s try the em410x first:</p>
+<pre><code>[usb] pm3 --&gt; lf em 410x clone --id 1122334455
 [+] Preparing to clone EM4102 to T55x7 tag with ID 1122334455 (RF/64)
 [#] Clock rate: 64
 [#] Tag T55x7 written with 0xff8c65298c94a940
-</code></pre><p>Once the command is issued, we can read the device and verify that it emulates an em410x tag:</p><pre><code>[usb] pm3 --&gt; lf em 410x reader
+</code></pre><p>Once the command is issued, we can read the device and verify that it emulates an em410x tag:</p>
+<pre><code>[usb] pm3 --&gt; lf em 410x reader
 [+] EM 410x ID 1122334455
-</code></pre><p>Of course it&rsquo;s still a t55xx tag (and the <code>detect</code> command will tell you that) but it behaves exactly like and em410x.</p><p>Now we can try with the HID Prox.</p><pre><code>[usb] pm3 --&gt; lf hid clone --r 000000000000002006ec0c86
+</code></pre><p>Of course it&rsquo;s still a t55xx tag (and the <code>detect</code> command will tell you that) but it behaves exactly like and em410x.</p>
+<p>Now we can try with the HID Prox.</p>
+<pre><code>[usb] pm3 --&gt; lf hid clone --r 000000000000002006ec0c86
 [=] Preparing to clone HID tag using raw 000000000000002006ec0c86
 [=] Done
-</code></pre><p>And of course reading it reveals that we successfully cloned the tag:</p><pre><code>usb] pm3 --&gt; lf hid reader
+</code></pre><p>And of course reading it reveals that we successfully cloned the tag:</p>
+<pre><code>usb] pm3 --&gt; lf hid reader
 [+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
 [=] raw: 000000000000002006ec0c86
-</code></pre><p>We now have two key fob tags copied on t55xx cards!</p><p><img src=https://lessonsec.com/images/rfid/cloned.jpg alt></p><p>In this demo only HID Prox and em410x tags are examined, but it&rsquo;s possible to clone and work with many more of these tags.</p><p>Since it&rsquo;s possible to emulate cards knowing the ID, we can clone some RFID LF cards &ldquo;by sight&rdquo; simply reading the ID printed to the device body.
+</code></pre><p>We now have two key fob tags copied on t55xx cards!</p>
+<p><img src="https://lessonsec.com/images/rfid/cloned.jpg" alt=""></p>
+<p>In this demo only HID Prox and em410x tags are examined, but it&rsquo;s possible to clone and work with many more of these tags.</p>
+<p>Since it&rsquo;s possible to emulate cards knowing the ID, we can clone some RFID LF cards &ldquo;by sight&rdquo; simply reading the ID printed to the device body.
 This completely removes the limit of having to read the card with a specialized tool.
-Some of these printed ID are &ldquo;encoded&rdquo; (or shifted by some value). This allows organizations to &ldquo;decode&rdquo; it, but prevents attackers from obtaining the ID by sight.</p><p>At this point you might be wondering if it&rsquo;s THAT easy to clone a tag in the real world, the answer is no. That&rsquo;s for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.</p><p>Luckily, it&rsquo;s possible to weaponize a bigger antenna! If we use a bigger and more powerful antenna, it&rsquo;s possible to clone a LF tag from a usable distance. Of course the antenna will need to be powered by a big battery pack and carried in some kind of backpack or messenger bag, but that&rsquo;s the price to pay.</p><p>More here: <a href="https://www.youtube.com/watch?v=wYmVtNQPlF4">https://www.youtube.com/watch?v=wYmVtNQPlF4</a><br>(NOTE: many other implementations exist!)</p><h3 id=defeating-password-protection>Defeating password protection</h3><p>When examining the t55xx tag, you may have noticed a parameter &ldquo;Password set&rdquo;. That&rsquo;s because
-this tag can be password protected!</p><pre><code>[usb] pm3 --&gt; lf t55xx protect -n 00001234
+Some of these printed ID are &ldquo;encoded&rdquo; (or shifted by some value). This allows organizations to &ldquo;decode&rdquo; it, but prevents attackers from obtaining the ID by sight.</p>
+<p>At this point you might be wondering if it&rsquo;s THAT easy to clone a tag in the real world, the answer is no. That&rsquo;s for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.</p>
+<p>Luckily, it&rsquo;s possible to weaponize a bigger antenna! If we use a bigger and more powerful antenna, it&rsquo;s possible to clone a LF tag from a usable distance. Of course the antenna will need to be powered by a big battery pack and carried in some kind of backpack or messenger bag, but that&rsquo;s the price to pay.</p>
+<p>More here: <a href="https://www.youtube.com/watch?v=wYmVtNQPlF4">https://www.youtube.com/watch?v=wYmVtNQPlF4</a><br>
+(NOTE: many other implementations exist!)</p>
+<h3 id="defeating-password-protection">Defeating password protection</h3>
+<p>When examining the t55xx tag, you may have noticed a parameter &ldquo;Password set&rdquo;. That&rsquo;s because
+this tag can be password protected!</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx protect -n 00001234
 [=] Checking current configuration
 [+] Wrote new password
 [+] Validated new password
@@ -143,9 +384,11 @@ this tag can be password protected!</p><pre><code>[usb] pm3 --&gt; lf t55xx prot
 [+] New configuration block 000880F0 password 00001234
 [+] Success, tag is locked
 </code></pre><p>At this point we can&rsquo;t operate on this tag without knowing the password, for instance
-the <code>detect</code> command won&rsquo;t work as expected:</p><pre><code>[usb] pm3 --&gt; lf t55xx detect 
+the <code>detect</code> command won&rsquo;t work as expected:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx detect 
 [!] ⚠️  Could not detect modulation automatically. Try setting it manually with 'lf t55xx config'
-</code></pre><p>But it does if the correct password is specified:</p><pre><code>[usb] pm3 --&gt; lf t55xx detect -p 00001234
+</code></pre><p>But it does if the correct password is specified:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx detect -p 00001234
 [=]  Chip type......... T55x7
 [=]  Modulation........ ASK
 [=]  Bit rate.......... 2 - RF/32
@@ -157,7 +400,11 @@ the <code>detect</code> command won&rsquo;t work as expected:</p><pre><code>[usb
 [=]  Password set...... Yes
 [=]  Password.......... 00001234
 </code></pre><p>Can we circumvent this? The simple answer is no.
-The device is completely locked and without the password it&rsquo;s impossible to do anything.</p><p>Luckily the proxmark allows bruteforce attacks.</p><p>While this type of attack works, it&rsquo;s a really slow and instable method. This means it&rsquo;s hard to try all the possible passwords before the connection drops. It may seem that the password protection is effective and that&rsquo;s true if you don&rsquo;t have the right tools. On the other hand, with quality reading devices and unlimited access to the target tag, success is granted.</p><p>Here&rsquo;s a demo on the tag we just password protected:</p><pre><code>[usb] pm3 --&gt; lf t55xx bruteforce -s 00000000 -e FFFFFFFF
+The device is completely locked and without the password it&rsquo;s impossible to do anything.</p>
+<p>Luckily the proxmark allows bruteforce attacks.</p>
+<p>While this type of attack works, it&rsquo;s a really slow and instable method. This means it&rsquo;s hard to try all the possible passwords before the connection drops. It may seem that the password protection is effective and that&rsquo;s true if you don&rsquo;t have the right tools. On the other hand, with quality reading devices and unlimited access to the target tag, success is granted.</p>
+<p>Here&rsquo;s a demo on the tag we just password protected:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx bruteforce -s 00000000 -e FFFFFFFF
 [=] press 'enter' to cancel the command
 [=] Search password range [00000000 -&gt; FFFFFFFF]
 .[=] Trying password 00000000
@@ -200,12 +447,106 @@ The device is completely locked and without the password it&rsquo;s impossible t
 Downlink Mode used : default/fixed bit length
 
 [+] time in bruteforce 1215 seconds
-</code></pre><p>As you can see, it took ~20 minutes to crack a 4 hex digit password. It may seem to be a reasonable time but we must consider that the password can be double the length and that having access to the card for long periods of time is not always an option.</p><h3 id=attacks-on-rfid-readers>Attacks on RFID readers</h3><p>Finally, we can talk about attacks on the readers. There are two main attacks:</p><ul><li>Tag simulation</li><li>Data exfiltration</li></ul><p>We saw that we can simulate a tag using the proxmark, but what if the ID we have read and simulated doesn&rsquo;t have enough permission to grant us access somewhere?
+</code></pre><p>As you can see, it took ~20 minutes to crack a 4 hex digit password. It may seem to be a reasonable time but we must consider that the password can be double the length and that having access to the card for long periods of time is not always an option.</p>
+<h3 id="attacks-on-rfid-readers">Attacks on RFID readers</h3>
+<p>Finally, we can talk about attacks on the readers. There are two main attacks:</p>
+<ul>
+<li>Tag simulation</li>
+<li>Data exfiltration</li>
+</ul>
+<p>We saw that we can simulate a tag using the proxmark, but what if the ID we have read and simulated doesn&rsquo;t have enough permission to grant us access somewhere?
 In this scenario, it&rsquo;s possible to use the read value as an upper limit to the ID space to research, and simulate every ID lower than that value hoping to find an ID with higher privileges. This attack is based on the assumption that lower IDs may have higher privileges because such privileges are associated with users registered earlier into the system, hence the lower ID value.
-As for the bruteforce attack, this process may take a while, so it&rsquo;s not always a usable technique.</p><p>A sneakier way to get valid IDs is to install a device such as the <a href=https://redteamtools.com/espkey>ESPKey</a> inside the reader.
+As for the bruteforce attack, this process may take a while, so it&rsquo;s not always a usable technique.</p>
+<p>A sneakier way to get valid IDs is to install a device such as the <a href="https://redteamtools.com/espkey">ESPKey</a> inside the reader.
 This approach allows the interception of data directly from the wires and can harvest valid IDs.
-Of course, this requires a physical access to the reader.</p><p>Using the proxmark is also possible to sniff data from a tag to a reader.<br>Given the antenna range, this is not a widely used technique and personally I haven&rsquo;t tried it yet.</p><h3 id=conclusions>Conclusions</h3><p>This article shows how, with the right hardware, it is possible to clone RFID tags with relatively low skills.</p><p>What&rsquo;s scary is how easy it is to &ldquo;steal&rdquo; valuable credentials. In an access control context, a stolen ID constitutes a danger for a business because of the implications of a possible unauthorized entry into a critical infrastructure.</p><p>Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.</p><p>A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.</p><p>RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.</p><hr><p>This article was reviewed by an external source, big thanks to them!</p></div></article><hr><div class=post-info><p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>2021-04-20 16:27</p><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7" y2="7"/></svg><span class=tag><a href=https://lessonsec.com/tags/rfid/>RFID</a></span>
-<span class=tag><a href=https://lessonsec.com/tags/radio/>Radio</a></span>
-<span class=tag><a href=https://lessonsec.com/tags/physical-security/>Physical security</a></span></div></div></main></div><footer class=footer><div class=footer__inner><div class=footer__content><span>&copy; 2022</span>
-<span><a href=https://lessonsec.com/>less</a></span>
-<span><a href=https://lessonsec.com/posts/index.xml target=_blank title=rss><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></span></div></div></footer></div><script type=text/javascript src=https://lessonsec.com/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js integrity="sha512-LOZOpupEpysT3YEvwutcyj7+h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script><script data-goatcounter=https://lessonsec.goatcounter.com/count async src=//lessonsec.com/script/count.js></script></body></html>
+Of course, this requires a physical access to the reader.</p>
+<p>Using the proxmark is also possible to sniff data from a tag to a reader.<br>
+Given the antenna range, this is not a widely used technique and personally I haven&rsquo;t tried it yet.</p>
+<h3 id="conclusions">Conclusions</h3>
+<p>This article shows how, with the right hardware, it is possible to clone RFID tags with relatively low skills.</p>
+<p>What&rsquo;s scary is how easy it is to &ldquo;steal&rdquo; valuable credentials. In an access control context, a stolen ID constitutes a danger for a business because of the implications of a possible unauthorized entry into a critical infrastructure.</p>
+<p>Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.</p>
+<p>A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.</p>
+<p>RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.</p>
+<hr>
+<p>This article was reviewed by an external source, big thanks to them!</p>
+
+      </div>
+    </article>
+
+    <hr />
+
+    <div class="post-info">
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+
+        
+          2021-04-20 16:27
+        
+
+         
+          
+        
+      </p>
+      
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://lessonsec.com/tags/rfid/">RFID</a></span>
+        <span class="tag"><a href="https://lessonsec.com/tags/radio/">Radio</a></span>
+        <span class="tag"><a href="https://lessonsec.com/tags/physical-security/">Physical security</a></span>
+        
+    </div>
+
+
+      
+
+    </div>
+
+    
+
+
+    
+
+    
+
+  </main>
+
+            </div>
+
+            
+                <footer class="footer">    
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2022</span>
+            <span><a href="https://lessonsec.com/">less</a></span>
+            <span><a href="https://lessonsec.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+<script type="text/javascript" src="https://lessonsec.com/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js" integrity="sha512-LOZOpupEpysT3YEvwutcyj7&#43;h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script>
+
+<script data-goatcounter="https://lessonsec.goatcounter.com/count"
+        async src="//lessonsec.com/script/count.js"></script>
+
+
+
+
+
+
+    </body>
+</html>
