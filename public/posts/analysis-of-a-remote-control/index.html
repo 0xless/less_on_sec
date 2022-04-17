@@ -1,231 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author" content="less ">
-<meta name="description" content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=author content="less "><meta name=description content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes." />
-<meta name="keywords" content="cybersecurity, physical security, physec, personal blog, Radio, SDR" />
-<meta property="og:image" content="" />
-
-<meta name="robots" content="noodp" />
-<meta name="theme-color" content="" />
-<link rel="canonical" href="https://lessonsec.com/posts/analysis-of-a-remote-control/" />
-
-
-<title>
-        
-        	Analysis of a Remote Control - less on sec
-        
-</title>
-
-
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
-    type="text/css">
-
-
-
-<link rel="stylesheet" href="https://lessonsec.com/main.2fd31a1cd96e9e2ff681ec3d5ee299b6f4e862dbdc77c9f855664a7b84497e31.css">
-
-
-
-
-    <link rel="apple-touch-icon" sizes="180x180" href="https://lessonsec.com/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://lessonsec.com/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://lessonsec.com/favicon-16x16.png">
-    <link rel="manifest" href="https://lessonsec.com/site.webmanifest">
-    <link rel="mask-icon" href="https://lessonsec.com/safari-pinned-tab.svg" color="#1b1c1d">
-    <link rel="shortcut icon" href="https://lessonsec.com/favicon.ico">
-    <meta name="msapplication-TileColor" content="#1b1c1d">
-    <meta name="theme-color" content="#1b1c1d">
-
-
-
-<meta itemprop="name" content="Analysis of a Remote Control">
-<meta itemprop="description" content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+ Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes."><meta name=keywords content="cybersecurity,physical security,physec,personal blog,Radio,SDR"><meta property="og:image" content><meta name=robots content="noodp"><meta name=theme-color content><link rel=canonical href=https://lessonsec.com/posts/analysis-of-a-remote-control/><title>Analysis of a Remote Control - less on sec</title><link href=https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css rel=stylesheet type=text/css><link rel=stylesheet href=https://lessonsec.com/main.2fd31a1cd96e9e2ff681ec3d5ee299b6f4e862dbdc77c9f855664a7b84497e31.css><link rel=apple-touch-icon sizes=180x180 href=https://lessonsec.com/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://lessonsec.com/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://lessonsec.com/favicon-16x16.png><link rel=manifest href=https://lessonsec.com/site.webmanifest><link rel=mask-icon href=https://lessonsec.com/safari-pinned-tab.svg color=#1b1c1d><link rel="shortcut icon" href=https://lessonsec.com/favicon.ico><meta name=msapplication-TileColor content="#1b1c1d"><meta name=theme-color content="#1b1c1d"><meta itemprop=name content="Analysis of a Remote Control"><meta itemprop=description content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes."><meta itemprop="datePublished" content="2021-07-15T16:45:40&#43;02:00" />
-<meta itemprop="dateModified" content="2021-07-15T16:45:40&#43;02:00" />
-<meta itemprop="wordCount" content="1420"><meta itemprop="image" content="https://lessonsec.com/images/rc_analysis/complete.jpeg"><meta itemprop="image" content="https://lessonsec.com/images/rc_analysis/clock.jpeg"><meta itemprop="image" content="https://lessonsec.com/images/rc_analysis/dip_switch.jpeg"><meta itemprop="image" content="https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg"><meta itemprop="image" content="https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg"><meta itemprop="image" content="https://lessonsec.com/images/rc_analysis/gqrx_signal.gif">
-<meta itemprop="keywords" content="Radio,SDR," />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://lessonsec.com/images/rc_analysis/complete.jpeg"/>
-
-<meta name="twitter:title" content="Analysis of a Remote Control"/>
-<meta name="twitter:description" content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+ Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes."><meta itemprop=datePublished content="2021-07-15T16:45:40+02:00"><meta itemprop=dateModified content="2021-07-15T16:45:40+02:00"><meta itemprop=wordCount content="1420"><meta itemprop=image content="https://lessonsec.com/images/rc_analysis/complete.jpeg"><meta itemprop=image content="https://lessonsec.com/images/rc_analysis/clock.jpeg"><meta itemprop=image content="https://lessonsec.com/images/rc_analysis/dip_switch.jpeg"><meta itemprop=image content="https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg"><meta itemprop=image content="https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg"><meta itemprop=image content="https://lessonsec.com/images/rc_analysis/gqrx_signal.gif"><meta itemprop=keywords content="Radio,SDR,"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://lessonsec.com/images/rc_analysis/complete.jpeg"><meta name=twitter:title content="Analysis of a Remote Control"><meta name=twitter:description content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes."/>
-
-
-
-
-    <meta property="og:title" content="Analysis of a Remote Control" />
-<meta property="og:description" content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+ Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes."><meta property="og:title" content="Analysis of a Remote Control"><meta property="og:description" content="A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://lessonsec.com/posts/analysis-of-a-remote-control/" /><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/complete.jpeg" /><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/clock.jpeg" /><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/dip_switch.jpeg" /><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg" /><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg" /><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/gqrx_signal.gif" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2021-07-15T16:45:40&#43;02:00" />
-<meta property="article:modified_time" content="2021-07-15T16:45:40&#43;02:00" />
-
-
-
-
-
-
-
-    <meta property="article:published_time" content="2021-07-15 16:45:40 &#43;0200 CEST" />
-
-
-
-
-
-
-
-
-    </head>
-
-    
-        <body>
-    
-    
-        <div class="container">
-            <link rel="apple-touch-icon" sizes="60x60" href="https://lessonsec.com/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://lessonsec.com/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://lessonsec.com/favicon-16x16.png">
-<link rel="manifest" href="https://lessonsec.com/site.webmanifest">
-<link rel="mask-icon" href="https://lessonsec.com/safari-pinned-tab.svg" color="#5bbad5">
-<meta name="msapplication-TileColor" content="#da532c">
-<meta name="theme-color" content="#ffffff">
-
-<header class="header">
-    <span class="header__inner">
-        <a href="https://lessonsec.com/" style="text-decoration: none;">
-    <div class="logo">
-        
-            <span class="logo__mark"> </span>
-            <span class="logo__text">less@machine:~#</span>
-            <span class="logo__cursor" style=
-                  "
-                   background-color:#a9a9b3;
-                   animation-duration:2s;">
-            </span>
-        
-    </div>
-</a>
-
-
-        <span class="header__right">
-            
-                <nav class="menu">
-    <ul class="menu__inner"><li><a href="https://lessonsec.com/whoami/">Whoami</a></li>
-
-        <li><a href="https://lessonsec.com/posts/">Posts</a></li><li><a href="https://lessonsec.com/thoughts/">Thoughts</a></li>
-    </ul>
-</nav>
-
-                <span class="menu-trigger">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-                    </svg>
-                </span>
-            
-        </span>
-    </span>
-</header>
-
-
-            <div class="content">
-                
-  <main class="post">
-
-    <div class="post-info">
-      <p>
-
-
-        
-      </p>
-    </div>
-
-    <article>
-      <h1 class="post-title">
-        <a href="https://lessonsec.com/posts/analysis-of-a-remote-control/">Analysis of a Remote Control</a>
-      </h1>
-
-      
-
-      
-
-      <div class="post-content">
-        <p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old <strong>RTL-SDR</strong> and put it to good use.
-In this article I will describe step-by-step my experience with <em>studying</em>, <em>reversing</em> and <em>understanding</em> these devices.</p>
-<p>In particular the analysis will comprehend:</p>
-<ul>
-<li>Analysis of the <strong>board</strong></li>
-<li>Analysis of the <strong>behavior</strong></li>
-<li>Analysis of the <strong>signal</strong></li>
-</ul>
-<p>This will allow to have a complete overview of the remotes.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/complete.jpeg#center" alt="remote"></p>
-<h2 id="board-analysis">Board analysis</h2>
-<p>The first thing I did was to operate the remote: of course whenever the yellow button was pressed, the led on its side would light up signaling that everything was working fine. The device could use different communication methods, but since there is no visible IR LED, it is possible to assume that the device works via radio signals.</p>
-<p>The very next step was to open up the remote and visually inspect the board.</p>
-<p>Inside the plastic casing I found this simple PCB.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/pcb.png#center" alt="RC pcb board"></p>
-<p>At first glance it&rsquo;s possible to notice that there&rsquo;s an <em>antenna</em>, <em>a crystal oscillator</em>, a <em>trimmer</em> an <em>integrated circuit</em> and of course led, button and battery.
-As expected, there&rsquo;s everything needed for a radio transmitter to work.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/clock.jpeg#center" alt="crystal oscillator"></p>
-<p>Looking at the components further it&rsquo;s possible to gather insights about how the device works.
-In particular the oscillator gives away that the device probably operates at <em>30.875MHz</em> - this isn&rsquo;t what I was expecting.</p>
-<p>In my country, <strong>Short Range Devices</strong> should work in the ranges:</p>
-<ul>
-<li>27,5000 – 28,0000 MHz</li>
-<li>29,7000 – 30,0050 MHz</li>
-</ul>
-<p>Or, for general purpose applications they can work  in the ranges:</p>
-<ul>
-<li>433,000 – 435,0000 MHz (devices without a specific use)</li>
-<li>862,0000 – 876,0000 MHz (devices without a specific use, wireless audio, alarm systems, social alarms, radio microphones, and RFID devices)</li>
-</ul>
-<p>Radio transmitters are not forced to adopt the crystal oscillator frequency as working frequency, in fact it&rsquo;s not uncommon that they use a multiple of such frequency instead. Said that, at this point it&rsquo;s only a guess, but even if it&rsquo;s not in the expected ranges, it&rsquo;s possible that the working frequency of the remote would be around 30.875MHz.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/dip_switch.jpeg#center" alt="DIP switch"></p>
-<p>We can also see that there&rsquo;s a 10-position DIP switch.</p>
-<p>The first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it, meaning that the switch closes the circuit when the lever is in the &ldquo;high&rdquo; position.
-This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.</p>
-<p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be <code>0001000110</code> or <code>1110111001</code>.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg#center" alt="ITF CIE9101"></p>
-<p>On the back of the PCB there&rsquo;s the ITF CIE9101 integrated circuit. Sadly I wasn&rsquo;t able to find any datasheets or information about this component (hit me up if you know something about it!).</p>
-<p>Inspecting the PCB it&rsquo;s possible to see that this device is connected to the DIP switch, to the oscillator and to the antenna. We can make an educated guess and say that this IC is probably responsible for the radio transmission (in future it would be worth reverse engineering this IC to better understand how this device work).</p>
-<h2 id="behavior-analysis">Behavior analysis</h2>
-<p>To validate the hypothesis of the device being a radio transmitter, it&rsquo;s fundamental to try to intercept and visualize the communication.</p>
-<p>The goal now is to find the transmitted signal. There is a limited set of possible frequency ranges, but it&rsquo;s not always easy to blindly spot the signal you&rsquo;re looking for, especially in areas in which similar devices are widely employed (think of remote car keys, AC remotes, radio weather stations and so on).</p>
-<p>To figure out the frequency and to work with the raw radio signal I used a Silver dongle <a href="https://www.rtl-sdr.com/about-rtl-sdr/">RTL-SDR</a> and <a href="https://gqrx.dk/">gqrx</a>.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg#center" alt="rtl-sdr and antenna"></p>
-<p>Once <em>gqrx</em> was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.</p>
-<p>NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&rsquo;s completely normal.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/gqrx_signal.gif#center" alt="radio signal"></p>
-<p>Now it&rsquo;s time to analyze the signal.</p>
-<h2 id="signal-analysis">Signal analysis</h2>
-<p>What I did at this point was to record the signal in <em>gqrx</em> to analyze it.
-Opening the signal in audacity shows the recorded waveform.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/signal.jpeg#center" alt="waveform"></p>
-<p>We can see noise at the beginning and at the end of the recording, while the center part represent the communication.</p>
-<p>It&rsquo;s possible to notice immediately that there are numerous spikes, this is due to the fact that I kept the button pressed for a few seconds while recording.
-Visually it&rsquo;s possible to say that the spikes are identical, so our scope is limited to understanding what one of these spikes represent.</p>
-<p>Now we need to zoom in on one spike to try and decode the actual digital data.</p>
-<p><img src="https://lessonsec.com/images/rc_analysis/signal_zoom.jpeg#center" alt="zoomed waveform"></p>
-<p>Of course it&rsquo;s a digital communication and It&rsquo;s now clear that we are dealing with <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width Modulation (PWM)</a>.
-If we look closely at the signal, we can see that there are &ldquo;short&rdquo; and &ldquo;long&rdquo; pulses. Those represent either 1s or 0s depending on the protocol shared by the remote and the receiver.</p>
-<p>Counting the bits reveals that that&rsquo;s more than a simple 10 bit communication. In fact, we are dealing with 14 bits.
-If we compare the signal to the position of the switches in the remote, we see that the pattern matches, with the exception of the last 4 bits. These bits (either 0000 or 1111) are trailing bits, needed to signal the end of the communication.</p>
-<p>To prove that the signal actually corresponds to the one encoded by the switch + 4 trailing bits, I&rsquo;m using <code>rtl_433</code> to read and decode the signal.
-So we run <code>rtl_433 -f 30888000 -A</code> and we get this output:</p>
-<pre><code>Attempting demodulation... short_width: 748, long_width: 1516, reset_limit: 5420, sync_width: 0
+ Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes."><meta property="og:type" content="article"><meta property="og:url" content="https://lessonsec.com/posts/analysis-of-a-remote-control/"><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/complete.jpeg"><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/clock.jpeg"><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/dip_switch.jpeg"><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg"><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg"><meta property="og:image" content="https://lessonsec.com/images/rc_analysis/gqrx_signal.gif"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-07-15T16:45:40+02:00"><meta property="article:modified_time" content="2021-07-15T16:45:40+02:00"><meta property="article:published_time" content="2021-07-15 16:45:40 +0200 CEST"></head><body><div class=container><link rel=apple-touch-icon sizes=60x60 href=https://lessonsec.com/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://lessonsec.com/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://lessonsec.com/favicon-16x16.png><link rel=manifest href=https://lessonsec.com/site.webmanifest><link rel=mask-icon href=https://lessonsec.com/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><header class=header><span class=header__inner><a href=https://lessonsec.com/ style=text-decoration:none><div class=logo><span class=logo__mark></span><span class=logo__text>less@machine:~#</span>
+<span class=logo__cursor style=background-color:#a9a9b3;animation-duration:2s></span></div></a><span class=header__right><nav class=menu><ul class=menu__inner><li><a href=https://lessonsec.com/whoami/>Whoami</a></li><li><a href=https://lessonsec.com/posts/>Posts</a></li><li><a href=https://lessonsec.com/thoughts/>Thoughts</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span></span></span></header><div class=content><main class=post><div class=post-info><p></p></div><article><h1 class=post-title><a href=https://lessonsec.com/posts/analysis-of-a-remote-control/>Analysis of a Remote Control</a></h1><div class=post-content><p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old <strong>RTL-SDR</strong> and put it to good use.
+In this article I will describe step-by-step my experience with <em>studying</em>, <em>reversing</em> and <em>understanding</em> these devices.</p><p>In particular the analysis will comprehend:</p><ul><li>Analysis of the <strong>board</strong></li><li>Analysis of the <strong>behavior</strong></li><li>Analysis of the <strong>signal</strong></li></ul><p>This will allow to have a complete overview of the remotes.</p><p><img src=https://lessonsec.com/images/rc_analysis/complete.jpeg#center alt=remote></p><h2 id=board-analysis>Board analysis</h2><p>The first thing I did was to operate the remote: of course whenever the yellow button was pressed, the led on its side would light up signaling that everything was working fine. The device could use different communication methods, but since there is no visible IR LED, it is possible to assume that the device works via radio signals.</p><p>The very next step was to open up the remote and visually inspect the board.</p><p>Inside the plastic casing I found this simple PCB.</p><p><img src=https://lessonsec.com/images/rc_analysis/pcb.png#center alt="RC pcb board"></p><p>At first glance it&rsquo;s possible to notice that there&rsquo;s an <em>antenna</em>, <em>a crystal oscillator</em>, a <em>trimmer</em> an <em>integrated circuit</em> and of course led, button and battery.
+As expected, there&rsquo;s everything needed for a radio transmitter to work.</p><p><img src=https://lessonsec.com/images/rc_analysis/clock.jpeg#center alt="crystal oscillator"></p><p>Looking at the components further it&rsquo;s possible to gather insights about how the device works.
+In particular the oscillator gives away that the device probably operates at <em>30.875MHz</em> - this isn&rsquo;t what I was expecting.</p><p>In my country, <strong>Short Range Devices</strong> should work in the ranges:</p><ul><li>27,5000 – 28,0000 MHz</li><li>29,7000 – 30,0050 MHz</li></ul><p>Or, for general purpose applications they can work in the ranges:</p><ul><li>433,000 – 435,0000 MHz (devices without a specific use)</li><li>862,0000 – 876,0000 MHz (devices without a specific use, wireless audio, alarm systems, social alarms, radio microphones, and RFID devices)</li></ul><p>Radio transmitters are not forced to adopt the crystal oscillator frequency as working frequency, in fact it&rsquo;s not uncommon that they use a multiple of such frequency instead. Said that, at this point it&rsquo;s only a guess, but even if it&rsquo;s not in the expected ranges, it&rsquo;s possible that the working frequency of the remote would be around 30.875MHz.</p><p><img src=https://lessonsec.com/images/rc_analysis/dip_switch.jpeg#center alt="DIP switch"></p><p>We can also see that there&rsquo;s a 10-position DIP switch.</p><p>The first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it, meaning that the switch closes the circuit when the lever is in the &ldquo;high&rdquo; position.
+This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.</p><p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be <code>0001000110</code> or <code>1110111001</code>.</p><p><img src=https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg#center alt="ITF CIE9101"></p><p>On the back of the PCB there&rsquo;s the ITF CIE9101 integrated circuit. Sadly I wasn&rsquo;t able to find any datasheets or information about this component (hit me up if you know something about it!).</p><p>Inspecting the PCB it&rsquo;s possible to see that this device is connected to the DIP switch, to the oscillator and to the antenna. We can make an educated guess and say that this IC is probably responsible for the radio transmission (in future it would be worth reverse engineering this IC to better understand how this device work).</p><h2 id=behavior-analysis>Behavior analysis</h2><p>To validate the hypothesis of the device being a radio transmitter, it&rsquo;s fundamental to try to intercept and visualize the communication.</p><p>The goal now is to find the transmitted signal. There is a limited set of possible frequency ranges, but it&rsquo;s not always easy to blindly spot the signal you&rsquo;re looking for, especially in areas in which similar devices are widely employed (think of remote car keys, AC remotes, radio weather stations and so on).</p><p>To figure out the frequency and to work with the raw radio signal I used a Silver dongle <a href=https://www.rtl-sdr.com/about-rtl-sdr/>RTL-SDR</a> and <a href=https://gqrx.dk/>gqrx</a>.</p><p><img src=https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg#center alt="rtl-sdr and antenna"></p><p>Once <em>gqrx</em> was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.</p><p>NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&rsquo;s completely normal.</p><p><img src=https://lessonsec.com/images/rc_analysis/gqrx_signal.gif#center alt="radio signal"></p><p>Now it&rsquo;s time to analyze the signal.</p><h2 id=signal-analysis>Signal analysis</h2><p>What I did at this point was to record the signal in <em>gqrx</em> to analyze it.
+Opening the signal in audacity shows the recorded waveform.</p><p><img src=https://lessonsec.com/images/rc_analysis/signal.jpeg#center alt=waveform></p><p>We can see noise at the beginning and at the end of the recording, while the center part represent the communication.</p><p>It&rsquo;s possible to notice immediately that there are numerous spikes, this is due to the fact that I kept the button pressed for a few seconds while recording.
+Visually it&rsquo;s possible to say that the spikes are identical, so our scope is limited to understanding what one of these spikes represent.</p><p>Now we need to zoom in on one spike to try and decode the actual digital data.</p><p><img src=https://lessonsec.com/images/rc_analysis/signal_zoom.jpeg#center alt="zoomed waveform"></p><p>Of course it&rsquo;s a digital communication and It&rsquo;s now clear that we are dealing with <a href=https://en.wikipedia.org/wiki/Pulse-width_modulation>Pulse Width Modulation (PWM)</a>.
+If we look closely at the signal, we can see that there are &ldquo;short&rdquo; and &ldquo;long&rdquo; pulses. Those represent either 1s or 0s depending on the protocol shared by the remote and the receiver.</p><p>Counting the bits reveals that that&rsquo;s more than a simple 10 bit communication. In fact, we are dealing with 14 bits.
+If we compare the signal to the position of the switches in the remote, we see that the pattern matches, with the exception of the last 4 bits. These bits (either 0000 or 1111) are trailing bits, needed to signal the end of the communication.</p><p>To prove that the signal actually corresponds to the one encoded by the switch + 4 trailing bits, I&rsquo;m using <code>rtl_433</code> to read and decode the signal.
+So we run <code>rtl_433 -f 30888000 -A</code> and we get this output:</p><pre><code>Attempting demodulation... short_width: 748, long_width: 1516, reset_limit: 5420, sync_width: 0
 Use a flex decoder with -X 'n=name,m=OOK_PWM,s=748,l=1516,r=5420,g=1556,t=307,y=0'
 pulse_demod_pwm(): Analyzer Device
 bitbuffer:: Number of rows: 6 
@@ -234,113 +25,29 @@ bitbuffer:: Number of rows: 6
 [02] {14} ee 40     : 11101110 010000
 [03] {14} ee 40     : 11101110 010000
 [04] {14} ee 40     : 11101110 010000
-</code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact <code>1110111001</code> followed by <code>0000</code>.</p>
-<p>To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
-I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.</p>
-<p>Changing bit 9 from 0 to 1 produced the following signal:</p>
-<pre><code>[00] {14} ee c0     : 11101110 110000
+</code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact <code>1110111001</code> followed by <code>0000</code>.</p><p>To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
+I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.</p><p>Changing bit 9 from 0 to 1 produced the following signal:</p><pre><code>[00] {14} ee c0     : 11101110 110000
 [01] {14} ee c0     : 11101110 110000
 [02] {14} ee c0     : 11101110 110000
 [03] {14} ee c0     : 11101110 110000
 [04] {14} ee c0     : 11101110 110000
 [05] {14} ee c0     : 11101110 110000
-</code></pre><p>Similarly, changing bit 8, produced this signal:</p>
-<pre><code>[00] {14} ef c0     : 11101111 110000
+</code></pre><p>Similarly, changing bit 8, produced this signal:</p><pre><code>[00] {14} ef c0     : 11101111 110000
 [01] {14} ef c0     : 11101111 110000
 [02] {14} ef c0     : 11101111 110000
 [03] {14} ef c0     : 11101111 110000
 [04] {14} ef c0     : 11101111 110000
 [05] {14} ef c0     : 11101111 110000
-</code></pre><p>Finally I changed bit 4 and I decoded signal was:</p>
-<pre><code>[00] {14} ff c0     : 11111111 110000
+</code></pre><p>Finally I changed bit 4 and I decoded signal was:</p><pre><code>[00] {14} ff c0     : 11111111 110000
 [01] {14} ff c0     : 11111111 110000
 [02] {14} ff c0     : 11111111 110000
 [03] {14} ff c0     : 11111111 110000
 [04] {14} ff c0     : 11111111 110000
 [05] {14} ff c0     : 11111111 110000
-</code></pre><p>As I suspected the last 4 bits don&rsquo;t change even if the signal changes. This means that they are simple trailing bits and not parity bits or a form of checksum.</p>
-<h2 id="conclusions">Conclusions</h2>
-<p>After the analysis, everything about how this board operates is known.
-Since this device was pretty old I wasn&rsquo;t expecting behaviors any more complex that the ones we observed.</p>
-<p>I was left with a deeper understanding on radio communications, in particular of the concept of modulations.
+</code></pre><p>As I suspected the last 4 bits don&rsquo;t change even if the signal changes. This means that they are simple trailing bits and not parity bits or a form of checksum.</p><h2 id=conclusions>Conclusions</h2><p>After the analysis, everything about how this board operates is known.
+Since this device was pretty old I wasn&rsquo;t expecting behaviors any more complex that the ones we observed.</p><p>I was left with a deeper understanding on radio communications, in particular of the concept of modulations.
 This was in fact the first time I was confronted with the PWM modulation in a real life scenario.
-Decoding these signals both visually and using specialized software allowed me to learn new tools I&rsquo;ll be using for future experiments.</p>
-
-      </div>
-    </article>
-
-    <hr />
-
-    <div class="post-info">
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-
-        
-          2021-07-15 16:45
-        
-
-         
-          
-        
-      </p>
-      
-    <div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
-
-        <span class="tag"><a href="https://lessonsec.com/tags/radio/">Radio</a></span>
-        <span class="tag"><a href="https://lessonsec.com/tags/sdr/">SDR</a></span>
-        
-    </div>
-
-
-      
-
-    </div>
-
-    
-
-
-    
-
-    
-
-  </main>
-
-            </div>
-
-            
-                <footer class="footer">    
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>&copy; 2022</span>
-            <span><a href="https://lessonsec.com/">less</a></span>
-            <span><a href="https://lessonsec.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    
-</footer>
-
-            
-        </div>
-
-        
-
-
-
-<script type="text/javascript" src="https://lessonsec.com/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js" integrity="sha512-LOZOpupEpysT3YEvwutcyj7&#43;h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script>
-
-<script data-goatcounter="https://lessonsec.goatcounter.com/count"
-        async src="//lessonsec.com/script/count.js"></script>
-
-
-
-
-
-
-    </body>
-</html>
+Decoding these signals both visually and using specialized software allowed me to learn new tools I&rsquo;ll be using for future experiments.</p></div></article><hr><div class=post-info><p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>2021-07-15 16:45</p><div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7" y2="7"/></svg><span class=tag><a href=https://lessonsec.com/tags/radio/>Radio</a></span>
+<span class=tag><a href=https://lessonsec.com/tags/sdr/>SDR</a></span></div></div></main></div><footer class=footer><div class=footer__inner><div class=footer__content><span>&copy; 2022</span>
+<span><a href=https://lessonsec.com/>less</a></span>
+<span><a href=https://lessonsec.com/posts/index.xml target=_blank title=rss><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></span></div></div></footer></div><script type=text/javascript src=https://lessonsec.com/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js integrity="sha512-LOZOpupEpysT3YEvwutcyj7+h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script><script data-goatcounter=https://lessonsec.goatcounter.com/count async src=//lessonsec.com/script/count.js></script></body></html>

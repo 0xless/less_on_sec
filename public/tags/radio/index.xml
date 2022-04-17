@@ -1,32 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Radio on less on sec</title>
-    <link>https://lessonsec.com/tags/radio/</link>
-    <description>Recent content in Radio on less on sec</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/radio/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Analysis of a Remote Control</title>
-      <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
-      <pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
-      <description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Radio on less on sec</title><link>https://lessonsec.com/tags/radio/</link><description>Recent content in Radio on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 17 Apr 2022 14:08:32 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/radio/index.xml" rel="self" type="application/rss+xml"/><item><title>Walkthrough: BLE CTF</title><link>https://lessonsec.com/posts/walkthrough-ble-ctf/</link><pubDate>Sun, 17 Apr 2022 14:08:32 +0200</pubDate><guid>https://lessonsec.com/posts/walkthrough-ble-ctf/</guid><description>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.com/hackgnar/ble_ctf and is an awesome tool to learn about BLE and get your feet wet.
+To be fair I expected the CTF to be a bit more security oriented, but I learned way more than I expected, both on BLE technologies and on the tools used to interact with those.</description></item><item><title>Analysis of a Remote Control</title><link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link><pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate><guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid><description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
 In particular the analysis will comprehend:
- Analysis of the board Analysis of the behavior Analysis of the signal  This will allow to have a complete overview of the remotes.</description>
-    </item>
-    
-    <item>
-      <title>Cloning RFID tags for fun and profit</title>
-      <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
-      <pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
-      <description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
- Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description>
-    </item>
-    
-  </channel>
-</rss>
+Analysis of the board Analysis of the behavior Analysis of the signal This will allow to have a complete overview of the remotes.</description></item><item><title>Cloning RFID tags for fun and profit</title><link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link><pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate><guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
+Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description></item></channel></rss>
