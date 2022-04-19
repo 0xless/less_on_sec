@@ -7,14 +7,14 @@ tags:
   - CTFs
   - Radio
   - BLE 
---- 
+---
 
 This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it!
 The challenge is available at: https://github.com/hackgnar/ble_ctf and is an awesome tool to learn about BLE and get your feet wet.
 
 To be fair I expected the CTF to be a bit more security oriented, but I learned way more than I expected, both on BLE technologies and on the tools used to interact with those.
 
-> ***Disclaimer***
+> ***Disclaimer***  
 > I'm not a fan of walkthrough articles that ignore the request of the creators not to post those.
 > The reasons I'm publishing this article are that:
 >
@@ -30,21 +30,21 @@ Without further ado, let's get started!
 ## How does this CTF works?
 
 The CTF is composed of a series of challenges hosted on an ESP32 board.
-The software required to setup the challenge is in fact a firmware to be installed on the board. I won't enter in details about the installation here, but you can find detailed instructions here: https://github.com/hackgnar/ble_ctf/blob/master/docs/setup.md
+The software required to setup the challenge is in fact a firmware to be installed on the board. I won't enter in details about the installation in this article, but you can find detailed instructions here: https://github.com/hackgnar/ble_ctf/blob/master/docs/setup.md
 
 When the firmware is installed, the ESP32 will host a GATT server with which we can interact to solve the challenges and gather the flags.
 
 ### What's a GATT server
 
 GATT is the name of a protocol that is used to exchange data between two Bluetooth Low Energy devices.
-This is developed on top of the Attribute Protocol (ATT) and manages device interaction following the advertising and pairing processes. 
-A GATT Server is a device that stores attribute data locally and provides data access methods to a remote GATT Client paired via BLE.  A client is a device that access data on a remote GATT Server. When two devices are paired, each can function as both a GATT Server and a GATT Client. 
+This is developed on top of the Attribute Protocol (ATT) and manages device interactions following the advertising and pairing processes. 
+A GATT Server is a device that stores attribute data locally and provides data access methods to a remote GATT Client paired via BLE.  A client, on the other hand, is a device that access data on a remote GATT Server. When two devices are paired, each can function as both a GATT Server and a GATT Client. 
 
 GATT lists a device’s characteristics, descriptors, and services in a table as either 16- or 32-bits values. 
 A characteristic is a data value sent between the server and the client. 
 
 These characteristics can have descriptors that provide additional information about them. 
-Characteristics are often grouped in services if they’re related to performing a particular action. Services can have several characteristics.
+Characteristics are often grouped in services if they have purposes related to each other. Services can have several characteristics.
 
 | ![GATT server layout](/images/BLE_CTF/gatt_server.png#center) |
 | :----------------------------------------------------------: |
@@ -53,11 +53,10 @@ Characteristics are often grouped in services if they’re related to performing
 ### ATT/GATT basics
 
 It is possible to interact with a GATT server, by interacting with each of the characteristics available.
-It is possible to do that using handles, or UUID: handles defines the address of a characteristic, while the UUID works as an identifier, but also gives the user some information about the characteristic. In general, handles are to be preferred to reference to a particular characteristic, this is because UUID can vary depending on the GATT implementation, while handles are expected to remain immutable for each device. 
+It is possible to do that using handles, or UUID: handles define the address of a characteristic, while the UUID works as an identifier, but also gives the user some indication about the content of a characteristic. In general, handles are to be preferred to reference to a particular characteristic, this is because UUID can vary depending on the GATT implementation, while handles are expected to remain immutable for each device. 
 
-As anticipated, UUID contains info about the service or characteristic. These are useful because they are defined by profiles: standards that use known UUID to serve information, profiles can be found here: https://www.bluetooth.com/specifications/specs/
-While UUID vary depending on the device functionality some UUID remains the same, for example: 0x2800, around which service discovery is built.
-This UUID allows GATT servers to understand service boundaries without having to know the exact standard the device is following.
+As anticipated, UUID contain info about the service or characteristic. These are useful because they are defined by profiles: standards that use known UUID to serve specific information, profiles can be found here: https://www.bluetooth.com/specifications/specs/
+While UUID vary depending on the device functionality some UUID remains the same, for example: 0x2800, around which service discovery is built. This UUID allows GATT servers to understand service boundaries without having to know the exact standard the device is following.
 
 Finally, there are characteristic properties. Properties indicate how to interact with a characteristic and what to expect from it.
 
@@ -69,12 +68,21 @@ Properties are defined as an hex value and works as bitmasks, so using bitwise o
 
 Properties need to be interpreted knowing Attribute Protocol Packets, these are:
 
-- Commands         (Client -> Server, no response required)
-- Requests            (Client -> Server, response required)
-- Responses         (Server -> Client, it's the response to a request)
-- Notifications       (Server -> Client, no response required - Signal the fact that a characteristic's value has changed)
-- Indications         (Server -> Client, ACK response required by the client - Similar to notifications)
-- Confirmations    (Client -> Server, it's the response to an indication)
+- Commands         	&emsp;&ensp;&emsp;&emsp;(Client -> Server, no response required)
+
+- Requests            	&emsp;&nbsp;&emsp;&emsp;&emsp;(Client -> Server, response required)
+
+- Responses         	&emsp;&ensp;&emsp;&emsp;(Server -> Client, it's the response to a request)
+
+- Notifications      	 &emsp;&ensp;&emsp;(Server -> Client, no response required - Signal the fact that a  
+
+  &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;    characteristic's value has changed)
+
+- Indications        	&emsp; &nbsp;&emsp;&emsp;(Server -> Client, ACK response required by the client - Similar to   
+
+  &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;   &emsp; notifications)
+
+- Confirmations   	&emsp; &nbsp;&ensp;(Client -> Server, it's the response to an indication)
 
 As indicated in the image, the `Read` and `Write` properties are like permissions, and allow the reading and writing of the characteristic if set.
 The other properties are an indication of the behavior of a characteristic in response of an action by the client.
@@ -85,13 +93,13 @@ While read operations are requests by nature, write operations can either be com
 ## CTF
 
 The tools that will be employed for this challenge are: gatttool and hcitool.
-There are other tools that can be used, in particular bettercap, which is a bit more user friendly but lacks some functionalities or libraries that implement GATT operations, that were avoided to allow familiarizing with the tools available on a standard linux system.
+There are other tools that can be used, in particular bettercap, which is a bit more user friendly but lacks some functionalities, or libraries that implement GATT operations, that were avoided to allow familiarizing with the tools available on a standard linux system.
 I think this "Living off the Land" approach helps better understanding GATT operations and also leads to a more generally employable approach to solve BLE related tasks. Of course you're free to use the tools you prefer for this challenge.
 
 Before starting, I suggest familiarizing with the challenge page and to understand how to operate actions relative to the challenge, like reading the score and submitting a flag. The list of the flags at the bottom of the page is really useful, as understanding exactly what to do can be tricky.
 There are also hints there, don't be afraid to check those out. None of the hints gives away too much and in certain cases those are needed to understand the challenge and to get the flag.
 
-NOTE: the flags are reset each time the ESP32 is powered off! Keep that in mind.
+NOTE: the score is reset each time the ESP32 is powered off! Keep that in mind.
 
 ---------------------
 
@@ -211,7 +219,7 @@ get_properties() {
 }
 ```
 
-NOTE: properties for each characteristic of interest are listed in the challenge description, so I won't be using the `get_properties` function explicitly. 
+NOTE: properties for each characteristic of interest are listed in the challenge description, so the `get_properties` function won't be used explicitly. 
 
 -----------------
 
