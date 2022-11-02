@@ -52,4 +52,26 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
+
+	{{- if .IsHome -}}
+		<meta name="og:title" content="{{ site.Title }}" />
+		<meta name="twitter:title" content="{{ site.Title }}" />
+		<meta property="og:type" content="website" />
+		<meta property="og:description" content="{{ site.Params.Description }}" />
+		<meta property="og:url" content="{{ site.BaseURL }}" />
+		<meta name="og:image" content="{{ site.Params.image }}" />
+		<meta name="twitter:image" content="{{ site.Params.image }}" />
+		
+		{{- else -}}
+		<meta name="og:title" content="{{ .Page.Title }}" />
+		<meta name="twitter:title" content="{{ .Page.Title }}" />
+		<meta property="og:url" content="{{ .Page.Permalink }}" />
+		<meta property="og:description" content="{{ .Params.Description }}" />
+		<meta name="og:image/" content="{{ .Params.image }}" />
+		<meta name="twitter:image" content="{{ .Params.image }}" />
+	{{- end -}}
+	
+	
+	
+
 </head>
