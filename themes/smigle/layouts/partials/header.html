@@ -12,23 +12,23 @@
     </div>
   </div>
   <nav>
-    <div style="float:left">
-    {{ with .Site.Menus.main }}
-      {{ range $index, $value := . }}
-        {{ if $index }} | {{ end }}
-        <a href="{{ .URL | relURL }}"><b>{{ .Name }}</b></a>
-      {{ end }}
-    {{ end }}
-    {{ if .Site.Params.social }}
-    </div>
+	<div class="responsive_div_top">
+		{{ with .Site.Menus.main }}
+		{{ range $index, $value := . }}
+		{{ if $index }} | {{ end }}
+		<a href="{{ .URL | relURL }}"><b>{{ .Name }}</b></a>
+		{{ end }}
+		{{ end }}
+		{{ if .Site.Params.social }}
+	</div>
 
-      <div style="text-align:right; float=right;">
-      Links: 
-      {{ range $i, $e := .Site.Params.social }}
-        {{ if $i }} | {{ end }}
-        <a href="{{ .url }}">{{ .name }}</a>
-      {{ end }}
-      </div>
+	<div class="responsive_div_bottom">
+		Links: 
+		{{ range $i, $e := .Site.Params.social }}
+		{{ if $i }} | {{ end }}
+		<a href="{{ .url }}">{{ .name }}</a>
+		{{ end }}
+	</div>
       
   {{ end }}
   </nav>

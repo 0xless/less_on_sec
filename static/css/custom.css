@@ -7,7 +7,7 @@ table
 table thead tr th img[src$='#center']
 {
     display: block; 
-    margin-: auto; 
+    margin: auto; 
 }
 
 img[src$='#center']
@@ -32,3 +32,27 @@ img[src$='#floatright']
     margin: 0.7rem;      /* this margin is totally up to you */
     /* whatever else styles you fancy here */
 }
+
+.responsive_div_top
+{
+	float: left;
+}
+
+.responsive_div_bottom
+{
+	text-align: right;
+}
+
+@media (max-width: 480px) {
+	.responsive_div_top
+	{
+		text-align: center;
+		float: none;
+	}
+
+	.responsive_div_bottom
+	{
+		text-align: center;
+	}
+}
+
