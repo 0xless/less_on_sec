@@ -1,6 +1,184 @@
-<!doctype html><html lang=en><head><meta name=generator content="Hugo 0.82.0"><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=author content="less "><meta name=description content="my take on"><meta name=keywords content="cybersecurity,physical security,physec,personal blog"><meta property="og:image" content><meta name=robots content="noodp"><meta name=theme-color content><link rel=canonical href=https://lessonsec.com/><title>less on sec</title><link href=https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css rel=stylesheet type=text/css><link rel=stylesheet href=https://lessonsec.com/main.2fd31a1cd96e9e2ff681ec3d5ee299b6f4e862dbdc77c9f855664a7b84497e31.css><link rel=apple-touch-icon sizes=180x180 href=https://lessonsec.com/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://lessonsec.com/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://lessonsec.com/favicon-16x16.png><link rel=manifest href=https://lessonsec.com/site.webmanifest><link rel=mask-icon href=https://lessonsec.com/safari-pinned-tab.svg color=#1b1c1d><link rel="shortcut icon" href=https://lessonsec.com/favicon.ico><meta name=msapplication-TileColor content="#1b1c1d"><meta name=theme-color content="#1b1c1d"><meta itemprop=name content="less on sec"><meta itemprop=description content="less' personal cyber and pyhisical security blog"><meta name=twitter:card content="summary"><meta name=twitter:title content="less on sec"><meta name=twitter:description content="less' personal cyber and pyhisical security blog"><meta property="og:title" content="less on sec"><meta property="og:description" content="less' personal cyber and pyhisical security blog"><meta property="og:type" content="website"><meta property="og:url" content="https://lessonsec.com/"><link rel=alternate type=application/rss+xml href=https://lessonsec.com/index.xml title="less on sec"></head><body><div class=container><link rel=apple-touch-icon sizes=60x60 href=https://lessonsec.com/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://lessonsec.com/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://lessonsec.com/favicon-16x16.png><link rel=manifest href=https://lessonsec.com/site.webmanifest><link rel=mask-icon href=https://lessonsec.com/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><header class=header><span class=header__inner><a href=https://lessonsec.com/ style=text-decoration:none><div class=logo><span class=logo__mark></span><span class=logo__text>less@machine:~#</span>
-<span class=logo__cursor style=background-color:#a9a9b3;animation-duration:2s></span></div></a><span class=header__right><nav class=menu><ul class=menu__inner><li><a href=https://lessonsec.com/whoami/>Whoami</a></li><li><a href=https://lessonsec.com/posts/>Posts</a></li><li><a href=https://lessonsec.com/thoughts/>Thoughts</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span></span></span></header><div class=content><main aria-role=main><div><h1 style=color:#a9a9b3>less on sec</h1><p style=text-align:right>my take on
-<b>exploring</b><br><b>hacking</b><br>and
-<b>breaking</b><br>stuff<br></p><div>&nbsp; <a href=mailto:contact@lessonsec.com target=_blank rel=noopener title=Email><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>&nbsp;&nbsp; <a href=https://github.com/0xless target=_blank rel=noopener title=Github><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg></a>&nbsp;&nbsp; <a href=https://www.linkedin.com/in/matteo-cosentino/ target=_blank rel=noopener title=Linkedin><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>&nbsp;</div><br><div><a href=https://lessonsec.com/posts/><code>Go to posts &#10140;</code></a></div></div></main></div><footer class=footer><div class=footer__inner><div class=footer__content><span>&copy; 2022</span>
-<span><a href=https://lessonsec.com/>less</a></span>
-<span><a href=https://lessonsec.com/posts/index.xml target=_blank title=rss><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></span></div></div></footer></div><script type=text/javascript src=https://lessonsec.com/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js integrity="sha512-LOZOpupEpysT3YEvwutcyj7+h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script><script data-goatcounter=https://lessonsec.goatcounter.com/count async src=//lessonsec.com/script/count.js></script></body></html>
+<!doctype html><html lang=en>
+<head>
+<meta name=generator content="Hugo 0.92.2">
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="Personal blog on cybersecurity, harware hacking and security research.">
+<title>less on sec</title>
+<link rel=stylesheet href=/css/reset.css>
+<link rel=stylesheet href=/css/font.css>
+<link rel=stylesheet href=/css/smigle.css>
+<link rel=stylesheet href=/css/custom.css>
+<link rel=canonical href=https://lessonsec.com/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/site.webmanifest>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<meta name=msapplication-TileColor content="#da532c">
+<meta name=theme-color content="#ffffff">
+</head>
+<body>
+<header>
+<div id=brand>
+<a class=icon-link href=https://lessonsec.com>
+<img class=icon src=/images/logo.jpeg>
+</a>
+<div class=text>
+<a href=https://lessonsec.com><h1>less on sec</h1></a>
+<h3>exploring, hacking and breaking stuff</h3>
+</div>
+</div>
+<nav>
+<div style=float:left>
+<a href=/><b>Home</b></a>
+|
+<a href=/whoami/><b>Whoami</b></a>
+|
+<a href=/posts/><b>Posts</b></a>
+</div>
+<div style="text-align:right;float=right">
+Links:
+<a href=https://github.com/0xless>GitHub</a>
+|
+<a href=https://www.linkedin.com/in/matteo-cosentino/>Linkedin</a>
+|
+<a href=mailto:contact@lessonsec.com>Email</a>
+</div>
+</nav>
+<hr>
+</header>
+<div id=content>
+<main>
+<article>
+<h1 class=summary-title><a href=https://lessonsec.com/posts/ble_ctf_walkthrough/>Walkthrough: BLE CTF</a></h1>
+<div class=post-meta>
+<strong>
+<span>Posted on</span>
+<time>2022-04-17</time>
+</strong>
+<span> • 4399 words</span>
+<div>
+<span>Tags:</span>
+<a href=/tags/ctfs>CTFs</a>,
+<a href=/tags/radio>Radio</a>,
+<a href=/tags/ble>BLE</a>
+</div>
+</div>
+<div class=summary-body>
+<p>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</p>
+<a href=https://lessonsec.com/posts/ble_ctf_walkthrough/>Read more...</a>
+</div>
+</article>
+<article>
+<h1 class=summary-title><a href=https://lessonsec.com/posts/email_spoofing_101/>Email spoofing 101</a></h1>
+<div class=post-meta>
+<strong>
+<span>Posted on</span>
+<time>2022-02-05</time>
+</strong>
+<span> • 3000 words</span>
+<div>
+<span>Tags:</span>
+<a href=/tags/dns>DNS</a>,
+<a href=/tags/email>Email</a>
+</div>
+</div>
+<div class=summary-body>
+<p>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</p>
+<a href=https://lessonsec.com/posts/email_spoofing_101/>Read more...</a>
+</div>
+</article>
+<article>
+<h1 class=summary-title><a href=https://lessonsec.com/posts/walkthrough_cryptohack_ctf/>Walkthrough: CryptoHack CTF</a></h1>
+<div class=post-meta>
+<strong>
+<span>Posted on</span>
+<time>2021-10-03</time>
+</strong>
+<span> • 1649 words</span>
+<div>
+<span>Tags:</span>
+<a href=/tags/ctfs>CTFs</a>,
+<a href=/tags/cryptography>Cryptography</a>
+</div>
+</div>
+<div class=summary-body>
+<p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
+<a href=https://lessonsec.com/posts/walkthrough_cryptohack_ctf/>Read more...</a>
+</div>
+</article>
+<article>
+<h1 class=summary-title><a href=https://lessonsec.com/posts/analysis_of_a_remote/>Analysis of a Remote Control</a></h1>
+<div class=post-meta>
+<strong>
+<span>Posted on</span>
+<time>2021-07-15</time>
+</strong>
+<span> • 1443 words</span>
+<div>
+<span>Tags:</span>
+<a href=/tags/radio>Radio</a>,
+<a href=/tags/sdr>SDR</a>
+</div>
+</div>
+<div class=summary-body>
+<p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</p>
+<a href=https://lessonsec.com/posts/analysis_of_a_remote/>Read more...</a>
+</div>
+</article>
+<article>
+<h1 class=summary-title><a href=https://lessonsec.com/posts/cloning_rfid_for_fun_and_profit/>Cloning RFID tags for fun and profit</a></h1>
+<div class=post-meta>
+<strong>
+<span>Posted on</span>
+<time>2021-04-20</time>
+</strong>
+<span> • 3021 words</span>
+<div>
+<span>Tags:</span>
+<a href=/tags/rfid>RFID</a>,
+<a href=/tags/radio>Radio</a>,
+<a href=/tags/physical-security>Physical security</a>
+</div>
+</div>
+<div class=summary-body>
+<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.</p>
+<a href=https://lessonsec.com/posts/cloning_rfid_for_fun_and_profit/>Read more...</a>
+</div>
+</article>
+<article>
+<h1 class=summary-title><a href=https://lessonsec.com/posts/intrudo/>Dev Chronicles: Creating an HTTP attack client</a></h1>
+<div class=post-meta>
+<strong>
+<span>Posted on</span>
+<time>2021-04-01</time>
+</strong>
+<span> • 1525 words</span>
+<div>
+<span>Tags:</span>
+<a href=/tags/dev-chronicles>Dev Chronicles</a>,
+<a href=/tags/http>HTTP</a>
+</div>
+</div>
+<div class=summary-body>
+<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+Intrudo logo Check it out: https://github.</p>
+<a href=https://lessonsec.com/posts/intrudo/>Read more...</a>
+</div>
+</article>
+<div>
+</br>
+[1 of 1]
+</div>
+</main>
+</div>
+<footer>
+<hr>
+<p class=copyright>
+Copyright © 2022
+<a href=https://lessonsec.com><strong>Matteo [0xless] Cosentino</strong></a>.
+</footer>
+<script data-goatcounter=https://lessonsec.goatcounter.com/count async src=https://lessonsec.com/script/count.js></script>
+</body>
+</html>
