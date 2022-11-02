@@ -11,7 +11,9 @@ image:
 
 Intrudo is a tool for automating customized attacks against web applications loosely shaped after [burp intruder](https://portswigger.net/burp/documentation/desktop/tools/intruder).  
 
-![intrudo logo](/images/intrudo/logo.png#center)
+| ![intrudo logo](/images/intrudo/logo.png#center) |
+| :----------------------------------------------: |
+|                   Intrudo logo                   |
 
 Check it out: [https://github.com/0xless/Intrudo](https://github.com/0xless/Intrudo)
 

@@ -1,0 +1,16 @@
+<footer>
+  <hr />
+
+  <p class="copyright">
+    Copyright © {{ now.Format "2006"}}
+    <a href="{{ .Site.BaseURL }}"><strong>{{ default "Blog Author" .Site.Params.Author }}</strong></a>.
+</footer>
+
+<script data-goatcounter="https://lessonsec.goatcounter.com/count"
+        async src="https://lessonsec.com/script/count.js"></script>
+
+<!--
+<noscript>
+	<img src="https://lessonsec.goatcounter.com/count?p={{ .RelPermalink }}&t={{ .Title }}">
+</noscript>
+-->

@@ -1,0 +1,1666 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on less on sec</title><link>https://lessonsec.com/posts/</link><description>Recent content in Posts on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 17 Apr 2022 14:08:32 +0200</lastBuildDate><atom:link href="https://lessonsec.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Walkthrough: BLE CTF</title><link>https://lessonsec.com/posts/walkthrough-ble-ctf/</link><pubDate>Sun, 17 Apr 2022 14:08:32 +0200</pubDate><guid>https://lessonsec.com/posts/walkthrough-ble-ctf/</guid><description>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.com/hackgnar/ble_ctf and is an awesome tool to learn about BLE and get your feet wet.
+To be fair I expected the CTF to be a bit more security oriented, but I learned way more than I expected, both on BLE technologies and on the tools used to interact with those.</description><content type="html"><![CDATA[<p>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it!
+The challenge is available at: <a href="https://github.com/hackgnar/ble_ctf">https://github.com/hackgnar/ble_ctf</a> and is an awesome tool to learn about BLE and get your feet wet.</p>
+<p>To be fair I expected the CTF to be a bit more security oriented, but I learned way more than I expected, both on BLE technologies and on the tools used to interact with those.</p>
+<blockquote>
+<p><em><strong>Disclaimer</strong></em><br>
+I&rsquo;m not a fan of walkthrough articles that ignore the request of the creators not to post those.
+The reasons I&rsquo;m publishing this article are that:</p>
+<ul>
+<li>No request by the creator has been made not to post the solutions</li>
+<li>There are plenty of walkthrough articles on this CTF that don&rsquo;t really teach anything and barely explain the solutions</li>
+<li>The CTF is self-hosted and is more of a teaching tool than a proper challenge</li>
+</ul>
+<p>Of course I strongly recommend trying to solve the challenges on your own before checking the solutions here!
+Anyway I suggest reading the first part of the articles to gather some useful information about the technologies involved in the challenge.</p>
+</blockquote>
+<p>Without further ado, let&rsquo;s get started!</p>
+<h2 id="how-does-this-ctf-works">How does this CTF works?</h2>
+<p>The CTF is composed of a series of challenges hosted on an ESP32 board.
+The software required to setup the challenge is in fact a firmware to be installed on the board. I won&rsquo;t enter in details about the installation in this article, but you can find detailed instructions here: <a href="https://github.com/hackgnar/ble_ctf/blob/master/docs/setup.md">https://github.com/hackgnar/ble_ctf/blob/master/docs/setup.md</a></p>
+<p>When the firmware is installed, the ESP32 will host a GATT server with which we can interact to solve the challenges and gather the flags.</p>
+<h3 id="whats-a-gatt-server">What&rsquo;s a GATT server</h3>
+<p>GATT is the name of a protocol that is used to exchange data between two Bluetooth Low Energy devices.
+This is developed on top of the Attribute Protocol (ATT) and manages device interactions following the advertising and pairing processes.
+A GATT Server is a device that stores attribute data locally and provides data access methods to a remote GATT Client paired via BLE.  A client, on the other hand, is a device that access data on a remote GATT Server. When two devices are paired, each can function as both a GATT Server and a GATT Client.</p>
+<p>GATT lists a device’s characteristics, descriptors, and services in a table as either 16- or 32-bits values.
+A characteristic is a data value sent between the server and the client.</p>
+<p>These characteristics can have descriptors that provide additional information about them.
+Characteristics are often grouped in services if they have purposes related to each other. Services can have several characteristics.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/BLE_CTF/gatt_server.png#center" alt="GATT server layout"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Image Credits - Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things</td>
+</tr>
+</tbody>
+</table>
+<h3 id="attgatt-basics">ATT/GATT basics</h3>
+<p>It is possible to interact with a GATT server, by interacting with each of the characteristics available.
+It is possible to do that using handles, or UUID: handles define the address of a characteristic, while the UUID works as an identifier, but also gives the user some indication about the content of a characteristic. In general, handles are to be preferred to reference to a particular characteristic, this is because UUID can vary depending on the GATT implementation, while handles are expected to remain immutable for each device.</p>
+<p>As anticipated, UUID contain info about the service or characteristic. These are useful because they are defined by profiles: standards that use known UUID to serve specific information, profiles can be found here: <a href="https://www.bluetooth.com/specifications/specs/">https://www.bluetooth.com/specifications/specs/</a>
+While UUID vary depending on the device functionality some UUID remains the same, for example: 0x2800, around which service discovery is built. This UUID allows GATT servers to understand service boundaries without having to know the exact standard the device is following.</p>
+<p>Finally, there are characteristic properties. Properties indicate how to interact with a characteristic and what to expect from it.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/BLE_CTF/properties.png#center" alt="properties"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Image Credits - devzone.nordicsemi.com</td>
+</tr>
+</tbody>
+</table>
+<p>Properties are defined as an hex value and works as bitmasks, so using bitwise operations it is possible reveal the properties of a characteristic starting from its properties value.</p>
+<p>Properties need to be interpreted knowing Attribute Protocol Packets, these are:</p>
+<ul>
+<li>
+<p>Commands         	    (Client -&gt; Server, no response required)</p>
+</li>
+<li>
+<p>Requests            	     (Client -&gt; Server, response required)</p>
+</li>
+<li>
+<p>Responses         	    (Server -&gt; Client, it&rsquo;s the response to a request)</p>
+</li>
+<li>
+<p>Notifications      	    (Server -&gt; Client, no response required - Signal the fact that a</p>
+<p>                 characteristic&rsquo;s value has changed)</p>
+</li>
+<li>
+<p>Indications        	     (Server -&gt; Client, ACK response required by the client - Similar to</p>
+<p>                notifications)</p>
+</li>
+<li>
+<p>Confirmations   	    (Client -&gt; Server, it&rsquo;s the response to an indication)</p>
+</li>
+</ul>
+<p>As indicated in the image, the <code>Read</code> and <code>Write</code> properties are like permissions, and allow the reading and writing of the characteristic if set.
+The other properties are an indication of the behavior of a characteristic in response of an action by the client.</p>
+<p>Actions performed by the client are limited to read and write operations.
+While read operations are requests by nature, write operations can either be commands or requests.</p>
+<h2 id="ctf">CTF</h2>
+<p>The tools that will be employed for this challenge are: gatttool and hcitool.
+There are other tools that can be used, in particular bettercap, which is a bit more user friendly but lacks some functionalities, or libraries that implement GATT operations, that were avoided to allow familiarizing with the tools available on a standard linux system.
+I think this &ldquo;Living off the Land&rdquo; approach helps better understanding GATT operations and also leads to a more generally employable approach to solve BLE related tasks. Of course you&rsquo;re free to use the tools you prefer for this challenge.</p>
+<p>Before starting, I suggest familiarizing with the challenge page and to understand how to operate actions relative to the challenge, like reading the score and submitting a flag. The list of the flags at the bottom of the page is really useful, as understanding exactly what to do can be tricky.
+There are also hints there, don&rsquo;t be afraid to check those out. None of the hints gives away too much and in certain cases those are needed to understand the challenge and to get the flag.</p>
+<p>NOTE: the score is reset each time the ESP32 is powered off! Keep that in mind.</p>
+<hr>
+<p>Let&rsquo;s begin! First thing first, we need to retrieve the device BT MAC address and we can do that using hcitool:</p>
+<pre><code>less@machine:~$ sudo hcitool lescan
+LE Scan ...
+78:21:84:80:A2:22 BLECTF
+[...]
+</code></pre><p>Now we know the address for my board is: <code>78:21:84:80:A2:22</code>, it will vary on yours.</p>
+<p>Once we have the address we can start enumerating services on the GATT server.
+The first thing to do is to connect to the board, we will do that using <code>gatttool</code> and its interactive mode:</p>
+<pre><code>less@machine:~$ gatttool -I
+[                 ][LE]&gt; connect 78:21:84:80:A2:22
+Attempting to connect to 78:21:84:80:A2:22
+Connection successful
+</code></pre><p>Now we need to enumerate the services, we can do that using the <code>primary</code> command or by reading the UUID 0x2800.</p>
+<pre><code>[78:21:84:80:A2:22][LE]&gt; primary
+attr handle: 0x0001, end grp handle: 0x0005 uuid: 00001801-0000-1000-8000-00805f9b34fb
+attr handle: 0x0014, end grp handle: 0x001c uuid: 00001800-0000-1000-8000-00805f9b34fb
+attr handle: 0x0028, end grp handle: 0xffff uuid: 000000ff-0000-1000-8000-00805f9b34fb
+[78:21:84:80:A2:22][LE]&gt; char-read-uuid 0x2800
+handle: 0x0001 	 value: 01 18 
+handle: 0x0014 	 value: 00 18 
+handle: 0x0028 	 value: ff 00 
+</code></pre><p>And in both cases we retrieve services boundaries. The first two services are standard, and contain info about the server itself, while the third is the one we want to work with.</p>
+<p>Now we can enumerate the characteristic of each service. This can be done using the command <code>characteristics</code> and using the boundaries found as upper and lower limits:</p>
+<pre><code>[78:21:84:80:A2:22][LE]&gt; characteristics 0x0001 0x0014
+handle: 0x0002, char properties: 0x20, char value handle: 0x0003, uuid: 00002a05-0000-1000-8000-00805f9b34fb
+[78:21:84:80:A2:22][LE]&gt; characteristics 0x0014 0x0028
+handle: 0x0015, char properties: 0x02, char value handle: 0x0016, uuid: 00002a00-0000-1000-8000-00805f9b34fb
+handle: 0x0017, char properties: 0x02, char value handle: 0x0018, uuid: 00002a01-0000-1000-8000-00805f9b34fb
+handle: 0x0019, char properties: 0x02, char value handle: 0x001a, uuid: 00002aa6-0000-1000-8000-00805f9b34fb
+[78:21:84:80:A2:22][LE]&gt; characteristics 0x0028 0x00ff
+handle: 0x0029, char properties: 0x02, char value handle: 0x002a, uuid: 0000ff01-0000-1000-8000-00805f9b34fb
+handle: 0x002b, char properties: 0x0a, char value handle: 0x002c, uuid: 0000ff02-0000-1000-8000-00805f9b34fb
+handle: 0x002d, char properties: 0x02, char value handle: 0x002e, uuid: 0000ff03-0000-1000-8000-00805f9b34fb
+handle: 0x002f, char properties: 0x02, char value handle: 0x0030, uuid: 0000ff04-0000-1000-8000-00805f9b34fb
+handle: 0x0031, char properties: 0x0a, char value handle: 0x0032, uuid: 0000ff05-0000-1000-8000-00805f9b34fb
+handle: 0x0033, char properties: 0x0a, char value handle: 0x0034, uuid: 0000ff06-0000-1000-8000-00805f9b34fb
+handle: 0x0035, char properties: 0x0a, char value handle: 0x0036, uuid: 0000ff07-0000-1000-8000-00805f9b34fb
+handle: 0x0037, char properties: 0x02, char value handle: 0x0038, uuid: 0000ff08-0000-1000-8000-00805f9b34fb
+handle: 0x0039, char properties: 0x08, char value handle: 0x003a, uuid: 0000ff09-0000-1000-8000-00805f9b34fb
+handle: 0x003b, char properties: 0x0a, char value handle: 0x003c, uuid: 0000ff0a-0000-1000-8000-00805f9b34fb
+handle: 0x003d, char properties: 0x02, char value handle: 0x003e, uuid: 0000ff0b-0000-1000-8000-00805f9b34fb
+handle: 0x003f, char properties: 0x1a, char value handle: 0x0040, uuid: 0000ff0c-0000-1000-8000-00805f9b34fb
+handle: 0x0041, char properties: 0x02, char value handle: 0x0042, uuid: 0000ff0d-0000-1000-8000-00805f9b34fb
+handle: 0x0043, char properties: 0x2a, char value handle: 0x0044, uuid: 0000ff0e-0000-1000-8000-00805f9b34fb
+handle: 0x0045, char properties: 0x1a, char value handle: 0x0046, uuid: 0000ff0f-0000-1000-8000-00805f9b34fb
+handle: 0x0047, char properties: 0x02, char value handle: 0x0048, uuid: 0000ff10-0000-1000-8000-00805f9b34fb
+handle: 0x0049, char properties: 0x2a, char value handle: 0x004a, uuid: 0000ff11-0000-1000-8000-00805f9b34fb
+handle: 0x004b, char properties: 0x02, char value handle: 0x004c, uuid: 0000ff12-0000-1000-8000-00805f9b34fb
+handle: 0x004d, char properties: 0x02, char value handle: 0x004e, uuid: 0000ff13-0000-1000-8000-00805f9b34fb
+handle: 0x004f, char properties: 0x0a, char value handle: 0x0050, uuid: 0000ff14-0000-1000-8000-00805f9b34fb
+handle: 0x0051, char properties: 0x0a, char value handle: 0x0052, uuid: 0000ff15-0000-1000-8000-00805f9b34fb
+handle: 0x0053, char properties: 0x9b, char value handle: 0x0054, uuid: 0000ff16-0000-1000-8000-00805f9b34fb
+handle: 0x0055, char properties: 0x02, char value handle: 0x0056, uuid: 0000ff17-0000-1000-8000-00805f9b34fb
+</code></pre><p>And just like that we retrieved every characteristic available, their value and their properties.</p>
+<p>At this point it is useful to define utility functions to work with the handles:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mac<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;78:21:84:80:A2:22&#34;</span> <span style="color:#75715e">#change the value to match your board&#39;s MAC</span>
+
+<span style="color:#75715e"># HEX encode</span>
+encode<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        echo -n $1 | xxd -ps;
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># HEX decode</span>
+decode<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        echo $1 | tr -d <span style="color:#e6db74">&#34;&#34;</span> | xxd -r -p; echo
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># Write flag to handle 0x002c</span>
+submit_flag<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        gatttool -b $mac --char-write-req -a 0x002c -n <span style="color:#e6db74">`</span>encode <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># Read handle 0x002a to get the score</span>
+get_score<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        read_hnd 0x002a
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># Read values from handle and decode it</span>
+read_hnd<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        decode <span style="color:#e6db74">&#34;`gatttool -b </span>$mac<span style="color:#e6db74"> --char-read -a </span>$1<span style="color:#e6db74"> | awk -F&#39;:&#39; &#39;{print </span>$2<span style="color:#e6db74">}&#39;`&#34;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># List properties from hex property value</span>
+get_properties<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x1<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x1 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Broadcast&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x2<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x2 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Read&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x4<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x4 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Write without response&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x8<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x8 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Write&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x10<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x10 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Notify&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x20<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x20 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Indicate&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x40<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x40 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Authenticated Signed Writes&#34;</span>; <span style="color:#66d9ef">fi</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span> <span style="color:#f92672">(</span>$1 &amp; 0x80<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0x80 <span style="color:#f92672">))</span>; <span style="color:#66d9ef">then</span> echo <span style="color:#e6db74">&#34;Extended Properties&#34;</span>; <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>NOTE: properties for each characteristic of interest are listed in the challenge description, so the <code>get_properties</code> function won&rsquo;t be used explicitly.</p>
+<hr>
+<ul>
+<li><strong>Flag #1</strong>
+To get this flag we need to use the <a href="https://github.com/hackgnar/ble_ctf/blob/master/docs/hints/flag1.md">hint</a>!</li>
+</ul>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x002c -n $(echo -n &quot;12345678901234567890&quot;|xxd -ps)
+Characteristic value was written successfully
+</code></pre><p>Now, reading the handle 0x002a confirms we got the first flag.</p>
+<pre><code>less@machine:~$ get_score
+Score:1 /20
+</code></pre><ul>
+<li>
+<p><strong>Flag 0x002e</strong></p>
+<blockquote>
+<p>Properties: Read</p>
+</blockquote>
+<p>To get this flag we simply need to read the handle 0x002e.</p>
+<pre><code>less@machine:~$ read_hnd 0x002e
+d205303e099ceff44835
+less@machine:~$ submit_flag d205303e099ceff44835
+less@machine:~$ get_score
+Score:2 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0030</strong></p>
+<blockquote>
+<p>&ldquo;MD5 of Device Name&rdquo;</p>
+<p>Properties: Read</p>
+</blockquote>
+<p>So for this flag we need to submit the MD5 of the Device Name.
+Note: the MD5 hash needs to be truncated to 20 characters as suggested in the README of the CTF project.</p>
+<p>We already know the device name as we encountered it connecting to the device:</p>
+<pre><code>less@machine:~$ sudo hcitool lescan
+LE Scan ...
+78:21:84:80:A2:22 BLECTF
+[...]
+</code></pre><p>Now we only need to get the MD5 digest of the name, cut and submit it:</p>
+<pre><code>less@machine:~$ echo -n &quot;BLECTF&quot; | md5sum | cut -c 1-20
+5cd56d74049ae40f442e
+less@machine:~$ submit_flag 5cd56d74049ae40f442e
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:3 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0016</strong></p>
+<p>This is a particular challenge, the hint says:</p>
+<blockquote>
+<p>&ldquo;Bluetooth GATT services provide some extra device attributes.  Try finding the value of the Generic Access -&gt; Device Name.&rdquo;</p>
+</blockquote>
+<p>But the name of the challenge is &ldquo;Flag 0x0016&rdquo;, so it gives it away!</p>
+<p>Reading the handle we get the flag:</p>
+<pre><code>less@machine:~$ read_hnd 0x0016
+2b00042f7481c7b056c4b410d28f33cf
+</code></pre><p>Of course we need to cut it before submitting it (as it is a name and the README clearly states that names and digests need to be cut to the 20th character):</p>
+<pre><code>less@machine:~$ echo 2b00042f7481c7b056c4b410d28f33cf | cut -c 1-20
+2b00042f7481c7b056c4
+less@machine:~$  submit_flag 2b00042f7481c7b056c4
+Characteristic value was written successfully
+less@machine:~$  get_score 
+Score:4 /20
+</code></pre><p>But it is important to understand the reason why this flag is there.
+We already talked about profiles and standard UUID, these include an UUID that corresponds to the Device Name, this UUID is: 0x2A00.</p>
+<p>Using <code>gatttool</code>, we can read the UUID and note that the handle is indeed 0x0016:</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-read -u 0x2A00
+handle: 0x0016 	 value: 32 62 30 30 30 34 32 66 37 34 38 31 63 37 62 30 35 36 63 
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0032</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Write anything here&rdquo;</p>
+<p>Properties: Read, Write</p>
+</blockquote>
+<p>To get the flag we need to write &ldquo;anything&rdquo; to the 0x0032 handle.</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x0032 -n `encode &quot;anything&quot;`
+Characteristic value was written successfully
+</code></pre><p>Now, we can read the handle a second time and it will reveal the flag</p>
+<pre><code>less@machine:~$ read_hnd 0x0032
+3873c0270763568cf7aa
+less@machine:~$ submit_flag 3873c0270763568cf7aa
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:5 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0034</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Write the ascii value &ldquo;yo&rdquo; here&rdquo;</p>
+<p>Properties: Read, Write</p>
+</blockquote>
+<p>The task is similar to the last one, but this time we don&rsquo;t have to hex encode the string</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x0034 -n `encode &quot;yo&quot;`
+Characteristic value was written successfully
+</code></pre><p>Now, we can get the flag reading the handle again</p>
+<pre><code>less@machine:~$ read_hnd 0x0034
+c55c6314b3db0a6128af
+less@machine:~$ submit_flag c55c6314b3db0a6128af
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:6 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0036</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Write the hex value 0x07 here&rdquo;</p>
+<p>Properties: Read, Write</p>
+</blockquote>
+<p>This task is not different from the previous ones, but since the default encoding used in BLE communications is hex, and the value is to be sent in hex, no encoding needs to be used</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x0036 -n 07
+Characteristic value was written successfully
+</code></pre><p>Now the flag should be available at the same handle</p>
+<pre><code>less@machine:~$ read_hnd 0x0036
+1179080b29f8da16ad66
+less@machine:~$ submit_flag 1179080b29f8da16ad66
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:7 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0038</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Write 0xC9 to handle 58&rdquo;</p>
+<p>Properties: Read
+Handle 58 properties: Write</p>
+</blockquote>
+<p>First off we need to convert 58 in hex to get the hex value for the handle, <code>hex(58)</code> is 0x3A.
+Now we need to write the hex value 0xC9 to the handle, this can be done exactly like we did for the last challenge:</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x003A -n C9
+Characteristic value was written successfully
+</code></pre><p>Now reading the handle 0x0038 again reveals the flag</p>
+<pre><code>less@machine:~$ read_hnd 0x0038
+f8b136d937fad6a2be9f
+less@machine:~$ submit_flag f8b136d937fad6a2be9f
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:8 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x003C</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Brute force my value 00 to ff&rdquo;</p>
+<p>Properties: Read, Write</p>
+</blockquote>
+<p>This can be achieved in multiple ways, but for consistency <code>gatttool</code> and a bit of bash scripting will be used.</p>
+<pre><code>less@machine:~$ for i in {0..255};
+&gt; do gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x003c -n $(printf '%02x\n' $i) &gt; /dev/null;
+&gt; done;
+</code></pre><p>This script iterates through every value from 0 to 255 (which is FF in hex) and writes such value in the handle 0x003C. The <code>$(printf '%02x\n' $i);</code> command converts the value to write from decimal to hex.</p>
+<p>Once the script has finished, it&rsquo;s possible to read the handle 0x003C again to get the flag</p>
+<pre><code>less@machine:~$ read_hnd 0x003c
+933c1fcfa8ed52d2ec05
+less@machine:~$ submit_flag 933c1fcfa8ed52d2ec05
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:9 /20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x003E</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Read me 1000 times&rdquo;</p>
+<p>Properties: Read</p>
+</blockquote>
+<p>This can be done simply modifying the script used in the previous challenge</p>
+<pre><code>less@machine:~$ for i in {0..1000}; 
+&gt; do gatttool -b 78:21:84:80:A2:22 --char-read -a 0x003e;
+&gt; done;
+</code></pre><p>This command will print out the content of the reads, and after a while you&rsquo;ll notice that the output changes like in the example here:</p>
+<pre><code>[...]
+Characteristic value/descriptor: 52 65 61 64 20 6d 65 20 31 30 30 30 20 74 69 6d 65 73 
+Characteristic value/descriptor: 52 65 61 64 20 6d 65 20 31 30 30 30 20 74 69 6d 65 73 
+Characteristic value/descriptor: 52 65 61 64 20 6d 65 20 31 30 30 30 20 74 69 6d 65 73 
+Characteristic value/descriptor: 36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65 
+Characteristic value/descriptor: 36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65 
+Characteristic value/descriptor: 36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65 
+</code></pre><p>The values printed after the variation represent the flag!</p>
+<p>So we just need to submit it to complete this challenge</p>
+<pre><code>less@machine:~$ decode &quot;36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65&quot;
+6ffcd214ffebdc0d069e
+less@machine:~$ submit_flag 6ffcd214ffebdc0d069e
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:10/20 
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0040</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Listen to me for a single notification&rdquo;</p>
+<p>Properties: Read, Write, Notify</p>
+</blockquote>
+<p>To listen for a notification, we first need to send a write request, but we will have to listen to the notification, this can be achieved with the following command:</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0040 --value=dummy --listen
+Characteristic value was written successfully
+Notification handle = 0x0040 value: 35 65 63 33 37 37 32 62 63 64 30 30 63 66 30 36 64 38 65 62 
+</code></pre><p>The notification value is the flag!</p>
+<pre><code>less@machine:~$ decode &quot;35 65 63 33 37 37 32 62 63 64 30 30 63 66 30 36 64 38 65 62&quot;
+5ec3772bcd00cf06d8eb
+less@machine:~$ submit_flag 5ec3772bcd00cf06d8eb
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:11/20 
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0042</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Listen to handle 0x0044 for a single indication&rdquo;</p>
+<p>Properties: Read</p>
+<p>Handle 0x0044 Properties: Read, Write, Indicate</p>
+</blockquote>
+<p>This flag can be obtained just like the last one:</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0044 --value=ffff --listen
+Characteristic value was written successfully
+Indication   handle = 0x0044 value: 63 37 62 38 36 64 64 31 32 31 38 34 38 63 37 37 63 31 31 33 
+</code></pre><p>Once the notification value is retrieved we can decode and submit it:</p>
+<pre><code>less@machine:~$ decode &quot;63 37 62 38 36 64 64 31 32 31 38 34 38 63 37 37 63 31 31 33&quot;
+c7b86dd121848c77c113
+less@machine:~$ submit_flag c7b86dd121848c77c113
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:12/20 
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0046</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Listen to me for multi notifications&rdquo;</p>
+<p>Properties: Read, Write, Notify</p>
+</blockquote>
+<p>And with the same command we can get this flag too!</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0046 --value=ffff --listen
+Characteristic value was written successfully
+Notification handle = 0x0046 value: 55 20 6e 6f 20 77 61 6e 74 20 74 68 69 73 20 6d 73 67 00 00 
+Notification handle = 0x0046 value: 63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64 
+Notification handle = 0x0046 value: 63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64 
+Notification handle = 0x0046 value: 63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64 
+</code></pre><p>After the first notification, we get the content of the flag! (The decoded content of the first notification is &ldquo;U no want this msg&rdquo;).</p>
+<pre><code>less@machine:~$ decode &quot;63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64&quot;
+c9457de5fd8cafe349fd
+less@machine:~$ submit_flag c9457de5fd8cafe349fd
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:13/20 
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0048</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Listen to handle 0x004a for multi indications&rdquo;</p>
+<p>Properties: Read</p>
+<p>Handle 0x004a Properties: Read, Write, Indicate</p>
+</blockquote>
+<p>Once again the same command is the key to the flag!</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x004a --value=ffff --listen
+Characteristic value was written successfully
+Indication   handle = 0x004a value: 55 20 6e 6f 20 77 61 6e 74 20 74 68 69 73 20 6d 73 67 00 00 
+Indication   handle = 0x004a value: 62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61 
+Indication   handle = 0x004a value: 62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61 
+Indication   handle = 0x004a value: 62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61 
+</code></pre><p>Now we can decode and submit the flag like always.</p>
+<pre><code>less@machine:~$ decode &quot;62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61&quot;
+b6f3a47f207d38e16ffa
+less@machine:~$ submit_flag b6f3a47f207d38e16ffa
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:14/20 
+</code></pre></li>
+<li>
+<p><strong>Flag 0x004c</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Connect with BT MAC address 11:22:33:44:55:66&rdquo;</p>
+<p>Properties: Read</p>
+</blockquote>
+<p>Now, this challenge depends on the BT card you&rsquo;re using. I&rsquo;m using a raspberry pi 3b+ and I could solve the challenge in the following way:</p>
+<pre><code>less@machine:~$ sudo hcitool cmd 0x3f 0x001 0x66 0x55 0x44 0x33 0x22 0x11
+&lt; HCI Command: ogf 0x3f, ocf 0x0001, plen 6
+  66 55 44 33 22 11 
+&gt; HCI Event: 0x0e plen 4
+  01 01 FC 00 
+less@machine:~$ sudo hciconfig hci0 reset
+less@machine:~$ systemctl restart bluetooth.service
+Authentication is required to restart 'bluetooth.service'.
+Authenticating as: ,,, (less)
+Password: 
+==== AUTHENTICATION COMPLETE ===
+</code></pre><p>At this point we can confirm our BT MAC address executing <code>hciconfig</code>:</p>
+<pre><code>less@machine:~$ hciconfig
+hci0:	Type: Primary  Bus: UART
+	BD Address: 11:22:33:44:55:66  ACL MTU: 1021:8  SCO MTU: 64:1
+	UP RUNNING 
+	RX bytes:13820 acl:117 sco:0 events:824 errors:0
+	TX bytes:16604 acl:108 sco:0 commands:606 errors:0
+</code></pre><p>And of course now, reading the handle gives us the flag:</p>
+<pre><code>less@machine:~$ read_hnd 0x004c
+aca16920583e42bdcf5f
+less@machine:~$ submit_flag aca16920583e42bdcf5f
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:15/20
+</code></pre><p>Check out these resources for more info on this solution:
+<a href="https://www.lisha.ufsc.br/teaching/shi/ine5346-2003-1/work/bluetooth/hci_commands.html">https://www.lisha.ufsc.br/teaching/shi/ine5346-2003-1/work/bluetooth/hci_commands.html</a> and <a href="https://raspberrypi.stackexchange.com/a/124117">https://raspberrypi.stackexchange.com/a/124117</a></p>
+</li>
+<li>
+<p><strong>Flag 0x004e</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Set your connection MTU to 444&rdquo;</p>
+<p>Properties: Read</p>
+</blockquote>
+<p>Even if there is the option to do that (-m), I can&rsquo;t seem to get the flag without using the interactive mode of gatttools, so my solution to this flag is:</p>
+<pre><code>less@machine:~$ gatttool -I
+[                 ][LE]&gt; connect 78:21:84:80:A2:22
+Attempting to connect to 78:21:84:80:A2:22
+Connection successful
+[78:21:84:80:A2:22][LE]&gt; mtu 444
+MTU was exchanged successfully: 444
+[78:21:84:80:A2:22][LE]&gt; char-read-hnd 0x004e
+Characteristic value/descriptor: 62 31 65 34 30 39 65 35 61 34 65 61 66 39 66 65 35 31 35 38 
+[78:21:84:80:A2:22][LE]&gt; exit
+</code></pre><p>And just like that we got the flag</p>
+<pre><code>less@machine:~$ decode &quot;62 31 65 34 30 39 65 35 61 34 65 61 66 39 66 65 35 31 35 38 &quot;
+b1e409e5a4eaf9fe5158
+less@machine:~$ submit_flag b1e409e5a4eaf9fe5158
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:16/20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0050</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;Write+resp &lsquo;hello&rsquo; &quot;</p>
+<p>Properties: Read, Write</p>
+</blockquote>
+<p>I suggest checking the hint for this challenge! The key is in correctly handling the ACK response from the write instruction, this is the reason</p>
+<p><code>--char-write-req</code> needs to be used.</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0050 --value=`encode hello`
+Characteristic value was written successfully
+less@machine:~$ read_hnd 0x0050
+d41d8cd98f00b204e980
+</code></pre><p>Now we only need to submit the flag.</p>
+<pre><code>less@machine:~$ submit_flag d41d8cd98f00b204e980
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:17/20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0052</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;No notifications here! really?&rdquo;</p>
+<p>Properties: Read, Write</p>
+</blockquote>
+<p>In fact even if there is no notification property set&hellip;</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0052 --value=`encode hello` --listen
+Characteristic value was written successfully
+Notification handle = 0x0052 value: 66 63 39 32 30 63 36 38 62 36 30 30 36 31 36 39 34 37 37 62 
+</code></pre><p>The flag is revealed through a notification!
+Now we can decode and submit it.</p>
+<pre><code>less@machine:~$ decode &quot;66 63 39 32 30 63 36 38 62 36 30 30 36 31 36 39 34 37 37 62&quot;
+fc920c68b6006169477b
+less@machine:~$ submit_flag fc920c68b6006169477b
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:18/20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0054</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;So many properties!&rdquo;</p>
+<p>Properties: Broadcast, Read, Write, Notify, Extended properties</p>
+</blockquote>
+<p>&hellip;and to be fair this handle has &ldquo;Broadcast, Read, Write, Notify, Extended properties&rdquo; properties. It&rsquo;s a bit of a mess!</p>
+<p>But getting the flag is fairly simple. The first half can be retrieved simply listening for a notification:</p>
+<pre><code>less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0054 --value=ffff --listen
+Characteristic value was written successfully
+Notification handle = 0x0054 value: 30 37 65 34 61 30 63 63 34 38 
+</code></pre><p>For the second half we need to read the handle once more:</p>
+<pre><code>less@machine:~$ read_hnd 0x0054
+fbb966958f
+</code></pre><p>Now we just need to put the two halves together and submit the flag (the second half of the flag goes first!):</p>
+<pre><code>less@machine:~$ submit_flag fbb966958f07e4a0cc48
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:19/20
+</code></pre></li>
+<li>
+<p><strong>Flag 0x0056</strong></p>
+<blockquote>
+<p>The content of the handle is: &ldquo;md5 of author&rsquo;s twitter handle&rdquo;.</p>
+<p>Properties: Read</p>
+</blockquote>
+<p>So we need to do a bit of OSINT to solve this challenge!</p>
+<p>The starting point is the github page of the challenge: <a href="https://github.com/hackgnar/ble_ctf">https://github.com/hackgnar/ble_ctf</a>
+Luckily in the README.md file we can find a twitter follow button, this leads us to: <a href="https://twitter.com/hackgnar">https://twitter.com/hackgnar</a>
+And now we know the handle is: @hackgnar</p>
+<p>Now we can get the MD5 digest of the handle and cut it to 20 chars:</p>
+<pre><code>less@machine:~$ echo -n &quot;@hackgnar&quot; | md5sum | cut -c 1-20
+d953bfb9846acc2e15ee
+</code></pre><p>We can now submit it as a flag</p>
+<pre><code>less@machine:~$ submit_flag d953bfb9846acc2e15ee
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:20/20
+</code></pre></li>
+</ul>
+<hr>
+<h2 id="conclusions">Conclusions</h2>
+<p>Hope this article is useful to anyone who&rsquo;s stuck on one of these challenges or to anyone who&rsquo;s trying to learn about BLE technologies.
+Writing this article has helped me formalizing most of the things I learned solving these challenges and my main takeaways are an improved understanding of BLE, GATT and ATT, but also the ability to use the tools needed to work with these technologies.</p>
+<p>In future I&rsquo;ll try working with GATT libraries to programmatically interact with GATT servers!</p>
+<hr>
+<p>Resources:</p>
+<ul>
+<li><a href="https://epxx.co/artigos/bluetooth_gatt.html">https://epxx.co/artigos/bluetooth_gatt.html</a> (ATT/GATT basics)</li>
+<li>Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things (General BLE introduction)</li>
+<li><a href="https://axodyne.com/2020/08/ble-uuids/">https://axodyne.com/2020/08/ble-uuids/</a>  (Explanation on standard UUIDS)</li>
+<li><a href="https://learn.adafruit.com/introduction-to-bluetooth-low-energy/gatt">https://learn.adafruit.com/introduction-to-bluetooth-low-energy/gatt</a> (Profiles and services)</li>
+<li><a href="https://devzone.nordicsemi.com/guides/short-range-guides/b/bluetooth-low-energy/posts/ble-characteristics-a-beginners-tutorial">https://devzone.nordicsemi.com/guides/short-range-guides/b/bluetooth-low-energy/posts/ble-characteristics-a-beginners-tutorial</a> (Properties)</li>
+</ul>
+]]></content></item><item><title>Email spoofing 101</title><link>https://lessonsec.com/posts/email-spoofing-101/</link><pubDate>Sat, 05 Feb 2022 16:40:50 +0100</pubDate><guid>https://lessonsec.com/posts/email-spoofing-101/</guid><description>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.
+I got interested in this technique in the last few days, so I decided to experiment a bit with it.
+Email spoofing basics This technique is as old as emails are, in fact original transmission protocols (such as SMTP) don&amp;rsquo;t have authentication methods, and while security measures have been adopted these are not widely employed yet.</description><content type="html"><![CDATA[<p>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming.
+From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</p>
+<p>I got interested in this technique in the last few days, so I decided to experiment a bit with it.</p>
+<h2 id="email-spoofing-basics">Email spoofing basics</h2>
+<p>This technique is as old as emails are, in fact original transmission protocols (such as SMTP) don&rsquo;t have authentication methods, and while security measures have been adopted these are <a href="https://labs.bishopfox.com/tech-blog/2017/05/how-we-can-stop-email-spoofing">not widely employed yet</a>.</p>
+<p>An email is composed of three different parts:</p>
+<ul>
+<li><strong>Envelope</strong>: data about sender and receiver addresses.
+This part of message is destined to the server, it&rsquo;s generally not shown to the user by the client.</li>
+<li><strong>Header</strong>: meta-data of the email. Contains information like the subject of the email, the date and some info about sending/receiving addresses.</li>
+<li><strong>Body</strong>: the content of the email.</li>
+</ul>
+<p>To get a bit more into details, the SMTP protocol specify two addresses in the envelope addressing part of the message:</p>
+<ul>
+<li><code>MAIL FROM</code>: it specifies the &ldquo;return address&rdquo; in case an email bounces.</li>
+<li><code>RCPT TO</code>: address to which the email will be delivered.</li>
+</ul>
+<p>Other headers are often present, this set of information represent what the receiver will see when reading the email inside of a client.
+The addresses in each header will be present in the form of: <code>Foo Bar &lt;foobar@spam.com&gt;</code>.</p>
+<p>In particular, these headers are: <code>From:</code>, <code>Reply-to:</code>, <code>Sender:</code>. Each of these headers represents the address visible to the receiving part.</p>
+<p>In general, it&rsquo;s important to notice the difference between the envelope <code>MAIL FROM</code> or <a href="https://datatracker.ietf.org/doc/html/rfc5321">RFC5321</a>.MailFrom and the header <code>From:</code>or <a href="https://datatracker.ietf.org/doc/html/rfc5322">RFC5322</a>.From since the latter is shown to the user and can be easily spoofed and it&rsquo;s shown to the recipient of the email by the client.</p>
+<p>As anticipated, SMTP doesn&rsquo;t check whether an user is authorized or not to use a particular address in these fields and this is the reason why it&rsquo;s so easy to spoof emails. The only reliable information we can harvest from a spoofed email is the IP from which the email was sent.</p>
+<h2 id="available-security-measures">Available security measures</h2>
+<p>There are three main security measured against email spoofing:</p>
+<ul>
+<li>
+<p><strong><a href="https://datatracker.ietf.org/doc/html/rfc7208">Sender Policy Framework</a> (SPF)</strong>
+This method allows the detection of forged sender addresses and it&rsquo;s based on envelope information.
+In particular SPF information are contained inside a <code>TXT</code> DNS record. These info specify which IP addresses are allowed to send emails on the behalf of the  domain. Allowed senders can be listed explicitly specifying authorized IP ranges, or checking if <code>A</code>, <code>AAAA</code> or <code>MX</code> records resolve to the sender&rsquo;s address.</p>
+<p>SPF also use 4 qualifiers, these represent the status of the SPF validation.
+Qualifiers can be:</p>
+<ul>
+<li>PASS (+) : if the check is passed. The email can be accepted.</li>
+<li>NEUTRAL (?) : if no policy is in use.</li>
+<li>FAIL (-) : if the check wasn&rsquo;t successful. The email should be rejected.</li>
+<li>SOFTFAIL (~) : like fail, but used for debugging. In general emails with SOFTFAIL qualifier are accepted but flagged.</li>
+</ul>
+<p>The SPF <code>TXT</code> DNS record is composed of SPF version (specified with the tag <code>v=</code> <a href="http://www.open-spf.org/SPF_vs_Sender_ID/#0.1.3">it can only be followed by the value <code>spf1</code></a>) and one of more <em>mechanisms</em>.
+Mechanisms are used to specify if a domain can send the email. Mechanisms include specifying IPv4/IPv6 address ranges or checking if A, MX or PTR records resolve to the domain. Other mechanisms exist but are rarely used.</p>
+<p>SPF alone is not enough to detect email forging because it checks envelope information only, it would still be possible to keep the original sender in the envelope information and forge only the headers that are interpreted by the client and can&rsquo;t be checked with SPF.
+Usually a failed SPF check is enough to mark the email as spam or even reject it.
+It&rsquo;s worth noting that SPF policies could cause troubles in case of email forwarding even if the sender is authorized. That&rsquo;s because the &ldquo;forwarder&rdquo; is technically not authorized to send emails on the behalf the original domain.</p>
+</li>
+<li>
+<p><strong><a href="https://datatracker.ietf.org/doc/html/rfc6376/">DomainKeys Identified Mail</a> (DKIM)</strong>
+DKIM is an authentication method that allows the receiver to check if the email was authorized by the owner of the domain and functions as an integrity check to make sure the message hasn&rsquo;t been modified.
+This check is possible thanks to an additional header containing a digital signature. A public key, that makes the signature validation possible, is available in a dedicated <code>TXT</code> DNS record. This method only checks the validity of email&rsquo;s header and body, the envelope addresses are ignored. It&rsquo;s possible to specify which headers to check, but the <code>RFC5322.From</code> header must always be checked.
+DKIM checks can and should be done at every SMTP hop and should resist relaying across <a href="https://en.wikipedia.org/wiki/Message_transfer_agent">MTAs</a> .</p>
+<p>Important info contained in the DKIM headers of an email are:</p>
+<ul>
+<li><code>b</code>: signature of header and body</li>
+<li><code>bh</code>: body hash</li>
+<li><code>d</code>: signing domain</li>
+<li><code>s</code>: selector</li>
+<li><code>h</code>: header fields that has been signed</li>
+</ul>
+<p>But information about the protocol, the algorithm used to sign and more can be present in optional tags.</p>
+<p>The information useful to verify the signature are present in the <code>TXT</code> DNS record and are presented in the form of key-value pairs:</p>
+<ul>
+<li><code>k</code>: algorithm to be used</li>
+<li><code>v</code>: version of DKIM</li>
+<li><code>p</code>: public key to validate the signature</li>
+</ul>
+<p>More tags can be present, but are not useful for our analysis.</p>
+<p>DKIM records are published at <code>selector._domainkey.example.com</code>.</p>
+</li>
+<li>
+<p><strong><a href="https://datatracker.ietf.org/doc/html/rfc7489">Domain-based Message Authentication, Reporting and Conformance</a> (DMARC)</strong>
+DMARC is an email authentication protocol. Using a <code>TXT</code> DNS record, it dictates the conditions under which an email is considered authenticated.
+It works on top of DKIM and SPF: these two mechanisms, as shown above, offer different checks on the authenticity of an email sender.<br>
+Both DKIM and SPF can offer authenticated identifiers in DMARC, meaning that DKIM <code>d=</code> tag of a validated DKIM-Signature header field and SPF validated <code>MAIL FROM</code> field can be used to validate an email&rsquo;s sender.</p>
+<p>DMARC alignment basically checks that the domain name in the <code>RFC5322.From</code> field, is &ldquo;aligned&rdquo; (matches) with either DKIM or SPF authenticated identifier.
+There are two types of alignment in DMARC, <em>strict</em> or <em>relaxed</em>.
+With strict alignment, the domain needs to be identical, while with relaxed alignment, a domain is considered aligned if the top-level domain match.</p>
+<p>It&rsquo;s also possible to define policies to specify how to deal with authentication failures.
+These policies are:</p>
+<ul>
+<li><code>none</code>: no action required by the receivers. It allows the domain to receive feedback reports.</li>
+<li><code>quarantine</code>: suggests that emails that fail DMARC check are flagged (marked as spam).</li>
+<li><code>reject</code>: suggests that emails that fail DMARC check are discarded.</li>
+</ul>
+<p>A <code>TXT</code> DNS entry for DMARC is composed of:</p>
+<ul>
+<li><code>v</code>: version</li>
+<li><code>p</code>: policy</li>
+<li><code>sp</code>: sub-domain policy</li>
+<li><code>pct</code>: percentage of non authenticated emails to which apply the policy</li>
+<li><code>rua</code>: email address to send reports to</li>
+</ul>
+<p>The use of <code>pct</code> is interesting because it can lower the protection offered by DMARC.
+By default <code>pct</code> is set to 100%, but if it wasn&rsquo;t, the receiver should use a Bernoulli sampling algorithm to check how the policy is to be applied to the email.
+If an email doesn&rsquo;t fall under the percentage specified in <code>pct</code>, a lower policy is to be applied to the email.
+So if <code>p=reject</code>, the quarantine policy is to be used and if <code>p=quarantine</code>, the <code>none</code> policy is to be applied.</p>
+<p>DMARC records are published at <code>_dmarc.example.com</code>.</p>
+</li>
+</ul>
+<p>While SPF and DKIM work properly, they both have defects:</p>
+<ul>
+<li>SPF checks the envelope from address, leaving the header from address not considered.
+This means that a malicious user can send an email from a whitelisted domain and spoof the header from address. This can lead to a situation in which the email is considered valid, but a domain different than the expected one is shown to the receiver.</li>
+<li>DKIM only checks parts of the email, this means that, leaving such parts untouched, a malicious user can <a href="https://www.zdnet.com/article/dkim-useless-or-just-disappointing/">add other headers</a> and make the receiving part see an apparently valid message, but with spoofed parts.</li>
+</ul>
+<p>This leaves DMARC as the only viable solution for a more comprehensive domain security.</p>
+<h2 id="vulnerable-configurations">Vulnerable configurations</h2>
+<p>When it comes to email security implemented with DMARC, there are 4 main vulnerable scenarios to consider:</p>
+<ul>
+<li>Case 1<br>
+There is a DMARC DNS record, this entry describes a DMARC entry and it has a policy different than &ldquo;none&rdquo;.
+In this case it&rsquo;s impossible to spoof an email from this domain.</li>
+<li>Case 2<br>
+There is a DMARC DNS record and a valid DMARC entry, but the policy is set to &ldquo;none&rdquo;, meaning that, even if feedback reports will be sent, the domain is spoofable in emails.</li>
+<li>Case 3<br>
+There is no DMARC DNS record in a domain that is used to send emails. This is the worst possible scenario because the domain is completely unprotected.</li>
+<li>Case 4<br>
+There is no DMARC DNS record in a domain not used to send emails. The domain is spoofable, but the impact is not as big as in case 3.
+It is suggested to have DMARC in place even for domain not used to send emails, but it&rsquo;s not fundamental.</li>
+</ul>
+<p>Of course to thoroughly evaluate the security in place, it&rsquo;s important to consider eventual SPF and DKIM policies, even if no DMARC protection is set up.</p>
+<p>The most direct way to check the configuration is to query the DNS, for this article I&rsquo;ll specify the way to do this in a unix based system, but more info can be found <a href="https://www.cisco.com/c/en/us/support/docs/security/secure-email-gateway/217073-how-to-use-dig-nslookup-to-find-spf-dki.html">here</a>. We will use google.com as a domain for our experiments.</p>
+<h3 id="find-the-spf-record">Find the SPF record</h3>
+<p>Using <code>dig</code> it&rsquo;s possible to get <code>TXT</code> records for a domain.
+The command is <code>dig google.com txt</code> and the output looks like this:</p>
+<pre><code>; &lt;&lt;&gt;&gt; DiG 9.16.8-Ubuntu &lt;&lt;&gt;&gt; google.com txt
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 8353
+;; flags: qr rd ra; QUERY: 1, ANSWER: 9, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;google.com.			IN	TXT
+
+;; ANSWER SECTION:
+google.com.		3600	IN	TXT	&quot;MS=E4A68B9AB2BB9670BCE15412F62916164C0B20BB&quot;
+google.com.		3600	IN	TXT	&quot;v=spf1 include:_spf.google.com ~all&quot;
+google.com.		3600	IN	TXT	&quot;google-site-verification=wD8N7i1JTNTkezJ49swvWW48f8_9xveREV4oB-0Hf5o&quot;
+google.com.		3600	IN	TXT	&quot;google-site-verification=TV9-DBe4R80X4v0M4U_bd_J9cpOJM0nikft0jAgjmsQ&quot;
+google.com.		3600	IN	TXT	&quot;apple-domain-verification=30afIBcvSuDV2PLX&quot;
+google.com.		3600	IN	TXT	&quot;docusign=05958488-4752-4ef2-95eb-aa7ba8a3bd0e&quot;
+google.com.		3600	IN	TXT	&quot;globalsign-smime-dv=CDYX+XFHUw2wml6/Gb8+59BsH31KzUr6c1l2BPvqKX8=&quot;
+google.com.		3600	IN	TXT	&quot;facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95&quot;
+google.com.		3600	IN	TXT	&quot;docusign=1b0a6754-49b1-4db5-8540-d2c12664b289&quot;
+
+;; Query time: 328 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Tue Nov 23 22:29:59 CET 2021
+;; MSG SIZE  rcvd: 625
+</code></pre><p>then we need to find the SPF record between <code>TXT</code> records. We simply need to find the one starting with <code>v=spf</code>, in this case it is
+<code>google.com.  3600	IN	TXT	&quot;v=spf1 include:_spf.google.com ~all&quot;</code>. Or we can use <code>grep</code> to extract the information directly:
+<code>dig google.com txt | grep spf</code>.</p>
+<h3 id="find-the-dkim-record">Find the DKIM record</h3>
+<p>The DKIM entry is located at <code>selector._domainkey.example.com</code>, so to find the DKIM record we first need to find the DKIM selector.
+This can be done in two ways, get it from an email received from the domain we are researching or trying to achieve a zone transfer.</p>
+<p>From an email, we just need to look for the original message (containing the headers), if DKIM is enabled, one of the fields will be <code>DKIM-Signature:</code> followed by different elements; what we are looking for is <code>s=</code> that is followed by the selector.
+If we can&rsquo;t receive an email from a specific domain, it&rsquo;s possible to try and get a zone transfer, it&rsquo;s basically a dump of every DNS record from a nameserver.
+This can be done with the command: <code>dig axfr @nameserver example.com</code>.  The nameservers can be found using the command <code>dig ns example.com</code>.
+Sadly google.com won&rsquo;t allow zone transfer. It&rsquo;s possible to practice this technique using <a href="https://digi.ninja/projects/zonetransferme.php">zonetransfer.me</a>, this website also contains a lot of cool info about DNS and zone transfers.</p>
+<p>I was able to recover the selector from an email received from google.com. Once we have the selector, we can get info about DKIM using the command:
+<code>dig 20210112._domainkey.google.com txt</code>.
+The output looks like this:</p>
+<pre><code>; &lt;&lt;&gt;&gt; DiG 9.16.8-Ubuntu &lt;&lt;&gt;&gt; 20210112._domainkey.google.com txt
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 52118
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;20210112._domainkey.google.com.	IN	TXT
+
+;; ANSWER SECTION:
+20210112._domainkey.google.com.	3600 IN	TXT	&quot;v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtnbQAeqvEP2pG2L540W9JvVU7qy767Zs83Hjw34PCkZ9/9dWE6cK+CYaMNIQqTGfwq4uUe3diBuz3Uikkr+WPMj9AuxtxJqUAO8PsZ2Y5DneFpz5kVesC9/rtXgCwgYOmO&quot; &quot;9UjSy4IN11ewXUBuCH+zp2v5Abv5T0Lol/nWl8wLgRI1IesstingY4cnSfo3Pq3U0I1GAxdNFCK2FPedPpg4sdPpHqtxVvRLMLamRKoUfySBMjpXuMNL0UeCizmFfdUL73ZdiS+MNxGECzFNmeCngFBscLQN++urvfB9OqHQrbxLIwNyni3KMbE/E+cxPkx4KxhyGHSU2klV1vvIAHfwIDAQAB&quot;
+
+;; Query time: 92 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Tue Nov 23 22:23:32 CET 2021
+;; MSG SIZE  rcvd: 483
+</code></pre><h3 id="find-the-dmarc-record">Find the DMARC record</h3>
+<p>The DMARC record is easy to find, just for the SPF record, we can use <code>dig _dmarc.google.com txt</code> to get what we are looking for.</p>
+<p>The output is:</p>
+<pre><code>; &lt;&lt;&gt;&gt; DiG 9.16.8-Ubuntu &lt;&lt;&gt;&gt; _dmarc.google.com txt
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 28825
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;_dmarc.google.com.		IN	TXT
+
+;; ANSWER SECTION:
+_dmarc.google.com.	300	IN	TXT	&quot;v=DMARC1; p=reject; rua=mailto:mailauth-reports@google.com&quot;
+
+;; Query time: 44 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Tue Nov 23 22:29:14 CET 2021
+;; MSG SIZE  rcvd: 117
+</code></pre><p>Another way to find these information is to use online tools like <a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3alessonsec.com&amp;run=toolpage#">this</a>, but I think that it&rsquo;s better to query the DNS server manually to better understand how these things work.</p>
+<h2 id="actually-spoofing-an-email">Actually spoofing an email</h2>
+<p>Now that we have an overview of email security, we can go ahead and try to actually spoof an email.</p>
+<p>Now, if you tried sending an email via code in past, you know for sure that it&rsquo;s really hard to avoid ending up in the spam folder, even if you are trying to send an email from a legitimate domain and you are authorized. Said that, let&rsquo;s go through some experiments I made and examine how feasible it really is to send spoofed emails from scratches.</p>
+<p>Anyway, let&rsquo;s dive into it.</p>
+<p>First of we need to setup a vulnerable server or try to find a vulnerable domain administrator that will allow you to spoof their domain name. Luckily using bug bounty programs it&rsquo;s easy to find vulnerable domains you&rsquo;re allowed to work with.</p>
+<p>Now, if you are familiar on the &ldquo;raw&rdquo; email format, you&rsquo;ll know that the email is nothing but a text composed of headers-values and the content of the email. For this reason it&rsquo;s possible to &ldquo;spoof&rdquo; headers like <code>From</code>, <code>Reply-to</code>, <code>Sender</code>.</p>
+<h3 id="first-attempt-using-gmail-smtp-server">First attempt: using Gmail SMTP server</h3>
+<p>I tried using my gmail account to send an email using google servers.
+To do that I had to enable access from less secure apps on my account. This is the only way to login into a google service from code you write.</p>
+<p>Now, it&rsquo;s not possible to specify envelope information, but it&rsquo;s possible to send the email and specify the <code>From:</code>, <code>Reply-to:</code> and <code>Sender:</code> headers.
+Using the <code>From:</code> field, I was able to change the sender name, but the email displayed by the client would be the one from the account used to login into gmail. If no <code>From:</code> header was specified, the header will be inferred by gmail servers and the email address (without the domain) will be used. Specifying the <code>Sender:</code> header didn&rsquo;t do much, if it was simply ignored, both with or without the <code>From:</code> header.
+The <code>Reply-to:</code> header was interpreted just like Sender:, but if specified, emails would be marked as &ldquo;promotions&rdquo; by gmail&rsquo;s client.</p>
+<p>Using different SMTP servers or clients will possibly lead to different results.</p>
+<p>This is the code snippet used for this experiment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> smtplib
+
+gmail_user <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;YOUR-EMAIL-HERE@gmail.com&#39;</span>
+gmail_password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;YOUR-PASSWORD-HERE&#39;</span>
+
+sent_from_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Foo&#34;</span>
+sent_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;foobar@spam.com&#39;</span>
+to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;receiver@email.com&#39;</span>
+subject <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;This is a spoofed email&#39;</span>
+body <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;This is the content of a spoofed email&#34;</span>
+
+
+email_text <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;&#34;&#34;</span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">MIME-Version: 1.0
+</span><span style="color:#e6db74">Date: Thu, 29 Apr 2021 18:49:13 +0200
+</span><span style="color:#e6db74">Subject: {subject}
+</span><span style="color:#e6db74">From: {sent_from_name} &lt;{sent_from}&gt;
+</span><span style="color:#e6db74">To: {to}
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">{body}
+</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+
+<span style="color:#66d9ef">try</span>:
+    server <span style="color:#f92672">=</span> smtplib<span style="color:#f92672">.</span>SMTP_SSL(<span style="color:#e6db74">&#39;smtp.gmail.com&#39;</span>, <span style="color:#ae81ff">465</span>)
+    server<span style="color:#f92672">.</span>ehlo()
+    server<span style="color:#f92672">.</span>login(gmail_user, gmail_password)
+    server<span style="color:#f92672">.</span>sendmail(sent_from, to, email_text)
+    server<span style="color:#f92672">.</span>close()
+
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Email sent!&#34;</span>)
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+    <span style="color:#66d9ef">print</span>(e)
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Email not sent!&#34;</span>)
+</code></pre></div><h3 id="second-attempt-setting-up-your-personal-smtp-server">Second attempt: setting up your personal SMTP server</h3>
+<p>Installing an SMTP server on your machine would make it possible to send emails from your computer using a script similar to the one used for google. Sadly this experiment won&rsquo;t let you send emails, this is for different reasons: for starters the IP address from which the email is sent is from a residential IP range. This means that if your ISP doesn&rsquo;t block the email (very possible), the receiving client will ignore the email because of the poor IP reputation.</p>
+<p>I think it&rsquo;s possible to send emails using this technique if an AWS, GCP or Azure VM is used, this simply because the IP wouldn&rsquo;t be from a residential range anymore. I didn&rsquo;t try this yet, but I&rsquo;m confident that emails would be at least delivered.</p>
+<h3 id="third-attempt-using-online-services">Third attempt: using online services</h3>
+<p>With this approach I was able to send spoofed emails! I&rsquo;m not linking any of the services I tried using, but there are free or paid services that actually work and let you specify the headers we are interested into.</p>
+<p>Sadly most of the emails will end up in the spam folder or discarded by the client due to bad IP reputation (I think).
+But it&rsquo;s a fun experiment to see how the emails are treated. Using a client with less protections (like online temporary email addresses ones) will allow the reception of the email.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>I think that the main take-away from this article should be an increased awareness about email security, mainly because of a deeper understanding of spoofing techniques.  For me personally, experimenting and researching on this topic was useful because I could work with DNS queries and gather insights about DNS security, a topic I&rsquo;d love to further explore.</p>
+<p>Sadly I couldn&rsquo;t experiment much at the moment, but I will for sure try and send emails from a VPS or Virtual Machine in the cloud that use a non-residential IP, I&rsquo;m confident this approach would work in sending spoofed emails on vulnerable domains.</p>
+<hr>
+<p>This article was reviewed by Nicola Selenu from <a href="http://topdeliverability.com">topdeliverability.com</a>, big thanks to him!</p>
+]]></content></item><item><title>Walkthrough: CryptoHack CTF</title><link>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</link><pubDate>Sun, 03 Oct 2021 12:41:44 +0200</pubDate><guid>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</guid><description>Recently I&amp;rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&amp;rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!
+I&amp;rsquo;m approaching this cryptography deep dive with https://cryptohack.org/. Cryptohack it&amp;rsquo;s website offering CTF style challenges to understand and try to break modern cryptography. I really like this gamified approach so I decided to give it a shot.</description><content type="html"><![CDATA[<p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
+<p>I&rsquo;m approaching this cryptography deep dive with <a href="https://cryptohack.org/">https://cryptohack.org/</a>.
+Cryptohack it&rsquo;s website offering CTF style challenges to understand and try to break modern cryptography. I really like this gamified approach so I decided to give it a shot.</p>
+<blockquote>
+<p><em><strong>Disclaimer</strong></em></p>
+<p>You always need to be extra careful when sharing CTFs solutions online. That&rsquo;s the reason why I&rsquo;m strictly following cryptohack&rsquo;s guidelines.
+As requested in the website&rsquo;s <a href="https://cryptohack.org/faq/#solutions">FAQ</a> I&rsquo;m only sharing solutions for challenges worth 10 points or less.
+These challenges are pretty basic, but I felt like it would be useful to have this kind of content published for those who are not familiar with basic cryptography or with the coding tools and technologies needed to solve the challenges. Each challenge solution will be explained but no flag will be available in this article.</p>
+<p>Cryptohack also has a functionality to share the solution once you get the flag for the challenge. Solutions to more complex challenges are to be shared exclusively there. The solutions are however only available for the solvers of the relative challenge.</p>
+</blockquote>
+<p>Make sure to download the python notebook with the code snippets from this article <a href="https://lessonsec.com/resources/cryptohack_walkthrough/cryptohack_walkthrough.ipynb">here</a>.</p>
+<hr>
+<h2 id="page-index">Page index</h2>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#setup">Setup</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#introduction-challenges">Introduction Challenges</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#finding-flags-2-pts">Finding Flags</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#great-snakes-3-pts">Great Snakes</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#network-attacks-5-pts">Network Attacks</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#general-challenges">General Challenges</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#ascii-5-pts">ASCII</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#hex-5-pts">Hex</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#base64-10-pts">Base64</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#bytes-and-big-integers-10-pts">Bytes and Big Integers</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#xor-starter-10-pts">XOR Starter</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#mathematics">Mathematics</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#vectors-10-pts">Vectors</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#symmetric-ciphers">Symmetric Ciphers</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#keyed-permutations-5-pts">Keyed Permutations</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#resisting-bruteforce-10-pts">Resisting Bruteforce</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#rsa">RSA</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#rsa-starter-1-10-pts">RSA Starter 1</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#diffie-hellman">Diffie-Hellman</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#diffie-hellman-starter-1-10-pts">Diffie-Hellman Starter 1</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#crypto-on-the-web">Crypto On The Web</a>
+<ul>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#token-appreciation-5-pts">Token Appreciation</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#jwt-sessions-10-pts">JWT Sessions</a></li>
+</ul>
+</li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#conclusions">Conclusions</a></li>
+</ul>
+<hr>
+<h2 id="setup">Setup</h2>
+<p>Before starting I suggest getting the official docker image provided in the FAQs.
+You simply need to pull <code>hyperreality/cryptohack:latest</code>.</p>
+<p>To run the container simply run the provided command: <code>docker run -p 127.0.0.1:8888:8888 -it hyperreality/cryptohack:latest</code></p>
+<p>This will start a Jupyter Notebook server reachable at <code>localhost:8888</code>.
+If you don&rsquo;t want to use notebooks to solve the challenges but still want to use the container because of dependencies, you can overwrite the entrypoint of the image with the following command: <code>docker run -it --entrypoint /bin/bash -p 127.0.0.1:8888:8888 -v hyperreality/cryptohack:latest</code></p>
+<p>Once the docker situation is under control, we can start working on the challenges.</p>
+<hr>
+<h2 id="introduction-challenges">Introduction Challenges</h2>
+<p>These challenges are basically tutorials to get familiar with how the challenges on this website works.
+They show the flag format, how to work with the challenge scripts and how to approach the network based attacks.</p>
+<h4 id="finding-flags-2-pts">Finding Flags (2 pts.)</h4>
+<p>Simply follow the instructions and copy-paste the flag in the text field.</p>
+<h4 id="great-snakes-3-pts">Great Snakes (3 pts.)</h4>
+<p>For this one you need to execute the provided python script, that will print out the flag.</p>
+<h4 id="network-attacks-5-pts">Network Attacks (5 pts.)</h4>
+<p>We need to interact with a TCP server using JSON messages.
+The website suggests using python and <code>telnetlib</code> to do so. It also provides an example showing how to interact with the server of this challenge.</p>
+<p>What we need to do to get the flag is to play around a little bit with the server and find the correct request to <em>buy</em> a <em>flag</em>.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># import the libraries needed for the challenge</span>
+<span style="color:#f92672">import</span> telnetlib
+<span style="color:#f92672">import</span> json
+
+HOST <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;socket.cryptohack.org&#34;</span>
+PORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">11112</span>
+
+<span style="color:#75715e"># initialize the connection</span>
+tn <span style="color:#f92672">=</span> telnetlib<span style="color:#f92672">.</span>Telnet(HOST, PORT)
+
+<span style="color:#75715e"># define functions to receive and send JSON payloads over TCP</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">readline</span>():
+    <span style="color:#66d9ef">return</span> tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">json_recv</span>():
+    line <span style="color:#f92672">=</span> readline()
+    <span style="color:#66d9ef">return</span> json<span style="color:#f92672">.</span>loads(line<span style="color:#f92672">.</span>decode())
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">json_send</span>(hsh):
+    request <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>dumps(hsh)<span style="color:#f92672">.</span>encode()
+    tn<span style="color:#f92672">.</span>write(request)
+  
+<span style="color:#75715e"># reads the banner printed by the server</span>
+<span style="color:#66d9ef">print</span>(readline())
+<span style="color:#66d9ef">print</span>(readline())
+<span style="color:#66d9ef">print</span>(readline())
+<span style="color:#66d9ef">print</span>(readline())
+
+<span style="color:#75715e"># ------ Request example ------</span>
+<span style="color:#75715e"># Compose a request for the server</span>
+request <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;buy&#34;</span>: <span style="color:#e6db74">&#34;clothes&#34;</span>}
+
+<span style="color:#75715e"># Sends the request</span>
+json_send(request)
+
+<span style="color:#75715e"># Gets the response</span>
+response <span style="color:#f92672">=</span> json_recv()
+
+<span style="color:#66d9ef">print</span>(response) <span style="color:#75715e"># {&#39;error&#39;: &#39;Sorry! All we have to sell are flags.&#39;}</span>
+
+<span style="color:#75715e"># ------ Real request ------</span>
+<span style="color:#75715e"># mhhh flags you say?</span>
+request <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;buy&#34;</span>: <span style="color:#e6db74">&#34;flag&#34;</span>}
+
+<span style="color:#75715e"># Sends the request</span>
+json_send(request)
+
+<span style="color:#75715e"># Gets the response</span>
+response <span style="color:#f92672">=</span> json_recv()
+
+<span style="color:#66d9ef">print</span>(response)
+</code></pre></div><hr>
+<h2 id="general-challenges">General Challenges</h2>
+<h3 id="uencodingu"><!-- raw HTML omitted -->Encoding<!-- raw HTML omitted --></h3>
+<blockquote>
+<p>For these challenges it&rsquo;s not really necessary to write any code. While writing your own scripts can help getting familiar with tools and techniques, a deeper understanding of encodings can be obtained solving the challenges in different ways.</p>
+<p>A super-versatile and commonly used tool for this kind of task is <a href="https://gchq.github.io/CyberChef/">CyberChef</a>.</p>
+</blockquote>
+<h4 id="ascii-5-pts">ASCII (5 pts.)</h4>
+<p>We are given a 7-bit ASCII encoded string and we need to decode it to get the flag.
+The challenge hint suggests that we use the python <code>chr()</code> function to do to.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># ASCII values to decode</span>
+values <span style="color:#f92672">=</span> [<span style="color:#ae81ff">99</span>, <span style="color:#ae81ff">114</span>, <span style="color:#ae81ff">121</span>, <span style="color:#ae81ff">112</span>, <span style="color:#ae81ff">116</span>, <span style="color:#ae81ff">111</span>, <span style="color:#ae81ff">123</span>, <span style="color:#ae81ff">65</span>, <span style="color:#ae81ff">83</span>, <span style="color:#ae81ff">67</span>, <span style="color:#ae81ff">73</span>, <span style="color:#ae81ff">73</span>, <span style="color:#ae81ff">95</span>, <span style="color:#ae81ff">112</span>, <span style="color:#ae81ff">114</span>, <span style="color:#ae81ff">49</span>, <span style="color:#ae81ff">110</span>, <span style="color:#ae81ff">116</span>, <span style="color:#ae81ff">52</span>, <span style="color:#ae81ff">98</span>, <span style="color:#ae81ff">108</span>, <span style="color:#ae81ff">51</span>, <span style="color:#ae81ff">125</span>]
+
+solution <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> values:
+    solution <span style="color:#f92672">+=</span> chr(v)
+    
+<span style="color:#66d9ef">print</span>(solution)
+</code></pre></div><h4 id="hex-5-pts">Hex (5 pts.)</h4>
+<p>In this challenge we are provided with an hex encoded string we need to decode.
+This time the challenge hint suggests using the <code>bytes.fromhex()</code> function.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># HEX values to decode</span>
+values <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;63727970746f7b596f755f77696c6c5f62655f776f726b696e675f776974685f6865785f737472696e67735f615f6c6f747d&#34;</span>
+
+solution <span style="color:#f92672">=</span> bytes<span style="color:#f92672">.</span>fromhex(values)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+
+<span style="color:#66d9ef">print</span>(solution)
+</code></pre></div><h4 id="base64-10-pts">Base64 (10 pts.)</h4>
+<p>For this challenge we are given an hex encoded string, to be decoded and then encoded in base64 to be used as flag.
+In this case we will be using the <code>base64</code> python module, in particular the <code>base64.b64encode()</code>.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> base64
+
+<span style="color:#75715e"># HEX values to decode</span>
+values <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;72bca9b68fc16ac7beeb8f849dca1d8a783e8acf9679bf9269f7bf&#34;</span>
+
+<span style="color:#75715e"># Decoded values</span>
+tmp <span style="color:#f92672">=</span> bytes<span style="color:#f92672">.</span>fromhex(values)
+<span style="color:#75715e"># print(tmp)</span>
+solution <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(tmp)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+
+<span style="color:#66d9ef">print</span>(solution)
+</code></pre></div><h4 id="bytes-and-big-integers-10-pts">Bytes and Big Integers (10 pts.)</h4>
+<p>Some cryptosystems like RSA work only when applied to numbers. We need to encode our messages as numbers in order to work with these cryptosystems.
+One method to do so is to represent the data as bytes and convert these in a base-16 or base-10 number.</p>
+<p>In this challenge we are provided with a message encoded in this way and we need to get the original message out.</p>
+<p>For this challenge the PyCryptodome library it needed, we can work with this encoding using the functions: <code>Crypto.Util.number.bytes_to_long()</code> and <code>Crypto.Util.number.long_to_bytes()</code>.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> long_to_bytes
+
+<span style="color:#75715e"># Message encoded as number</span>
+values <span style="color:#f92672">=</span> <span style="color:#ae81ff">11515195063862318899931685488813747395775516287289682636499965282714637259206269</span>
+
+solution <span style="color:#f92672">=</span> long_to_bytes(values)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+
+<span style="color:#66d9ef">print</span>(solution)
+</code></pre></div><hr>
+<h3 id="uxoru"><!-- raw HTML omitted -->XOR<!-- raw HTML omitted --></h3>
+<h4 id="xor-starter-10-pts">XOR Starter (10 pts.)</h4>
+<p>In this challenge we need to XOR the value 13 to each character of the provided string, then we need to put the result in the cyber{flag} format.
+The hint suggests that it&rsquo;s possible to use the <code>xor()</code> function from <code>pwntools</code> but it&rsquo;s just as easy to do the same in pure python.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Provided string</span>
+values <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;label&#34;</span>
+
+solution <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> values:
+    solution <span style="color:#f92672">+=</span> chr(ord(v) <span style="color:#f92672">^</span> <span style="color:#ae81ff">13</span>)
+    
+<span style="color:#75715e"># The {{{var}}} syntax is needed to excape curly braces in python f-strings</span>
+<span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;crypto{{{solution}}}&#34;</span>)
+</code></pre></div><hr>
+<h2 id="mathematics">Mathematics</h2>
+<h3 id="ulatticesu"><!-- raw HTML omitted -->Lattices<!-- raw HTML omitted --></h3>
+<h4 id="vectors-10-pts">Vectors (10 pts.)</h4>
+<p>In this challenge we are asked to perform operations on a three dimensional vector space.
+If this sounds new to you make sure to carefully read the challenge description and check the suggested materials.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">v <span style="color:#f92672">=</span> (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">3</span>)
+w <span style="color:#f92672">=</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>)
+u <span style="color:#f92672">=</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">2</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_minus</span>(a, b):
+   <span style="color:#66d9ef">return</span> [x <span style="color:#f92672">-</span> y <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> zip(a,b)]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_dot</span>(a,b):
+    <span style="color:#66d9ef">return</span> sum([x <span style="color:#f92672">*</span> y <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> zip(a,b)])
+    
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">scalar_times</span>(a, times):
+    <span style="color:#66d9ef">return</span> list(map( <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> times , a))
+
+<span style="color:#75715e"># calculate 3*(2*v - w) ∙ 2*u</span>
+vector_dot(scalar_times(vector_minus(scalar_times(v, <span style="color:#ae81ff">2</span>), w), <span style="color:#ae81ff">3</span>), scalar_times(u, <span style="color:#ae81ff">2</span>))
+</code></pre></div><hr>
+<h2 id="symmetric-ciphers">Symmetric Ciphers</h2>
+<p><!-- raw HTML omitted --><strong>How AES Works</strong><!-- raw HTML omitted --></p>
+<h4 id="keyed-permutations-5-pts">Keyed Permutations (5 pts.)</h4>
+<p>In this challenge we are asked to answer a question: <em>What is the mathematical term for a one-to-one correspondence?</em>
+Google is your friend for this one!</p>
+<h4 id="resisting-bruteforce-10-pts">Resisting Bruteforce (10 pts.)</h4>
+<p>This time we are asked: <em>What is the name for the best single-key attack against AES?</em>                <br>
+Just make sure you carefully read the challenge description and you&rsquo;re good to go!</p>
+<hr>
+<h2 id="rsa">RSA</h2>
+<p><!-- raw HTML omitted --><strong>Starter</strong><!-- raw HTML omitted --></p>
+<h4 id="rsa-starter-1-10-pts">RSA Starter 1 (10 pts.)</h4>
+<p>The basis of RSA encryption is modular exponentiation. In this challenge we are asked to use such technique to create a &ldquo;trapdoor function&rdquo; (a function easy to calculate but hard to reverse).
+This can be done using the <code>pow()</code> function that python provides.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Calculate 101^17 mod 22663</span>
+pow(<span style="color:#ae81ff">101</span>, <span style="color:#ae81ff">17</span>, <span style="color:#ae81ff">22663</span>)
+</code></pre></div><hr>
+<h2 id="diffie-hellman">Diffie-Hellman</h2>
+<p><!-- raw HTML omitted --><strong>Starter</strong><!-- raw HTML omitted --></p>
+<h4 id="diffie-hellman-starter-1-10-pts">Diffie-Hellman Starter 1 (10 pts.)</h4>
+<p>The Diffie-Hellman algorithm works with finite fields and modular exponentiation to allow to parties to exchange a shared secret.
+If you&rsquo;re not familiar with this algorithm or with the math behind it I would suggest to check out the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange#Cryptographic_explanation">Wikipedia page</a> to get started.</p>
+<p>In this challenge we are asked to find an inverse element given the prime number and the modulo.</p>
+<p><!-- raw HTML omitted -->Solution<!-- raw HTML omitted -->:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g <span style="color:#f92672">=</span> <span style="color:#ae81ff">209</span>
+p <span style="color:#f92672">=</span> <span style="color:#ae81ff">991</span>
+fc <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+<span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, p):    
+    <span style="color:#66d9ef">if</span> (g <span style="color:#f92672">*</span> x) <span style="color:#f92672">%</span> p <span style="color:#f92672">==</span> fc:         
+        <span style="color:#66d9ef">print</span>(x)        
+        <span style="color:#66d9ef">break</span>
+</code></pre></div><hr>
+<h2 id="crypto-on-the-web">Crypto On The Web</h2>
+<p><strong><!-- raw HTML omitted -->JSON web tokens<!-- raw HTML omitted --></strong></p>
+<h4 id="token-appreciation-5-pts">Token Appreciation (5 pts.)</h4>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc7519">JWTs or JSON Web Tokens</a> are a standard method to safely represent claims between two parties.
+This kind of token is not encrypted by default, and this is the reason why it&rsquo;s possible to reverse the encoding and extract the original message.</p>
+<p>We are given the token:</p>
+<p><code>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmbGFnIjoiY3J5cHRve2p3dF9jb250ZW50c19j</code>
+<code>YW5fYmVfZWFzaWx5X3ZpZXdlZH0iLCJ1c2VyIjoiQ3J5cHRvIE1jSGFjayIsImV4cCI6MjAwNT</code>
+<code>AzMzQ5M30.shKSmZfgGVvd2OSB2CGezzJ3N6WAULo3w9zCl_T47K</code></p>
+<p>Now, there are a few ways to solve this challenge, the suggested one is to use Python&rsquo;s <a href="https://pyjwt.readthedocs.io/en/stable/">PyJWT</a> library, but since it&rsquo;s not installed in the docker container we are using, it&rsquo;s easier to use an online tool like <a href="https://gchq.github.io/CyberChef">CyberChef</a> or <a href="https://jwt.io/">jwt.io</a>.</p>
+<h4 id="jwt-sessions-10-pts">JWT Sessions (10 pts.)</h4>
+<p>In this challenge we are given some information about the use of JWT tokens, now we are asked the <em>HTTP header used by the browser to send JWTs to the server</em>. Once again Google is your friend!</p>
+<p>If you want to solve this challenge on your own, take out the developer tools in your browser, go to the network tab and start looking around for HTTP headers that could refer to the use of JWT tokens. You&rsquo;re <em>authorized</em> to do that!</p>
+<hr>
+<h2 id="conclusions">Conclusions</h2>
+<p>Hope this article is useful to anyone who&rsquo;s meaning to get into cryptography or CTFs in general.
+Writing this article allowed me to go back and review my knowledge of basic cryptography as well as exploring a bit out of my comfort zone (when it came to more complex challenges not included in the writeup).</p>
+]]></content></item><item><title>Analysis of a Remote Control</title><link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link><pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate><guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid><description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use. In this article I will describe step-by-step my experience with studying, reversing and understanding these devices.
+In particular the analysis will comprehend:
+Analysis of the board Analysis of the behavior Analysis of the signal This will allow to have a complete overview of the remotes.</description><content type="html"><![CDATA[<p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old <strong>RTL-SDR</strong> and put it to good use.
+In this article I will describe step-by-step my experience with <em>studying</em>, <em>reversing</em> and <em>understanding</em> these devices.</p>
+<p>In particular the analysis will comprehend:</p>
+<ul>
+<li>Analysis of the <strong>board</strong></li>
+<li>Analysis of the <strong>behavior</strong></li>
+<li>Analysis of the <strong>signal</strong></li>
+</ul>
+<p>This will allow to have a complete overview of the remotes.</p>
+<p><img src="/images/rc_analysis/complete.jpeg#center" alt="remote"></p>
+<h2 id="board-analysis">Board analysis</h2>
+<p>The first thing I did was to operate the remote: of course whenever the yellow button was pressed, the led on its side would light up signaling that everything was working fine. The device could use different communication methods, but since there is no visible IR LED, it is possible to assume that the device works via radio signals.</p>
+<p>The very next step was to open up the remote and visually inspect the board.</p>
+<p>Inside the plastic casing I found this simple PCB.</p>
+<p><img src="/images/rc_analysis/pcb.png#center" alt="RC pcb board"></p>
+<p>At first glance it&rsquo;s possible to notice that there&rsquo;s an <em>antenna</em>, <em>a crystal oscillator</em>, a <em>trimmer</em> an <em>integrated circuit</em> and of course led, button and battery.
+As expected, there&rsquo;s everything needed for a radio transmitter to work.</p>
+<p><img src="/images/rc_analysis/clock.jpeg#center" alt="crystal oscillator"></p>
+<p>Looking at the components further it&rsquo;s possible to gather insights about how the device works.
+In particular the oscillator gives away that the device probably operates at <em>30.875MHz</em> - this isn&rsquo;t what I was expecting.</p>
+<p>In my country, <strong>Short Range Devices</strong> should work in the ranges:</p>
+<ul>
+<li>27,5000 – 28,0000 MHz</li>
+<li>29,7000 – 30,0050 MHz</li>
+</ul>
+<p>Or, for general purpose applications they can work  in the ranges:</p>
+<ul>
+<li>433,000 – 435,0000 MHz (devices without a specific use)</li>
+<li>862,0000 – 876,0000 MHz (devices without a specific use, wireless audio, alarm systems, social alarms, radio microphones, and RFID devices)</li>
+</ul>
+<p>Radio transmitters are not forced to adopt the crystal oscillator frequency as working frequency, in fact it&rsquo;s not uncommon that they use a multiple of such frequency instead. Said that, at this point it&rsquo;s only a guess, but even if it&rsquo;s not in the expected ranges, it&rsquo;s possible that the working frequency of the remote would be around 30.875MHz.</p>
+<p><img src="/images/rc_analysis/dip_switch.jpeg#center" alt="DIP switch"></p>
+<p>We can also see that there&rsquo;s a 10-position DIP switch.</p>
+<p>The first pin (1) of the DIP switch has written &ldquo;ON&rdquo; on top of it, meaning that the switch closes the circuit when the lever is in the &ldquo;high&rdquo; position.
+This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.</p>
+<p>Also, given the position of the switches, it&rsquo;s possible to assume that the code sent by the remote would either be <code>0001000110</code> or <code>1110111001</code>.</p>
+<p><img src="/images/rc_analysis/unknown_ic.jpeg#center" alt="ITF CIE9101"></p>
+<p>On the back of the PCB there&rsquo;s the ITF CIE9101 integrated circuit. Sadly I wasn&rsquo;t able to find any datasheets or information about this component (hit me up if you know something about it!).</p>
+<p>Inspecting the PCB it&rsquo;s possible to see that this device is connected to the DIP switch, to the oscillator and to the antenna. We can make an educated guess and say that this IC is probably responsible for the radio transmission (in future it would be worth reverse engineering this IC to better understand how this device work).</p>
+<h2 id="behavior-analysis">Behavior analysis</h2>
+<p>To validate the hypothesis of the device being a radio transmitter, it&rsquo;s fundamental to try to intercept and visualize the communication.</p>
+<p>The goal now is to find the transmitted signal. There is a limited set of possible frequency ranges, but it&rsquo;s not always easy to blindly spot the signal you&rsquo;re looking for, especially in areas in which similar devices are widely employed (think of remote car keys, AC remotes, radio weather stations and so on).</p>
+<p>To figure out the frequency and to work with the raw radio signal I used a Silver dongle <a href="https://www.rtl-sdr.com/about-rtl-sdr/">RTL-SDR</a> and <a href="https://gqrx.dk/">gqrx</a>.</p>
+<p><img src="/images/rc_analysis/rtl_antenna.jpeg#center" alt="rtl-sdr and antenna"></p>
+<p>Once <em>gqrx</em> was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.</p>
+<p>NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&rsquo;s completely normal.</p>
+<p><img src="/images/rc_analysis/gqrx_signal.gif#center" alt="radio signal"></p>
+<p>Now it&rsquo;s time to analyze the signal.</p>
+<h2 id="signal-analysis">Signal analysis</h2>
+<p>What I did at this point was to record the signal in <em>gqrx</em> to analyze it.
+Opening the signal in audacity shows the recorded waveform.</p>
+<p><img src="/images/rc_analysis/signal.jpeg#center" alt="waveform"></p>
+<p>We can see noise at the beginning and at the end of the recording, while the center part represent the communication.</p>
+<p>It&rsquo;s possible to notice immediately that there are numerous spikes, this is due to the fact that I kept the button pressed for a few seconds while recording.
+Visually it&rsquo;s possible to say that the spikes are identical, so our scope is limited to understanding what one of these spikes represent.</p>
+<p>Now we need to zoom in on one spike to try and decode the actual digital data.</p>
+<p><img src="/images/rc_analysis/signal_zoom.jpeg#center" alt="zoomed waveform"></p>
+<p>Of course it&rsquo;s a digital communication and It&rsquo;s now clear that we are dealing with <a href="https://en.wikipedia.org/wiki/Pulse-width_modulation">Pulse Width Modulation (PWM)</a>.
+If we look closely at the signal, we can see that there are &ldquo;short&rdquo; and &ldquo;long&rdquo; pulses. Those represent either 1s or 0s depending on the protocol shared by the remote and the receiver.</p>
+<p>Counting the bits reveals that that&rsquo;s more than a simple 10 bit communication. In fact, we are dealing with 14 bits.
+If we compare the signal to the position of the switches in the remote, we see that the pattern matches, with the exception of the last 4 bits. These bits (either 0000 or 1111) are trailing bits, needed to signal the end of the communication.</p>
+<p>To prove that the signal actually corresponds to the one encoded by the switch + 4 trailing bits, I&rsquo;m using <code>rtl_433</code> to read and decode the signal.
+So we run <code>rtl_433 -f 30888000 -A</code> and we get this output:</p>
+<pre><code>Attempting demodulation... short_width: 748, long_width: 1516, reset_limit: 5420, sync_width: 0
+Use a flex decoder with -X 'n=name,m=OOK_PWM,s=748,l=1516,r=5420,g=1556,t=307,y=0'
+pulse_demod_pwm(): Analyzer Device
+bitbuffer:: Number of rows: 6 
+[00] {14} ee 40     : 11101110 010000
+[01] {14} ee 40     : 11101110 010000
+[02] {14} ee 40     : 11101110 010000
+[03] {14} ee 40     : 11101110 010000
+[04] {14} ee 40     : 11101110 010000
+</code></pre><p>And we confirm that the signal uses a PWM modulation and is in fact <code>1110111001</code> followed by <code>0000</code>.</p>
+<p>To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
+I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.</p>
+<p>Changing bit 9 from 0 to 1 produced the following signal:</p>
+<pre><code>[00] {14} ee c0     : 11101110 110000
+[01] {14} ee c0     : 11101110 110000
+[02] {14} ee c0     : 11101110 110000
+[03] {14} ee c0     : 11101110 110000
+[04] {14} ee c0     : 11101110 110000
+[05] {14} ee c0     : 11101110 110000
+</code></pre><p>Similarly, changing bit 8, produced this signal:</p>
+<pre><code>[00] {14} ef c0     : 11101111 110000
+[01] {14} ef c0     : 11101111 110000
+[02] {14} ef c0     : 11101111 110000
+[03] {14} ef c0     : 11101111 110000
+[04] {14} ef c0     : 11101111 110000
+[05] {14} ef c0     : 11101111 110000
+</code></pre><p>Finally I changed bit 4 and I decoded signal was:</p>
+<pre><code>[00] {14} ff c0     : 11111111 110000
+[01] {14} ff c0     : 11111111 110000
+[02] {14} ff c0     : 11111111 110000
+[03] {14} ff c0     : 11111111 110000
+[04] {14} ff c0     : 11111111 110000
+[05] {14} ff c0     : 11111111 110000
+</code></pre><p>As I suspected the last 4 bits don&rsquo;t change even if the signal changes. This means that they are simple trailing bits and not parity bits or a form of checksum.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>After the analysis, everything about how this board operates is known.
+Since this device was pretty old I wasn&rsquo;t expecting behaviors any more complex that the ones we observed.</p>
+<p>I was left with a deeper understanding on radio communications, in particular of the concept of modulations.
+This was in fact the first time I was confronted with the PWM modulation in a real life scenario.
+Decoding these signals both visually and using specialized software allowed me to learn new tools I&rsquo;ll be using for future experiments.</p>
+]]></content></item><item><title>Cloning RFID tags for fun and profit</title><link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link><pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate><guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops. Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.
+Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.</description><content type="html"><![CDATA[<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.
+Given the diffusion these tags have, it&rsquo;s important to understand how they work and the security implication of their use.</p>
+<blockquote>
+<p>Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.<br>
+An RFID system consists of a tiny radio transponder, a radio receiver and transmitter. When triggered by an electromagnetic interrogation pulse from a nearby RFID reader device,  the tag transmits digital data, back to the reader. - <a href="https://en.wikipedia.org/wiki/Radio-frequency_identification">Wikipedia</a></p>
+</blockquote>
+<p><img src="/images/rfid/main.jpg" alt="rfid tools"></p>
+<h3 id="whats-rfid">What&rsquo;s RFID?</h3>
+<p>RFID is a set of standards and technologies because it includes multiple frequency ranges such as:</p>
+<ul>
+<li>LF: 120–150 kHz</li>
+<li>HF: 13.56 MHz</li>
+<li>UHF: 433 MHz</li>
+<li>UHF: 865–868 MHz (Europe) 902–928 MHz (North America)</li>
+<li>microwave: 2450–5800 MHz</li>
+<li>microwave: 3.1–10 GHz</li>
+</ul>
+<p>In practice, only tags operating in the LF range are commonly called RFID tags while tags operating in the HF range are called NFC tags.<br>
+The rest are radio technologies not limited to the near field use (i.e. bluetooth).</p>
+<p>There&rsquo;s a big difference between RFID and NFC tags and it hides in the specifications. They operate on different frequencies, use different protocols, offer different features and have different uses. Some RFID devices can be compatible with NFC readers, but that doesn&rsquo;t mean that they strictly follow the NFC specs. Further considerations on the difference between these technologies are out of the scope of this article, but it&rsquo;s important not to confuse the two.</p>
+<p>LF tags operate in the 120–150 kHz range, but the most commonly used frequencies are 125kHz for access control tags and 134kHz for uses like pet chips. Other frequencies can be used but the vast majority of tags use either 125kHz or 134kHz. Such low frequencies can limit the data transmission speed.</p>
+<p>RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
+While active tags are used, they often have specific purposes. This article will focus on RFID LF passive tags since it&rsquo;s the most common variant found in everyday life.</p>
+<p>RFID LF tags have poor transmission speed but are incredibly cheap to produce. Due to this, they are so widely employed where speed is not fundamental.
+The reading distance of LF tags is usually better compared to HF reading distance. In fact, LF is referred as a vicinity technology, while HF is generally called a proximity technology.</p>
+<p>Industrial uses aside, one of the main uses of these tags is as access control tokens. It&rsquo;s common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.</p>
+<p>There are numerous models of RFID LF tags each with it&rsquo;s specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option. (note that are exceptions: some tags can employ a password or crypto mode, one of the very few examples are <a href="https://www.nxp.com/products/rfid-nfc/hitag-lf:MC_42027">Hitag2</a> tags and these security measures <a href="https://www.cs.bham.ac.uk/~tpc/isecsem/talks/EZ.pdf">can still be circumvented</a>!)</p>
+<p>In this article, we will see how it&rsquo;s possible to read, write and clone these tags and learn about possible implications due to misuse of this technology.</p>
+<h3 id="how-to-work-with-rfid-tags">How to work with RFID tags</h3>
+<p>To work with RFID tags, specialized hardware is necessary.</p>
+<p>Different devices exist:</p>
+<ul>
+<li>
+<p>Chinese cloners<br>
+Simple devices that read from one tag and write on another.
+Generally, these are hand-held, feature read and write buttons, and have a couple of status LEDs.
+Some are more advanced than others and can feature a little screen.
+Compatibility for frequencies and standards may vary, but these devices are usually good enough for simpler tasks.</p>
+</li>
+<li>
+<p>RFID Chameleon<br>
+Developed to be used in RFID security assessments.
+Doesn&rsquo;t offer the most advanced features, but is designed to be used in the field, is battery powered and supports tag simulation and manipulation.
+It is also programmable and you can use it with an app.</p>
+<p>It&rsquo;s probably the best solution for a standalone use.<br>
+More here: <a href="https://kasper-oswald.de/gb/chameleonmini/">https://kasper-oswald.de/gb/chameleonmini/</a></p>
+</li>
+<li>
+<p>Proxmark3<br>
+As the website puts it: Proxmark is an RFID swiss-army tool.
+It represents the state of the art when it comes to RFID research.
+It allows interacting with the tags both high and low level.
+Different versions have different features, including bluetooth support, battery packs,
+swappable antennas and so on.</p>
+<p>It supports a standalone use, but it&rsquo;s more powerful when connected to a PC.
+It&rsquo;s to be intended  as a research tool.<br>
+More here: <a href="https://www.proxmark.com/">https://www.proxmark.com/</a></p>
+</li>
+<li>
+<p>Generic boards<br>
+Other boards exist. These are usually sold as an Arduino add on, but dongles featuring
+the same integrated circuits are available.
+These are not widely used outside the makers world, but many are compatible with
+<a href="http://www.nfc-tools.org/index.php/Libnfc"><code>libnfc</code></a> and can be useful to perform simple to advanced operations.</p>
+</li>
+</ul>
+<p>The only device that I have available is a Proxmark3 easy (cheap Chinese version) so this
+article will focus on its use. The underlying concepts about RFID tags should translate to other devices.</p>
+<h3 id="tags-that-emulate-other-tags">Tags that emulate other tags</h3>
+<p>When it comes to working with RFID LF tags, there&rsquo;s one main player: the <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-9187-RFID-ATA5577C_Datasheet.pdf">t55xx</a> tag</p>
+<p>They are a family of tags developed to emulate a wide range of regular tags.
+This means that it&rsquo;s possible to clone most of the RFID tags around using one of these
+without having to carry writable cards for each and every tag model.</p>
+<p>This tag features 8 x 32 bit blocks in page 0 and 4 x 32 blocks in page 1.
+Page 1 blocks are meant to be used for configuration purposes along with block 0 and 7 in page 0.
+Blocks 1 to 6 in page 0 are dedicated to user data.</p>
+<p><img src="/images/rfid/t55xx.png#center" alt="t55xx"></p>
+<p>Of course, it&rsquo;s possible to work directly on the configuration blocks, and this is what allows the emulation
+of other type of tags, but doing so carelessly can easily lead to a brick!</p>
+<p><img src="/images/rfid/bricked.jpg#center" alt="bricked tag"></p>
+<p>Original Atmel T5577 tags have a test mode and that can be helpful to recover soft-bricked cards.</p>
+<h3 id="cloning-tags">Cloning tags</h3>
+<p>Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
+First off you need to look for the device:</p>
+<pre><code>[usb] pm3 --&gt; lf search
+
+[=] NOTE: some demods output possible binary
+[=] if it finds something that looks like a tag
+[=] False Positives ARE possible
+[=] 
+[=] Checking for known tags...
+[=] 
+[+] EM 410x ID 1122334455
+[+] EM410x ( RF/64 )
+[=] -------- Possible de-scramble patterns ---------
+[+] Unique TAG ID      : 8844CC22AA
+[=] HoneyWell IdentKey
+[+]     DEZ 8          : 03359829
+[+]     DEZ 10         : 0573785173
+[+]     DEZ 5.5        : 08755.17493
+[+]     DEZ 3.5A       : 017.17493
+[+]     DEZ 3.5B       : 034.17493
+[+]     DEZ 3.5C       : 051.17493
+[+]     DEZ 14/IK2     : 00073588229205
+[+]     DEZ 15/IK3     : 000585269781162
+[+]     DEZ 20/ZK      : 08080404121202021010
+[=] 
+[+] Other              : 17493_051_03359829
+[+] Pattern Paxton     : 289899093 [0x11478255]
+[+] Pattern 1          : 5931804 [0x5A831C]
+[+] Pattern Sebury     : 17493 51 3359829  [0x4455 0x33 0x334455]
+[=] ------------------------------------------------
+
+[+] Valid EM410x ID found!
+</code></pre><p>The proxmark found an EM410x tag! We can now try to read it:</p>
+<pre><code>[usb] pm3 --&gt; lf em 410x reader
+[+] EM 410x ID 1122334455
+</code></pre><p>Let&rsquo;s try with another type of tag:</p>
+<pre><code>[usb] pm3 --&gt; lf search
+
+[=] NOTE: some demods output possible binary
+[=] if it finds something that looks like a tag
+[=] False Positives ARE possible
+[=] 
+[=] Checking for known tags...
+[=] 
+[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+[=] raw: 000000000000002006ec0c86
+
+[+] Valid HID Prox ID found!
+</code></pre><p>It&rsquo;s an HID Prox tag, let&rsquo;s try and read its ID:</p>
+<pre><code>[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+[=] raw: 000000000000002006ec0c86
+</code></pre><p>And just like that we got the devices ID. That ID is the authentication token!
+If we can write this token on a t55xx tag, we can emulate the card and possibly gain access
+to a restricted perimeter.</p>
+<p>Let&rsquo;s see how it&rsquo;s done.<br>
+First we need to get a t55xx tag and position it on the reader. When empty this device
+can&rsquo;t be found using <code>lf search</code>, so we can make sure it&rsquo;s a t55xx tag using the detect command:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx detect
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 32
+[=]  Seq. terminator... Yes
+[=]  Block0............ 00088048 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... No
+</code></pre><p>The <code>lf t55 detect</code> command is also necessary before using this tag because it detects the configuration in use and helps avoiding problems running other <code>lf t55</code> commands.</p>
+<p>Now we can see the content of the device:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx dump
+[+] Reading Page 0:
+[+] blk | hex data | binary                           | ascii
+[+] ----+----------+----------------------------------+-------
+[+]  00 | 00088048 | 00000000000010001000000001001000 | ...H
+[+]  01 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  02 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  03 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  04 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  05 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  06 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  07 | 00000000 | 00000000000000000000000000000000 | ....
+[+] Reading Page 1:
+[+] blk | hex data | binary                           | ascii
+[+] ----+----------+----------------------------------+-------
+[+]  00 | 00088048 | 00000000000010001000000001001000 | ...H
+[+]  01 | E03900D0 | 11100000001110010000000011010000 | .9..
+[+]  02 | C60337D7 | 11000110000000110011011111010111 | ..7.
+[+]  03 | 00A00003 | 00000000101000000000000000000011 | ....
+</code></pre><p>Note that it&rsquo;s possible to operate on single blocks too, but for the purpose of this article, it&rsquo;s easier to dump the whole memory instead.</p>
+<p>We see that the card doesn&rsquo;t contain user data. If it did, wiping the card with the <code>lf t55xx wipe</code> command would be suggested.
+We can now try and emulate tags on it!
+To do that we only need to have the ID of the tags we want to emulate. We already saw how that&rsquo;s done.</p>
+<p>We can now go ahead and clone the tags, let&rsquo;s try the em410x first:</p>
+<pre><code>[usb] pm3 --&gt; lf em 410x clone --id 1122334455
+[+] Preparing to clone EM4102 to T55x7 tag with ID 1122334455 (RF/64)
+[#] Clock rate: 64
+[#] Tag T55x7 written with 0xff8c65298c94a940
+</code></pre><p>Once the command is issued, we can read the device and verify that it emulates an em410x tag:</p>
+<pre><code>[usb] pm3 --&gt; lf em 410x reader
+[+] EM 410x ID 1122334455
+</code></pre><p>Of course it&rsquo;s still a t55xx tag (and the <code>detect</code> command will tell you that) but it behaves exactly like and em410x.</p>
+<p>Now we can try with the HID Prox.</p>
+<pre><code>[usb] pm3 --&gt; lf hid clone --r 000000000000002006ec0c86
+[=] Preparing to clone HID tag using raw 000000000000002006ec0c86
+[=] Done
+</code></pre><p>And of course reading it reveals that we successfully cloned the tag:</p>
+<pre><code>usb] pm3 --&gt; lf hid reader
+[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+[=] raw: 000000000000002006ec0c86
+</code></pre><p>We now have two key fob tags copied on t55xx cards!</p>
+<p><img src="/images/rfid/cloned.jpg" alt=""></p>
+<p>In this demo only HID Prox and em410x tags are examined, but it&rsquo;s possible to clone and work with many more of these tags.</p>
+<p>Since it&rsquo;s possible to emulate cards knowing the ID, we can clone some RFID LF cards &ldquo;by sight&rdquo; simply reading the ID printed to the device body.
+This completely removes the limit of having to read the card with a specialized tool.
+Some of these printed ID are &ldquo;encoded&rdquo; (or shifted by some value). This allows organizations to &ldquo;decode&rdquo; it, but prevents attackers from obtaining the ID by sight.</p>
+<p>At this point you might be wondering if it&rsquo;s THAT easy to clone a tag in the real world, the answer is no. That&rsquo;s for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.</p>
+<p>Luckily, it&rsquo;s possible to weaponize a bigger antenna! If we use a bigger and more powerful antenna, it&rsquo;s possible to clone a LF tag from a usable distance. Of course the antenna will need to be powered by a big battery pack and carried in some kind of backpack or messenger bag, but that&rsquo;s the price to pay.</p>
+<p>More here: <a href="https://www.youtube.com/watch?v=wYmVtNQPlF4">https://www.youtube.com/watch?v=wYmVtNQPlF4</a><br>
+(NOTE: many other implementations exist!)</p>
+<h3 id="defeating-password-protection">Defeating password protection</h3>
+<p>When examining the t55xx tag, you may have noticed a parameter &ldquo;Password set&rdquo;. That&rsquo;s because
+this tag can be password protected!</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx protect -n 00001234
+[=] Checking current configuration
+[+] Wrote new password
+[+] Validated new password
+[+] Wrote modified configuration block
+[!] ⚠️  Safety check: Could not detect if PWD bit is set in config block. Exits.
+[?] Consider using the override parameter to force read.
+[=] Block0 write detected, running `detect` to see if validation is possible
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 33
+[=]  Seq. terminator... Yes
+[=]  Block0............ 000880F0 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... Yes
+[=]  Password.......... 00001234
+
+[+] New configuration block 000880F0 password 00001234
+[+] Success, tag is locked
+</code></pre><p>At this point we can&rsquo;t operate on this tag without knowing the password, for instance
+the <code>detect</code> command won&rsquo;t work as expected:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx detect 
+[!] ⚠️  Could not detect modulation automatically. Try setting it manually with 'lf t55xx config'
+</code></pre><p>But it does if the correct password is specified:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx detect -p 00001234
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 33
+[=]  Seq. terminator... Yes
+[=]  Block0............ 000880F0 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... Yes
+[=]  Password.......... 00001234
+</code></pre><p>Can we circumvent this? The simple answer is no.
+The device is completely locked and without the password it&rsquo;s impossible to do anything.</p>
+<p>Luckily the proxmark allows bruteforce attacks.</p>
+<p>While this type of attack works, it&rsquo;s a really slow and instable method. This means it&rsquo;s hard to try all the possible passwords before the connection drops. It may seem that the password protection is effective and that&rsquo;s true if you don&rsquo;t have the right tools. On the other hand, with quality reading devices and unlimited access to the target tag, success is granted.</p>
+<p>Here&rsquo;s a demo on the tag we just password protected:</p>
+<pre><code>[usb] pm3 --&gt; lf t55xx bruteforce -s 00000000 -e FFFFFFFF
+[=] press 'enter' to cancel the command
+[=] Search password range [00000000 -&gt; FFFFFFFF]
+.[=] Trying password 00000000
+.[=] Trying password 00000001
+.[=] Trying password 00000002
+.[=] Trying password 00000003
+.[=] Trying password 00000004
+.[=] Trying password 00000005
+.[=] Trying password 00000006
+.[=] Trying password 00000007
+.[=] Trying password 00000008
+.[=] Trying password 00000009
+.[=] Trying password 0000000A
+.[=] Trying password 0000000B
+.[=] Trying password 0000000C
+.[=] Trying password 0000000D
+
+[...]
+
+.[=] Trying password 0000122D
+.[=] Trying password 0000122E
+.[=] Trying password 0000122F
+.[=] Trying password 00001230
+.[=] Trying password 00001231
+.[=] Trying password 00001232
+.[=] Trying password 00001233
+.[=] Trying password 00001234
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 33
+[=]  Seq. terminator... Yes
+[=]  Block0............ 000880F0 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... Yes
+[=]  Password.......... 00001234
+
+[+] Found valid password: [ 00001234 ]
+Downlink Mode used : default/fixed bit length
+
+[+] time in bruteforce 1215 seconds
+</code></pre><p>As you can see, it took ~20 minutes to crack a 4 hex digit password. It may seem to be a reasonable time but we must consider that the password can be double the length and that having access to the card for long periods of time is not always an option.</p>
+<h3 id="attacks-on-rfid-readers">Attacks on RFID readers</h3>
+<p>Finally, we can talk about attacks on the readers. There are two main attacks:</p>
+<ul>
+<li>Tag simulation</li>
+<li>Data exfiltration</li>
+</ul>
+<p>We saw that we can simulate a tag using the proxmark, but what if the ID we have read and simulated doesn&rsquo;t have enough permission to grant us access somewhere?
+In this scenario, it&rsquo;s possible to use the read value as an upper limit to the ID space to research, and simulate every ID lower than that value hoping to find an ID with higher privileges. This attack is based on the assumption that lower IDs may have higher privileges because such privileges are associated with users registered earlier into the system, hence the lower ID value.
+As for the bruteforce attack, this process may take a while, so it&rsquo;s not always a usable technique.</p>
+<p>A sneakier way to get valid IDs is to install a device such as the <a href="https://redteamtools.com/espkey">ESPKey</a> inside the reader.
+This approach allows the interception of data directly from the wires and can harvest valid IDs.
+Of course, this requires a physical access to the reader.</p>
+<p>Using the proxmark is also possible to sniff data from a tag to a reader.<br>
+Given the antenna range, this is not a widely used technique and personally I haven&rsquo;t tried it yet.</p>
+<h3 id="conclusions">Conclusions</h3>
+<p>This article shows how, with the right hardware, it is possible to clone RFID tags with relatively low skills.</p>
+<p>What&rsquo;s scary is how easy it is to &ldquo;steal&rdquo; valuable credentials. In an access control context, a stolen ID constitutes a danger for a business because of the implications of a possible unauthorized entry into a critical infrastructure.</p>
+<p>Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.</p>
+<p>A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.</p>
+<p>RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.</p>
+<hr>
+<p>This article was reviewed by an external source, big thanks to them!</p>
+]]></content></item><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/dev-chronicles-creating-an-http-attack-client/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+Check it out: https://github.com/0xless/Intrudo
+A little of background While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that PortSwigger created for this reason.</description><content type="html"><![CDATA[<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
+<p><img src="/images/intrudo/logo.png#center" alt="intrudo logo"></p>
+<p>Check it out: <a href="https://github.com/0xless/Intrudo">https://github.com/0xless/Intrudo</a></p>
+<h3 id="a-little-of-background">A little of background</h3>
+<p>While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.<br>
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that <a href="https://portswigger.net/web-security">PortSwigger created for this reason</a>.</p>
+<p>The idea of developing this tool came to me when working on SQL injection challenges. The labs and the learning material were great, but the throttling on the requests in burp intruder (community version only) was making it difficult to complete these challenges.  Due to the throttling, completing a challenge would take several hours since for every request sent, you have to wait more and more.</p>
+<p>Every challenge was focused on retrieving an administrative password, in some of these challenges a request needed to be sent for every possible letter and digit for each character of the password.  Now these challenges could be solved in two ways. You could either send requests to discover one character at time or try to automate it using the &ldquo;cluster bomb&rdquo; attack. In the first scenario, you&rsquo;d have to adjust the parameters and manually launch the attack every 30 minutes or so. In the second scenario, you could automate the whole thing, if the challenge password didn&rsquo;t change mid-attack because the client took so long to send the requests.</p>
+<p>One would assume these challenges were developed <em>specifically</em> to make it harder to solve for those who didn&rsquo;t have a paid version of the software. I&rsquo;m not implying they have a malicious intent, but they could have made it easier for <em>everybody</em> to solve the challenges and learn from the awesome materials they share.</p>
+<p>After my experience with PortSwigger&rsquo;s labs, I decided to develop Intrudo; a fast, throttling free alternative to burp intruder.</p>
+<h3 id="the-initial-approach">The initial approach</h3>
+<p>My first idea was to use multithreading so I started surfing the web for ideas and found <a href="https://docs.aiohttp.org/en/stable/">aiohttp</a>, and asynchronous HTTP Client/Server based on <a href="https://docs.aiohttp.org/en/stable/glossary.html#term-asyncio">asyncio</a>. It wasn&rsquo;t multithreading but it seemed perfect for this project.</p>
+<p>Unfortunately, I was not lucky with the choice of developing around <code>aiohttp</code> as the client was strict on what requests can be sent and how they are sent.</p>
+<p>I learned this the hard way, of course. I spent a few days developing with <code>aiohttp</code> and all I could achieve was an incredibly fast fuzzer that would only work on URL parameters. Big let down.</p>
+<p>At this point I could try two things:</p>
+<ul>
+<li>see if I could find some libraries I could fork</li>
+<li>implement my own client consisting of bare bones sockets and some good ol' <code>asyncio</code> magic</li>
+</ul>
+<h3 id="the-wrong-way">The wrong way</h3>
+<p>So I decided to try and modify some libraries first. It turns out every library that implements an HTTP client wants to ensure it is compliant and do so by thoroughly reviewing the data an user would want to send.
+Usually these libraries make you specify method, URL, headers and body of the request separately.</p>
+<p>While this approach with HTTP complaint requests works well for standard clients and preventing errors, it is not flexible enough for this type of project.  This makes it incredibly hard to implement complex attack logic, work with headers and cookies and send non-HTTP compliant malformed data.</p>
+<p>After looking around, studying the HTTP protocol specifications and coding for a few hours, I was able to read some requests (non-chunked transfer encoding ones) and manage content compression!</p>
+<p>Well, to be completely honest, I borrowed and modified some code from <a href="https://github.com/urllib3/urllib3/blob/main/src/urllib3/">urllib3</a> to handle the decompression.</p>
+<p>I did this for two reasons:</p>
+<ul>
+<li>the code is clean, simple and well tested</li>
+<li>someone has already considered aspects of the HTTP standard I didn&rsquo;t even know existed</li>
+</ul>
+<p>Since <code>urllib3</code> worked so well I decided to try and use as much code as I could.<br>
+One tweak here and one tweak there and I got myself into completely modifying <code>urllib3</code>&hellip; Bad idea!<br>
+<code>urllib3</code> offers great client functionalities, but it&rsquo;s too high level and wouldn&rsquo;t let me work with <code>asyncio</code> streams to read data.</p>
+<p><code>urllib3</code> requests are made by <code>http.client</code>, a standard python library. So guess, what I tried next? You guessed correctly, I attempted to hack <code>http.client</code> to work with <code>asyncio</code>.
+I knew from the beginning that it wasn&rsquo;t a smart idea, and it turns out I was right: modifying the <code>http</code> library to suit my needs is an hard task. <code>http.client</code> would only read file-like objects and there was no way I could make it to use <code>asyncio</code> streams (without rewriting a huge portion of the code, of course).</p>
+<p>If you can&rsquo;t beat &lsquo;em, join &lsquo;em, right? So I decided to &ldquo;transform&rdquo; <code>asyncio</code> streams into files with the hope <code>urllib3</code> will come to like them.  At this point you may think: &ldquo;<em>less, if you read the whole content of a socket, the client would not be asynchronous anymore!</em>&rdquo;, and my answer to that would be <del>&quot;<em>mind your own business</em>&quot;</del> &ldquo;<em>we can manage sockets in some kind of spooled way!</em>&rdquo;. But of course that didn&rsquo;t pan out.</p>
+<p>After a few hours of unsuccessful attempts, I decided to take a step back and code the whole client from scratch.</p>
+<h3 id="the-right-way">The right way?</h3>
+<p>I quickly realized it wasn&rsquo;t as easy as I expected it to be, but I did find some <a href="https://www.jmarshall.com/easy/http/">well written documents</a> that helped me better understand what I was I was looking for. So, the custom HTTP client adventure begins!</p>
+<p>I was able to put together some code I had already written and the decompression module from <code>urllib3</code>. That resulted in an HTTP 1.0 semi-compliant client (it would have been nice if HTTP 1.0 was used anytime in history, but sadly it has not).
+I want to make it HTTP 1.1 compliant to the extent that I need the client to be compliant, so the only thing missing would be to manage
+<code>chunked transfer encoding</code>.</p>
+<p>After avoiding this for a whole week, I realized it was easier than I expected. If I hadn&rsquo;t wasted so much time trying to poke at the libraries, I probably would have had a nice piece of client already.
+But you can&rsquo;t cry over spilled milk, so let&rsquo;s get back to work! After 1 hour of coding and 1 hour of debugging, I was able to achieve HTTP 1.1 compliance!</p>
+<p>And just like that &ldquo;cliente&rdquo; was born: a fully asynchronous, unrestricted, HTTP attack client. Simple yet effective.</p>
+<h3 id="the-right-way-1">The right way!</h3>
+<p>Everything seemed to work smoothly after the custom client was complete.
+I implemented the payload position logics just like in burp intruder (pitchfork, sniper, cluster bomb and battering ram), it was not easy to work with two delimiters: I had to play around a little bit with <code>regex</code> and had to work with payload position offsets given by the substitution of a text with a payload. To this day I&rsquo;m sure there must be a better solution.</p>
+<p>After that I implemented a few simple callback mechanisms to manage, analyze and store incoming responses which match user specified criteria.</p>
+<p>It&rsquo;s only a draft, but the very first version of Intrudo was complete!</p>
+<p>Here&rsquo;s a little demo of the speed Intrudo can offer at the moment:</p>
+<p><img src="/images/intrudo/demo.gif#center" alt="intrudo demo"></p>
+<h3 id="what-i-learned">What I learned</h3>
+<p>Of course the main takeaway is a deeper understanding of the HTTP protocol, especially when it comes to encodings and compression methods, since I  had to work with these directly.</p>
+<p>Working with raw HTTP requests was also the main challenge, ensuring that an user specified request is acceptable by the server was an hard task. Since there are no debug messages this process was based on a &ldquo;try and fail&rdquo; method and I had to read multiple rfc documents on the standard but I could complete this task, at least for the majority of servers I&rsquo;ve experimented with.</p>
+<p>Another interesting thing I got from this project is a grasp of asynchronous programming. I had studied it in theory but learning a framework to actually write asynchronous programs is different thing.  <code>asyncio</code> is a powerful tool I will be using in other projects.</p>
+<p>Finally I had to mess around with <code>regex</code> and learned about greedy <code>regex</code>. Handling the placeholder delimiters in the requests wasn&rsquo;t straightforward and for the sake of performance (to avoid recomputing placeholder positions for each payload inserted) I had to develop a module that would insert the payload in the desired position considering the offsets from previously inserted payloads.</p>
+<h3 id="to-be-continued">To be continued</h3>
+<p>There are a few things that need to be done:</p>
+<ul>
+<li>The callbacks are not as complete as burp intruder ones.</li>
+<li>There is no payload generator (but that&rsquo;s because Intrudo is to be used as a framework, not with a GUI).</li>
+<li>Some servers will always respond with &ldquo;bad request&rdquo; (can&rsquo;t figure out why).</li>
+<li>Some serious testing is yet to be done.</li>
+<li>The timeout on requests is to be calculated with an adaptive function to optimize the throughput.</li>
+</ul>
+]]></content></item><item><title>The art of lock picking: Insights from picking locks</title><link>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</link><pubDate>Mon, 01 Mar 2021 18:06:36 +0100</pubDate><guid>https://lessonsec.com/posts/the-art-of-lock-picking-insights-from-picking-locks/</guid><description>Lock picking is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - Wikipedia
+Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.
+Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers.</description><content type="html"><![CDATA[<blockquote>
+<p><strong>Lock picking</strong> is the practice of unlocking a lock by manipulating the components of the lock device without the original key. - <a href="https://en.wikipedia.org/wiki/Lock_picking">Wikipedia</a></p>
+</blockquote>
+<p><img src="/images/lockpicking/lockpicking.jpg#center" alt="lock picks"></p>
+<p>Locks are an universal item used to secure everything from homes and offices to critical infrastructures. They often represent the first line of security an attacker will have to face while trying to reach a target.</p>
+<p>Although lock picking is often associated with criminal intent, it can also be an essential skill within penetration testers. Like any other red team technique, lock picking translates to a defensive skill as it assists with finding and patching vulnerabilities. Since locks play such an important role in modern day security, it is important as a security professional to understand the lock picking process and what comes with it.</p>
+<h3 id="lock-picking-is-hacking">Lock picking is hacking</h3>
+<p>Picking locks is not so different from hacking a computer: you are faced with a challenge and need to defeat security measures to get to the target. In both cases to succeed, you will need a strong background of study and practice.
+The passion for discovering vulnerabilities and the curiosity to learn about a technology is the reason why lock picking is so popular amongst security professionals.</p>
+<blockquote>
+<p>It’s another version of hacking. Hacking is all about using a system against itself, or bypassing a system by thinking outside of the box. Lockpicking is almost like a magic trick, a puzzle of the same sort. You can’t bypass it without using the lock’s systems exactly how they were meant to be used or by using it in a manner the creators never expected it to be used. - <a href="https://twitter.com/HydeNS33k">Jek Hyde</a></p>
+</blockquote>
+<p>While the technical knowledge received from practicing lock picking is useful, picking locks may be one of the least effective ways to enter inside a protected perimeters. This can be true for many reasons:</p>
+<ul>
+<li>Some locks can be <em>really hard</em> to pick open</li>
+<li>Picking locks can take a <em>really long</em> time</li>
+<li>Bypassing doors and locks is usually a more effective approach</li>
+<li>Social engineering oftentimes works better</li>
+</ul>
+<p>While <a href="https://www.youtube.com/watch?v=LRXGIdg7eNE">lock picking has it&rsquo;s applications</a>, it remains an impractical technique for numerous situations. This then leads to the question: <em>why practice lock picking</em>?
+The reason is simple. Lock picking and cybersecurity are similar in nature where the skills can become transferable.</p>
+<p>Some skills that can be picked up from picking locks which apply to cybersecurity are:</p>
+<ul>
+<li><strong>Outside of the box thinking</strong><br>
+If a lock doesn&rsquo;t want to open, how can you make it do so? The more complex the lock, the more complex the solution can be. Though with the right intuition, you are in.</li>
+<li><strong>Think like the enemy</strong><br>
+The only way to secure something is knowing exactly how to defeat its security measures.
+Picking locks brings a new dimension to &ldquo;<em>thinking like the enemy</em>&rdquo;, since implications are projected into the physical world.</li>
+<li><strong>Ethics</strong><br>
+A strong ethic is needed in both cyber and physical security. Considering different approaches with the same concept can add to an individual&rsquo;s experience.</li>
+</ul>
+<p>To conclude, lock picking is an important skill that gives a firsthand experience into the world of security. Working on a physical level can assist with understanding the security risks faced every day. <em>It is not possible to improve security without the understanding of how an attacker can defeat security measures that are in place</em>.</p>
+]]></content></item></channel></rss>

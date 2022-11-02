@@ -1,0 +1,61 @@
+baseURL: https://lessonsec.com 
+languageCode: en-us
+theme: smigle
+title: less on sec
+
+menu:
+  main:
+    - identifier: home
+      name: Home
+      url: /
+      weight: 1
+      
+    - identifier: about
+      name: Whoami
+      url: /whoami/
+      weight: 2
+      
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 3
+      
+#    - identifier: CVE
+#      name: CVE
+#      url: /cve/
+#      weight: 4
+      
+params:
+  abbrDateFmt: "Jan 2"
+  author: "Matteo [0xless] Cosentino"
+  brandIconFile: "images/logo.jpeg"
+  dateFmt: "2006-01-02"
+  subtitle: "exploring, hacking and breaking stuff"
+  
+  description: "Personal blog on cybersecurity, harware hacking and security research."
+  
+  mainSections:
+  - posts
+  - redirect
+  
+  customStylesheets: # Add custom css
+    - "css/custom.css"
+  social:
+    - name: GitHub
+      url: https://github.com/0xless
+    - name: Linkedin
+      url: https://www.linkedin.com/in/matteo-cosentino/
+#    - name: Twitter
+#      url: https://twitter.com/0xless
+    - name: Email
+      url: mailto:contact@lessonsec.com
+      
+# Prevents automatic "pluralization" of page titles
+pluralizeListTitles: False
+# Prevents overlong article summaries
+summaryLength: 30
+
+markup:
+  goldmark:
+   renderer:
+     unsafe: true

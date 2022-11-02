@@ -1,0 +1,36 @@
+<header>
+  <div id="brand">
+    <a class="icon-link" href="{{ .Site.BaseURL }}">
+      <img
+        class="icon"
+        src="{{ default "images/brandIcon.svg" .Site.Params.brandIconFile | relURL }}"
+      />
+    </a>
+    <div class="text">
+      <a href="{{ .Site.BaseURL }}"><h1>{{ .Site.Title }}</h1></a>
+      <h3>{{ .Site.Params.subtitle }}</h3>
+    </div>
+  </div>
+  <nav>
+    <div style="float:left">
+    {{ with .Site.Menus.main }}
+      {{ range $index, $value := . }}
+        {{ if $index }} | {{ end }}
+        <a href="{{ .URL | relURL }}"><b>{{ .Name }}</b></a>
+      {{ end }}
+    {{ end }}
+    {{ if .Site.Params.social }}
+    </div>
+
+      <div style="text-align:right; float=right;">
+      Links: 
+      {{ range $i, $e := .Site.Params.social }}
+        {{ if $i }} | {{ end }}
+        <a href="{{ .url }}">{{ .name }}</a>
+      {{ end }}
+      </div>
+      
+  {{ end }}
+  </nav>
+  <hr />
+</header>

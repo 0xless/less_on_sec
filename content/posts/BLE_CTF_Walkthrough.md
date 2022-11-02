@@ -3,6 +3,8 @@ title: "Walkthrough: BLE CTF"
 date: 2022-04-17T14:08:32+02:00
 toc: false
 images:
+  - /images/BLE_CTF/gatt_server.png
+  - /images/BLE_CTF/gatt_server.png
 tags:
   - CTFs
   - Radio
@@ -40,7 +42,7 @@ GATT is the name of a protocol that is used to exchange data between two Bluetoo
 This is developed on top of the Attribute Protocol (ATT) and manages device interactions following the advertising and pairing processes. 
 A GATT Server is a device that stores attribute data locally and provides data access methods to a remote GATT Client paired via BLE.  A client, on the other hand, is a device that access data on a remote GATT Server. When two devices are paired, each can function as both a GATT Server and a GATT Client. 
 
-GATT lists a device’s characteristics, descriptors, and services in a table as either 16- or 32-bits values. 
+GATT lists a device’s characteristics, descriptors, and services in a table as either 16 or 32-bits values. 
 A characteristic is a data value sent between the server and the client. 
 
 These characteristics can have descriptors that provide additional information about them. 
@@ -48,7 +50,7 @@ Characteristics are often grouped in services if they have purposes related to e
 
 | ![GATT server layout](/images/BLE_CTF/gatt_server.png#center) |
 | :----------------------------------------------------------: |
-| Image Credits - Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things |
+| GATT Server content layout <br />Credits - Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things |
 
 ### ATT/GATT basics
 
@@ -60,11 +62,11 @@ While UUID vary depending on the device functionality some UUID remains the same
 
 Finally, there are characteristic properties. Properties indicate how to interact with a characteristic and what to expect from it.
 
-| ![properties](/images/BLE_CTF/properties.png#center) |
+|     ![properties](/images/BLE_CTF/properties.png#center)     |
 | :----------------------------------------------------------: |
-|            Image Credits - devzone.nordicsemi.com            |
+| GATT chatateristic proprieties  <br />Credits - devzone.nordicsemi.com |
 
-Properties are defined as an hex value and works as bitmasks, so using bitwise operations it is possible reveal the properties of a characteristic starting from its properties value.
+Properties are defined as an hex value and work as bitmasks, so using bitwise operations it is possible reveal the properties of a characteristic starting from its properties value.
 
 Properties need to be interpreted knowing Attribute Protocol Packets, these are:
 
