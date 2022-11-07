@@ -28,7 +28,7 @@ menu:
 params:
   abbrDateFmt: "Jan 2"
   author: "Matteo [0xless] Cosentino"
-  brandIconFile: "images/logo.jpeg"
+  brandIconFile: "images/logo_white.svg"
   dateFmt: "2006-01-02"
   subtitle: "exploring, hacking and breaking stuff"
   
