@@ -3,10 +3,11 @@ title = "Whoami"
 date = "2021-04-01"
 aliases = ["about","contact"]
 [ author ]
-  name = "less"
+ name = "less"
+
 +++
 
-Hi, I'm Matteo [0xless] Cosentino. I'm a penetration tester during the day and a security researcher during the night.
+Hi, I'm Matteo [0xless] Cosentino. I'm a penetration tester by day and a security researcher by night.
 I see hacking as a tool to learn new things and I’ve always been fascinated by breaking stuff.  
 Of course I'm invested in software hacking, but I also enjoy exploring hardware and physical security.
 
