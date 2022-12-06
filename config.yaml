@@ -20,10 +20,10 @@ menu:
       url: /posts/
       weight: 3
       
-#    - identifier: CVE
-#      name: CVE
-#      url: /cve/
-#      weight: 4
+    - identifier: CVE
+      name: CVE
+      url: /cve/
+      weight: 4
       
 params:
   abbrDateFmt: "Jan 2"
