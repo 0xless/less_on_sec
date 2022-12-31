@@ -10,6 +10,15 @@
   </strong>
   {{ with .WordCount }}<span> • {{ . }} words</span>{{ end }}
   <!-- {{ with .ReadingTime}}<span> • {{ . }} minute read</span>{{ end }} -->
+  
+  {{ if .Params.location }}
+    <div>
+      <span>Published on </span>
+      {{ $url := urls.Parse .Params.location }}
+      <a href={{$url.Scheme}}://{{$url.Host}}>{{$url.Host}}</a>
+    </div>
+  {{ end }}
+  
   {{ with .Params.tags }}
     <div>
       <span>Tags:</span>

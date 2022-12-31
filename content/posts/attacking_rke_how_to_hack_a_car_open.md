@@ -1,5 +1,5 @@
 ---
-title: "Attacking RKE: How to hack a car open  - published on secjuice.com"
+title: "Attacking RKE: How to hack a car open"
 date: 2022-12-30T22:30:14+01:00
 
 tags:
