@@ -3,6 +3,9 @@ languageCode: en-us
 theme: smigle
 title: less on sec
 
+# for metadata in pages
+image: "images/logo_white.svg"
+
 menu:
   main:
     - identifier: home
