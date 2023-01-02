@@ -7,6 +7,28 @@
 			<img src="https://lessonsec.goatcounter.com/count?p={{ .RelPermalink }}&t={{ .Title }}">
 		</noscript>
 		-->
+		
+	  {{ if (eq .Title .Site.Title) }}
+	    {{ with $title := .Title }}
+	      <title>{{ . }}</title>
+	    {{ end }}
+	  {{ else }}
+	  
+	  
+	  {{ if (lt (len .Title) 4) }}
+
+	    {{ with $title := printf "%s | %s" (upper .Title) .Site.Title }}
+	      
+	      	<title> {{ . }} </title>
+	      {{ end }}
+	    {{ else }}
+	    {{ with $title := printf "%s | %s"  .Title .Site.Title }}
+	      
+	      	<title> {{ . }} </title>
+	      {{ end }}
+	    {{ end }}
+	  {{ end }}
+  
 	</head>
 	<body style="background-color:#000" onload="window.location.href={{ .Params.location }}">
 	</body>
