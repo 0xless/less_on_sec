@@ -3,9 +3,6 @@ languageCode: en-us
 theme: smigle
 title: less on sec
 
-# for metadata in pages
-image: "images/logo_white.svg"
-
 menu:
   main:
     - identifier: home
@@ -36,6 +33,9 @@ params:
   subtitle: "exploring, hacking and breaking stuff"
   
   description: "Personal blog on cybersecurity, harware hacking and security research."
+  
+  # for metadata in pages
+  image: "images/logo_white.svg"
   
   mainSections:
   - posts
