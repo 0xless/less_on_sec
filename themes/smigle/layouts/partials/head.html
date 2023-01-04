@@ -68,10 +68,10 @@
 		<meta property="og:url" content="{{ .Page.Permalink }}" />
 		<meta property="og:description" content="{{ .Params.Description }}" />
 		{{- if isset .Params "image" -}}
-			<meta name="og:image/" content="{{ .Params.image }}" />
+			<meta name="og:image" content="{{ .Params.image }}" />
 			<meta name="twitter:image" content="{{ .Params.image }}" />
 		{{- else -}}
-			<meta name="og:image/" content="{{ site.Params.image }}" />
+			<meta name="og:image" content="{{ site.Params.image }}" />
 			<meta name="twitter:image" content="{{ site.Params.image }}" />
 		{{- end -}}
 	{{- end -}}
