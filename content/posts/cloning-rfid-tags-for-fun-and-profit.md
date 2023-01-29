@@ -2,6 +2,9 @@
 title: "Cloning RFID tags for fun and profit"
 date: 2021-04-20T16:27:00+02:00
 toc: false
+aliases:
+  - /posts/cloning-rfid-for-fun-and-profit
+  - /posts/cloning-rfid-tags-for-fun-and-profit
 images:
   - /images/rfid/t55xx.png
   - /images/rfid/bricked.jpg

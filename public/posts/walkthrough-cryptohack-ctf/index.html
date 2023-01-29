@@ -1,135 +1,185 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=description content="Personal blog on cybersecurity, harware hacking and security research.">
-<title> Walkthrough: CryptoHack CTF | less on sec </title>
-<link rel=stylesheet href=/css/reset.css>
-<link rel=stylesheet href=/css/font.css>
-<link rel=stylesheet href=/css/smigle.css>
-<link rel=stylesheet href=/css/custom.css>
-<link rel=canonical href=https://lessonsec.com/posts/walkthrough-cryptohack-ctf/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/site.webmanifest>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff"><meta name=og:title content="Walkthrough: CryptoHack CTF">
-<meta name=twitter:title content="Walkthrough: CryptoHack CTF">
-<meta property="og:url" content="https://lessonsec.com/posts/walkthrough-cryptohack-ctf/">
-<meta property="og:description" content><meta name=og:image content="images/logo_white.svg">
-<meta name=twitter:image content="images/logo_white.svg"></head>
-<body>
-<header>
-<div id=brand>
-<a class=icon-link href=https://lessonsec.com>
-<img class=icon src=/images/logo_white.svg>
-</a>
-<div class=text>
-<a href=https://lessonsec.com><h1>less on sec</h1></a>
-<h3>exploring, hacking and breaking stuff</h3>
-</div>
-</div>
-<nav>
-<div class=responsive_div_top>
-<a href=/><b>Home</b></a>
-|
-<a href=/whoami/><b>Whoami</b></a>
-|
-<a href=/posts/><b>Posts</b></a>
-|
-<a href=/cve/><b>CVE</b></a>
-</div>
-<div class=responsive_div_bottom>
-Links:
-<a href=https://github.com/0xless>GitHub</a>
-|
-<a href=https://www.linkedin.com/in/matteo-cosentino/>Linkedin</a>
-|
-<a href=mailto:contact@lessonsec.com>Email</a>
-</div>
-</nav>
-<hr>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Personal blog on cybersecurity, harware hacking and security research."
+  />
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+      	<title> Walkthrough: CryptoHack CTF | less on sec </title>
+      
+    
+  
+  <link rel="stylesheet" href="/css/reset.css"/>
+  <link rel="stylesheet" href="/css/font.css"/>
+  <link rel="stylesheet" href="/css/smigle.css"/>
+  
+    <link rel="stylesheet" href="/css/custom.css"/>
+  
+  <link rel="canonical" href="https://lessonsec.com/posts/walkthrough-cryptohack-ctf/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff"><meta name="og:title" content="Walkthrough: CryptoHack CTF" />
+		<meta name="twitter:title" content="Walkthrough: CryptoHack CTF" />
+		<meta property="og:url" content="https://lessonsec.com/posts/walkthrough-cryptohack-ctf/" />
+		<meta property="og:description" content="" /><meta name="og:image" content="images/logo_white.svg" />
+			<meta name="twitter:image" content="images/logo_white.svg" /></head>
+
+  <body>
+    <header>
+  <div id="brand">
+    <a class="icon-link" href="https://lessonsec.com">
+      <img
+        class="icon"
+        src="/images/logo_white.svg"
+      />
+    </a>
+    <div class="text">
+      <a href="https://lessonsec.com"><h1>less on sec</h1></a>
+      <h3>exploring, hacking and breaking stuff</h3>
+    </div>
+  </div>
+  <nav>
+	<div class="responsive_div_top">
+		
+		
+		
+		<a href="/"><b>Home</b></a>
+		
+		 | 
+		<a href="/whoami/"><b>Whoami</b></a>
+		
+		 | 
+		<a href="/posts/"><b>Posts</b></a>
+		
+		 | 
+		<a href="/cve/"><b>CVE</b></a>
+		
+		
+		
+	</div>
+
+	<div class="responsive_div_bottom">
+		Links: 
+		
+		
+		<a href="https://github.com/0xless">GitHub</a>
+		
+		 | 
+		<a href="https://www.linkedin.com/in/matteo-cosentino/">Linkedin</a>
+		
+		 | 
+		<a href="mailto:contact@lessonsec.com">Email</a>
+		
+	</div>
+      
+  
+  </nav>
+  <hr />
 </header>
-<div id=content>
-<main>
-<article>
-<h1>Walkthrough: CryptoHack CTF</h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2021-10-03</time>
-</strong>
-<span> • 1649 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/ctfs>CTFs</a>,
-<a href=/tags/cryptography>Cryptography</a>
+
+    <div id="content">
+      
+  <main>
+    <article>
+      <h1>Walkthrough: CryptoHack CTF</h1>
+      <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2021-10-03</time>
+    
+    
+  </strong>
+  <span> • 1649 words</span>
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/ctfs">CTFs</a>, 
+        <a href="/tags/cryptography">Cryptography</a>
+    </div>
+  
 </div>
-</div>
-<div><p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
-<p>I&rsquo;m approaching this cryptography deep dive with <a href=https://cryptohack.org/>https://cryptohack.org/</a>.
+
+      <div><p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
+<p>I&rsquo;m approaching this cryptography deep dive with <a href="https://cryptohack.org/">https://cryptohack.org/</a>.
 Cryptohack it&rsquo;s website offering CTF style challenges to understand and try to break modern cryptography. I really like this gamified approach so I decided to give it a shot.</p>
 <blockquote>
 <p><em><strong>Disclaimer</strong></em></p>
 <p>You always need to be extra careful when sharing CTFs solutions online. That&rsquo;s the reason why I&rsquo;m strictly following cryptohack&rsquo;s guidelines.
-As requested in the website&rsquo;s <a href=https://cryptohack.org/faq/#solutions>FAQ</a> I&rsquo;m only sharing solutions for challenges worth 10 points or less.
+As requested in the website&rsquo;s <a href="https://cryptohack.org/faq/#solutions">FAQ</a> I&rsquo;m only sharing solutions for challenges worth 10 points or less.
 These challenges are pretty basic, but I felt like it would be useful to have this kind of content published for those who are not familiar with basic cryptography or with the coding tools and technologies needed to solve the challenges. Each challenge solution will be explained but no flag will be available in this article.</p>
 <p>Cryptohack also has a functionality to share the solution once you get the flag for the challenge. Solutions to more complex challenges are to be shared exclusively there. The solutions are however only available for the solvers of the relative challenge.</p>
 </blockquote>
-<p>Make sure to download the python notebook with the code snippets from this article <a href=https://lessonsec.com/resources/cryptohack_walkthrough/cryptohack_walkthrough.ipynb>here</a>.</p>
+<p>Make sure to download the python notebook with the code snippets from this article <a href="https://lessonsec.com/resources/cryptohack_walkthrough/cryptohack_walkthrough.ipynb">here</a>.</p>
 <hr>
-<h2 id=page-index>Page index</h2>
+<h2 id="page-index">Page index</h2>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#setup>Setup</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#introduction-challenges>Introduction Challenges</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#setup">Setup</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#introduction-challenges">Introduction Challenges</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#finding-flags-2-pts>Finding Flags</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#great-snakes-3-pts>Great Snakes</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#network-attacks-5-pts>Network Attacks</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#finding-flags-2-pts">Finding Flags</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#great-snakes-3-pts">Great Snakes</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#network-attacks-5-pts">Network Attacks</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#general-challenges>General Challenges</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#general-challenges">General Challenges</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#ascii-5-pts>ASCII</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#hex-5-pts>Hex</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#base64-10-pts>Base64</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#bytes-and-big-integers-10-pts>Bytes and Big Integers</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#xor-starter-10-pts>XOR Starter</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#ascii-5-pts">ASCII</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#hex-5-pts">Hex</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#base64-10-pts">Base64</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#bytes-and-big-integers-10-pts">Bytes and Big Integers</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#xor-starter-10-pts">XOR Starter</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#mathematics>Mathematics</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#mathematics">Mathematics</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#vectors-10-pts>Vectors</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#vectors-10-pts">Vectors</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#symmetric-ciphers>Symmetric Ciphers</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#symmetric-ciphers">Symmetric Ciphers</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#keyed-permutations-5-pts>Keyed Permutations</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#resisting-bruteforce-10-pts>Resisting Bruteforce</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#keyed-permutations-5-pts">Keyed Permutations</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#resisting-bruteforce-10-pts">Resisting Bruteforce</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#rsa>RSA</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#rsa">RSA</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#rsa-starter-1-10-pts>RSA Starter 1</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#rsa-starter-1-10-pts">RSA Starter 1</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#diffie-hellman>Diffie-Hellman</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#diffie-hellman">Diffie-Hellman</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#diffie-hellman-starter-1-10-pts>Diffie-Hellman Starter 1</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#diffie-hellman-starter-1-10-pts">Diffie-Hellman Starter 1</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#crypto-on-the-web>Crypto On The Web</a>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#crypto-on-the-web">Crypto On The Web</a>
 <ul>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#token-appreciation-5-pts>Token Appreciation</a></li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#jwt-sessions-10-pts>JWT Sessions</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#token-appreciation-5-pts">Token Appreciation</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#jwt-sessions-10-pts">JWT Sessions</a></li>
 </ul>
 </li>
-<li><a href=/posts/walkthrough-cryptohack-ctf/#conclusions>Conclusions</a></li>
+<li><a href="/posts/walkthrough-cryptohack-ctf/#conclusions">Conclusions</a></li>
 </ul>
 <hr>
-<h2 id=setup>Setup</h2>
+<h2 id="setup">Setup</h2>
 <p>Before starting I suggest getting the official docker image provided in the FAQs.
 You simply need to pull <code>hyperreality/cryptohack:latest</code>.</p>
 <p>To run the container simply run the provided command: <code>docker run -p 127.0.0.1:8888:8888 -it hyperreality/cryptohack:latest</code></p>
@@ -137,226 +187,233 @@ You simply need to pull <code>hyperreality/cryptohack:latest</code>.</p>
 If you don&rsquo;t want to use notebooks to solve the challenges but still want to use the container because of dependencies, you can overwrite the entrypoint of the image with the following command: <code>docker run -it --entrypoint /bin/bash -p 127.0.0.1:8888:8888 -v hyperreality/cryptohack:latest</code></p>
 <p>Once the docker situation is under control, we can start working on the challenges.</p>
 <hr>
-<h2 id=introduction-challenges>Introduction Challenges</h2>
+<h2 id="introduction-challenges">Introduction Challenges</h2>
 <p>These challenges are basically tutorials to get familiar with how the challenges on this website works.
 They show the flag format, how to work with the challenge scripts and how to approach the network based attacks.</p>
-<h4 id=finding-flags-2-pts>Finding Flags (2 pts.)</h4>
+<h4 id="finding-flags-2-pts">Finding Flags (2 pts.)</h4>
 <p>Simply follow the instructions and copy-paste the flag in the text field.</p>
-<h4 id=great-snakes-3-pts>Great Snakes (3 pts.)</h4>
+<h4 id="great-snakes-3-pts">Great Snakes (3 pts.)</h4>
 <p>For this one you need to execute the provided python script, that will print out the flag.</p>
-<h4 id=network-attacks-5-pts>Network Attacks (5 pts.)</h4>
+<h4 id="network-attacks-5-pts">Network Attacks (5 pts.)</h4>
 <p>We need to interact with a TCP server using JSON messages.
 The website suggests using python and <code>telnetlib</code> to do so. It also provides an example showing how to interact with the server of this challenge.</p>
 <p>What we need to do to get the flag is to play around a little bit with the server and find the correct request to <em>buy</em> a <em>flag</em>.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># import the libraries needed for the challenge</span>
-<span style=color:#f92672>import</span> telnetlib
-<span style=color:#f92672>import</span> json
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># import the libraries needed for the challenge</span>
+<span style="color:#f92672">import</span> telnetlib
+<span style="color:#f92672">import</span> json
 
-HOST <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;socket.cryptohack.org&#34;</span>
-PORT <span style=color:#f92672>=</span> <span style=color:#ae81ff>11112</span>
+HOST <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;socket.cryptohack.org&#34;</span>
+PORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">11112</span>
 
-<span style=color:#75715e># initialize the connection</span>
-tn <span style=color:#f92672>=</span> telnetlib<span style=color:#f92672>.</span>Telnet(HOST, PORT)
+<span style="color:#75715e"># initialize the connection</span>
+tn <span style="color:#f92672">=</span> telnetlib<span style="color:#f92672">.</span>Telnet(HOST, PORT)
 
-<span style=color:#75715e># define functions to receive and send JSON payloads over TCP</span>
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>readline</span>():
-    <span style=color:#66d9ef>return</span> tn<span style=color:#f92672>.</span>read_until(<span style=color:#e6db74>b</span><span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)
+<span style="color:#75715e"># define functions to receive and send JSON payloads over TCP</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">readline</span>():
+    <span style="color:#66d9ef">return</span> tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
 
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>json_recv</span>():
-    line <span style=color:#f92672>=</span> readline()
-    <span style=color:#66d9ef>return</span> json<span style=color:#f92672>.</span>loads(line<span style=color:#f92672>.</span>decode())
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">json_recv</span>():
+    line <span style="color:#f92672">=</span> readline()
+    <span style="color:#66d9ef">return</span> json<span style="color:#f92672">.</span>loads(line<span style="color:#f92672">.</span>decode())
 
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>json_send</span>(hsh):
-    request <span style=color:#f92672>=</span> json<span style=color:#f92672>.</span>dumps(hsh)<span style=color:#f92672>.</span>encode()
-    tn<span style=color:#f92672>.</span>write(request)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">json_send</span>(hsh):
+    request <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>dumps(hsh)<span style="color:#f92672">.</span>encode()
+    tn<span style="color:#f92672">.</span>write(request)
   
-<span style=color:#75715e># reads the banner printed by the server</span>
+<span style="color:#75715e"># reads the banner printed by the server</span>
 print(readline())
 print(readline())
 print(readline())
 print(readline())
 
-<span style=color:#75715e># ------ Request example ------</span>
-<span style=color:#75715e># Compose a request for the server</span>
-request <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#34;buy&#34;</span>: <span style=color:#e6db74>&#34;clothes&#34;</span>}
+<span style="color:#75715e"># ------ Request example ------</span>
+<span style="color:#75715e"># Compose a request for the server</span>
+request <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;buy&#34;</span>: <span style="color:#e6db74">&#34;clothes&#34;</span>}
 
-<span style=color:#75715e># Sends the request</span>
+<span style="color:#75715e"># Sends the request</span>
 json_send(request)
 
-<span style=color:#75715e># Gets the response</span>
-response <span style=color:#f92672>=</span> json_recv()
+<span style="color:#75715e"># Gets the response</span>
+response <span style="color:#f92672">=</span> json_recv()
 
-print(response) <span style=color:#75715e># {&#39;error&#39;: &#39;Sorry! All we have to sell are flags.&#39;}</span>
+print(response) <span style="color:#75715e"># {&#39;error&#39;: &#39;Sorry! All we have to sell are flags.&#39;}</span>
 
-<span style=color:#75715e># ------ Real request ------</span>
-<span style=color:#75715e># mhhh flags you say?</span>
-request <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#34;buy&#34;</span>: <span style=color:#e6db74>&#34;flag&#34;</span>}
+<span style="color:#75715e"># ------ Real request ------</span>
+<span style="color:#75715e"># mhhh flags you say?</span>
+request <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;buy&#34;</span>: <span style="color:#e6db74">&#34;flag&#34;</span>}
 
-<span style=color:#75715e># Sends the request</span>
+<span style="color:#75715e"># Sends the request</span>
 json_send(request)
 
-<span style=color:#75715e># Gets the response</span>
-response <span style=color:#f92672>=</span> json_recv()
+<span style="color:#75715e"># Gets the response</span>
+response <span style="color:#f92672">=</span> json_recv()
 
 print(response)
 </code></pre></div><hr>
-<h2 id=general-challenges>General Challenges</h2>
-<h3 id=uencodingu><u>Encoding</u></h3>
+<h2 id="general-challenges">General Challenges</h2>
+<h3 id="uencodingu"><u>Encoding</u></h3>
 <blockquote>
 <p>For these challenges it&rsquo;s not really necessary to write any code. While writing your own scripts can help getting familiar with tools and techniques, a deeper understanding of encodings can be obtained solving the challenges in different ways.</p>
-<p>A super-versatile and commonly used tool for this kind of task is <a href=https://gchq.github.io/CyberChef/>CyberChef</a>.</p>
+<p>A super-versatile and commonly used tool for this kind of task is <a href="https://gchq.github.io/CyberChef/">CyberChef</a>.</p>
 </blockquote>
-<h4 id=ascii-5-pts>ASCII (5 pts.)</h4>
+<h4 id="ascii-5-pts">ASCII (5 pts.)</h4>
 <p>We are given a 7-bit ASCII encoded string and we need to decode it to get the flag.
 The challenge hint suggests that we use the python <code>chr()</code> function to do to.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># ASCII values to decode</span>
-values <span style=color:#f92672>=</span> [<span style=color:#ae81ff>99</span>, <span style=color:#ae81ff>114</span>, <span style=color:#ae81ff>121</span>, <span style=color:#ae81ff>112</span>, <span style=color:#ae81ff>116</span>, <span style=color:#ae81ff>111</span>, <span style=color:#ae81ff>123</span>, <span style=color:#ae81ff>65</span>, <span style=color:#ae81ff>83</span>, <span style=color:#ae81ff>67</span>, <span style=color:#ae81ff>73</span>, <span style=color:#ae81ff>73</span>, <span style=color:#ae81ff>95</span>, <span style=color:#ae81ff>112</span>, <span style=color:#ae81ff>114</span>, <span style=color:#ae81ff>49</span>, <span style=color:#ae81ff>110</span>, <span style=color:#ae81ff>116</span>, <span style=color:#ae81ff>52</span>, <span style=color:#ae81ff>98</span>, <span style=color:#ae81ff>108</span>, <span style=color:#ae81ff>51</span>, <span style=color:#ae81ff>125</span>]
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># ASCII values to decode</span>
+values <span style="color:#f92672">=</span> [<span style="color:#ae81ff">99</span>, <span style="color:#ae81ff">114</span>, <span style="color:#ae81ff">121</span>, <span style="color:#ae81ff">112</span>, <span style="color:#ae81ff">116</span>, <span style="color:#ae81ff">111</span>, <span style="color:#ae81ff">123</span>, <span style="color:#ae81ff">65</span>, <span style="color:#ae81ff">83</span>, <span style="color:#ae81ff">67</span>, <span style="color:#ae81ff">73</span>, <span style="color:#ae81ff">73</span>, <span style="color:#ae81ff">95</span>, <span style="color:#ae81ff">112</span>, <span style="color:#ae81ff">114</span>, <span style="color:#ae81ff">49</span>, <span style="color:#ae81ff">110</span>, <span style="color:#ae81ff">116</span>, <span style="color:#ae81ff">52</span>, <span style="color:#ae81ff">98</span>, <span style="color:#ae81ff">108</span>, <span style="color:#ae81ff">51</span>, <span style="color:#ae81ff">125</span>]
 
-solution <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
-<span style=color:#66d9ef>for</span> v <span style=color:#f92672>in</span> values:
-    solution <span style=color:#f92672>+=</span> chr(v)
+solution <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> values:
+    solution <span style="color:#f92672">+=</span> chr(v)
     
 print(solution)
-</code></pre></div><h4 id=hex-5-pts>Hex (5 pts.)</h4>
+</code></pre></div><h4 id="hex-5-pts">Hex (5 pts.)</h4>
 <p>In this challenge we are provided with an hex encoded string we need to decode.
 This time the challenge hint suggests using the <code>bytes.fromhex()</code> function.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># HEX values to decode</span>
-values <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;63727970746f7b596f755f77696c6c5f62655f776f726b696e675f776974685f6865785f737472696e67735f615f6c6f747d&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># HEX values to decode</span>
+values <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;63727970746f7b596f755f77696c6c5f62655f776f726b696e675f776974685f6865785f737472696e67735f615f6c6f747d&#34;</span>
 
-solution <span style=color:#f92672>=</span> bytes<span style=color:#f92672>.</span>fromhex(values)<span style=color:#f92672>.</span>decode(<span style=color:#e6db74>&#39;utf-8&#39;</span>)
+solution <span style="color:#f92672">=</span> bytes<span style="color:#f92672">.</span>fromhex(values)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
 
 print(solution)
-</code></pre></div><h4 id=base64-10-pts>Base64 (10 pts.)</h4>
+</code></pre></div><h4 id="base64-10-pts">Base64 (10 pts.)</h4>
 <p>For this challenge we are given an hex encoded string, to be decoded and then encoded in base64 to be used as flag.
 In this case we will be using the <code>base64</code> python module, in particular the <code>base64.b64encode()</code>.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> base64
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> base64
 
-<span style=color:#75715e># HEX values to decode</span>
-values <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;72bca9b68fc16ac7beeb8f849dca1d8a783e8acf9679bf9269f7bf&#34;</span>
+<span style="color:#75715e"># HEX values to decode</span>
+values <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;72bca9b68fc16ac7beeb8f849dca1d8a783e8acf9679bf9269f7bf&#34;</span>
 
-<span style=color:#75715e># Decoded values</span>
-tmp <span style=color:#f92672>=</span> bytes<span style=color:#f92672>.</span>fromhex(values)
-<span style=color:#75715e># print(tmp)</span>
-solution <span style=color:#f92672>=</span> base64<span style=color:#f92672>.</span>b64encode(tmp)<span style=color:#f92672>.</span>decode(<span style=color:#e6db74>&#39;utf-8&#39;</span>)
+<span style="color:#75715e"># Decoded values</span>
+tmp <span style="color:#f92672">=</span> bytes<span style="color:#f92672">.</span>fromhex(values)
+<span style="color:#75715e"># print(tmp)</span>
+solution <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(tmp)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
 
 print(solution)
-</code></pre></div><h4 id=bytes-and-big-integers-10-pts>Bytes and Big Integers (10 pts.)</h4>
+</code></pre></div><h4 id="bytes-and-big-integers-10-pts">Bytes and Big Integers (10 pts.)</h4>
 <p>Some cryptosystems like RSA work only when applied to numbers. We need to encode our messages as numbers in order to work with these cryptosystems.
 One method to do so is to represent the data as bytes and convert these in a base-16 or base-10 number.</p>
 <p>In this challenge we are provided with a message encoded in this way and we need to get the original message out.</p>
 <p>For this challenge the PyCryptodome library it needed, we can work with this encoding using the functions: <code>Crypto.Util.number.bytes_to_long()</code> and <code>Crypto.Util.number.long_to_bytes()</code>.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>from</span> Crypto.Util.number <span style=color:#f92672>import</span> long_to_bytes
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> long_to_bytes
 
-<span style=color:#75715e># Message encoded as number</span>
-values <span style=color:#f92672>=</span> <span style=color:#ae81ff>11515195063862318899931685488813747395775516287289682636499965282714637259206269</span>
+<span style="color:#75715e"># Message encoded as number</span>
+values <span style="color:#f92672">=</span> <span style="color:#ae81ff">11515195063862318899931685488813747395775516287289682636499965282714637259206269</span>
 
-solution <span style=color:#f92672>=</span> long_to_bytes(values)<span style=color:#f92672>.</span>decode(<span style=color:#e6db74>&#39;utf-8&#39;</span>)
+solution <span style="color:#f92672">=</span> long_to_bytes(values)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
 
 print(solution)
 </code></pre></div><hr>
-<h3 id=uxoru><u>XOR</u></h3>
-<h4 id=xor-starter-10-pts>XOR Starter (10 pts.)</h4>
+<h3 id="uxoru"><u>XOR</u></h3>
+<h4 id="xor-starter-10-pts">XOR Starter (10 pts.)</h4>
 <p>In this challenge we need to XOR the value 13 to each character of the provided string, then we need to put the result in the cyber{flag} format.
 The hint suggests that it&rsquo;s possible to use the <code>xor()</code> function from <code>pwntools</code> but it&rsquo;s just as easy to do the same in pure python.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># Provided string</span>
-values <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;label&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Provided string</span>
+values <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;label&#34;</span>
 
-solution <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
-<span style=color:#66d9ef>for</span> v <span style=color:#f92672>in</span> values:
-    solution <span style=color:#f92672>+=</span> chr(ord(v) <span style=color:#f92672>^</span> <span style=color:#ae81ff>13</span>)
+solution <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> values:
+    solution <span style="color:#f92672">+=</span> chr(ord(v) <span style="color:#f92672">^</span> <span style="color:#ae81ff">13</span>)
     
-<span style=color:#75715e># The {{{var}}} syntax is needed to excape curly braces in python f-strings</span>
-print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;crypto</span><span style=color:#ae81ff>{{</span><span style=color:#e6db74>{</span>solution<span style=color:#e6db74>}</span><span style=color:#ae81ff>}}</span><span style=color:#e6db74>&#34;</span>)
+<span style="color:#75715e"># The {{{var}}} syntax is needed to excape curly braces in python f-strings</span>
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;crypto</span><span style="color:#ae81ff">{{</span><span style="color:#e6db74">{</span>solution<span style="color:#e6db74">}</span><span style="color:#ae81ff">}}</span><span style="color:#e6db74">&#34;</span>)
 </code></pre></div><hr>
-<h2 id=mathematics>Mathematics</h2>
-<h3 id=ulatticesu><u>Lattices</u></h3>
-<h4 id=vectors-10-pts>Vectors (10 pts.)</h4>
+<h2 id="mathematics">Mathematics</h2>
+<h3 id="ulatticesu"><u>Lattices</u></h3>
+<h4 id="vectors-10-pts">Vectors (10 pts.)</h4>
 <p>In this challenge we are asked to perform operations on a three dimensional vector space.
 If this sounds new to you make sure to carefully read the challenge description and check the suggested materials.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>v <span style=color:#f92672>=</span> (<span style=color:#ae81ff>2</span>,<span style=color:#ae81ff>6</span>,<span style=color:#ae81ff>3</span>)
-w <span style=color:#f92672>=</span> (<span style=color:#ae81ff>1</span>,<span style=color:#ae81ff>0</span>,<span style=color:#ae81ff>0</span>)
-u <span style=color:#f92672>=</span> (<span style=color:#ae81ff>7</span>,<span style=color:#ae81ff>7</span>,<span style=color:#ae81ff>2</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">v <span style="color:#f92672">=</span> (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">3</span>)
+w <span style="color:#f92672">=</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>)
+u <span style="color:#f92672">=</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">2</span>)
 
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>vector_minus</span>(a, b):
-   <span style=color:#66d9ef>return</span> [x <span style=color:#f92672>-</span> y <span style=color:#66d9ef>for</span> x, y <span style=color:#f92672>in</span> zip(a,b)]
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_minus</span>(a, b):
+   <span style="color:#66d9ef">return</span> [x <span style="color:#f92672">-</span> y <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> zip(a,b)]
 
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>vector_dot</span>(a,b):
-    <span style=color:#66d9ef>return</span> sum([x <span style=color:#f92672>*</span> y <span style=color:#66d9ef>for</span> x, y <span style=color:#f92672>in</span> zip(a,b)])
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_dot</span>(a,b):
+    <span style="color:#66d9ef">return</span> sum([x <span style="color:#f92672">*</span> y <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> zip(a,b)])
     
-<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>scalar_times</span>(a, times):
-    <span style=color:#66d9ef>return</span> list(map( <span style=color:#66d9ef>lambda</span> x: x <span style=color:#f92672>*</span> times , a))
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">scalar_times</span>(a, times):
+    <span style="color:#66d9ef">return</span> list(map( <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> times , a))
 
-<span style=color:#75715e># calculate 3*(2*v - w) ∙ 2*u</span>
-vector_dot(scalar_times(vector_minus(scalar_times(v, <span style=color:#ae81ff>2</span>), w), <span style=color:#ae81ff>3</span>), scalar_times(u, <span style=color:#ae81ff>2</span>))
+<span style="color:#75715e"># calculate 3*(2*v - w) ∙ 2*u</span>
+vector_dot(scalar_times(vector_minus(scalar_times(v, <span style="color:#ae81ff">2</span>), w), <span style="color:#ae81ff">3</span>), scalar_times(u, <span style="color:#ae81ff">2</span>))
 </code></pre></div><hr>
-<h2 id=symmetric-ciphers>Symmetric Ciphers</h2>
+<h2 id="symmetric-ciphers">Symmetric Ciphers</h2>
 <p><u><strong>How AES Works</strong></u></p>
-<h4 id=keyed-permutations-5-pts>Keyed Permutations (5 pts.)</h4>
+<h4 id="keyed-permutations-5-pts">Keyed Permutations (5 pts.)</h4>
 <p>In this challenge we are asked to answer a question: <em>What is the mathematical term for a one-to-one correspondence?</em>
 Google is your friend for this one!</p>
-<h4 id=resisting-bruteforce-10-pts>Resisting Bruteforce (10 pts.)</h4>
-<p>This time we are asked: <em>What is the name for the best single-key attack against AES?</em> <br>
+<h4 id="resisting-bruteforce-10-pts">Resisting Bruteforce (10 pts.)</h4>
+<p>This time we are asked: <em>What is the name for the best single-key attack against AES?</em>                <br>
 Just make sure you carefully read the challenge description and you&rsquo;re good to go!</p>
 <hr>
-<h2 id=rsa>RSA</h2>
+<h2 id="rsa">RSA</h2>
 <p><u><strong>Starter</strong></u></p>
-<h4 id=rsa-starter-1-10-pts>RSA Starter 1 (10 pts.)</h4>
+<h4 id="rsa-starter-1-10-pts">RSA Starter 1 (10 pts.)</h4>
 <p>The basis of RSA encryption is modular exponentiation. In this challenge we are asked to use such technique to create a &ldquo;trapdoor function&rdquo; (a function easy to calculate but hard to reverse).
 This can be done using the <code>pow()</code> function that python provides.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># Calculate 101^17 mod 22663</span>
-pow(<span style=color:#ae81ff>101</span>, <span style=color:#ae81ff>17</span>, <span style=color:#ae81ff>22663</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Calculate 101^17 mod 22663</span>
+pow(<span style="color:#ae81ff">101</span>, <span style="color:#ae81ff">17</span>, <span style="color:#ae81ff">22663</span>)
 </code></pre></div><hr>
-<h2 id=diffie-hellman>Diffie-Hellman</h2>
+<h2 id="diffie-hellman">Diffie-Hellman</h2>
 <p><u><strong>Starter</strong></u></p>
-<h4 id=diffie-hellman-starter-1-10-pts>Diffie-Hellman Starter 1 (10 pts.)</h4>
+<h4 id="diffie-hellman-starter-1-10-pts">Diffie-Hellman Starter 1 (10 pts.)</h4>
 <p>The Diffie-Hellman algorithm works with finite fields and modular exponentiation to allow to parties to exchange a shared secret.
-If you&rsquo;re not familiar with this algorithm or with the math behind it I would suggest to check out the <a href=https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange#Cryptographic_explanation>Wikipedia page</a> to get started.</p>
+If you&rsquo;re not familiar with this algorithm or with the math behind it I would suggest to check out the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange#Cryptographic_explanation">Wikipedia page</a> to get started.</p>
 <p>In this challenge we are asked to find an inverse element given the prime number and the modulo.</p>
 <p><u>Solution</u>:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>g <span style=color:#f92672>=</span> <span style=color:#ae81ff>209</span>
-p <span style=color:#f92672>=</span> <span style=color:#ae81ff>991</span>
-fc <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g <span style="color:#f92672">=</span> <span style="color:#ae81ff">209</span>
+p <span style="color:#f92672">=</span> <span style="color:#ae81ff">991</span>
+fc <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
 
-<span style=color:#66d9ef>for</span> x <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>1</span>, p):    
-    <span style=color:#66d9ef>if</span> (g <span style=color:#f92672>*</span> x) <span style=color:#f92672>%</span> p <span style=color:#f92672>==</span> fc:         
+<span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, p):    
+    <span style="color:#66d9ef">if</span> (g <span style="color:#f92672">*</span> x) <span style="color:#f92672">%</span> p <span style="color:#f92672">==</span> fc:         
         print(x)        
-        <span style=color:#66d9ef>break</span>
+        <span style="color:#66d9ef">break</span>
 </code></pre></div><hr>
-<h2 id=crypto-on-the-web>Crypto On The Web</h2>
+<h2 id="crypto-on-the-web">Crypto On The Web</h2>
 <p><strong><u>JSON web tokens</u></strong></p>
-<h4 id=token-appreciation-5-pts>Token Appreciation (5 pts.)</h4>
-<p><a href=https://datatracker.ietf.org/doc/html/rfc7519>JWTs or JSON Web Tokens</a> are a standard method to safely represent claims between two parties.
+<h4 id="token-appreciation-5-pts">Token Appreciation (5 pts.)</h4>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc7519">JWTs or JSON Web Tokens</a> are a standard method to safely represent claims between two parties.
 This kind of token is not encrypted by default, and this is the reason why it&rsquo;s possible to reverse the encoding and extract the original message.</p>
 <p>We are given the token:</p>
 <p><code>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmbGFnIjoiY3J5cHRve2p3dF9jb250ZW50c19j</code>
 <code>YW5fYmVfZWFzaWx5X3ZpZXdlZH0iLCJ1c2VyIjoiQ3J5cHRvIE1jSGFjayIsImV4cCI6MjAwNT</code>
 <code>AzMzQ5M30.shKSmZfgGVvd2OSB2CGezzJ3N6WAULo3w9zCl_T47K</code></p>
-<p>Now, there are a few ways to solve this challenge, the suggested one is to use Python&rsquo;s <a href=https://pyjwt.readthedocs.io/en/stable/>PyJWT</a> library, but since it&rsquo;s not installed in the docker container we are using, it&rsquo;s easier to use an online tool like <a href=https://gchq.github.io/CyberChef>CyberChef</a> or <a href=https://jwt.io/>jwt.io</a>.</p>
-<h4 id=jwt-sessions-10-pts>JWT Sessions (10 pts.)</h4>
+<p>Now, there are a few ways to solve this challenge, the suggested one is to use Python&rsquo;s <a href="https://pyjwt.readthedocs.io/en/stable/">PyJWT</a> library, but since it&rsquo;s not installed in the docker container we are using, it&rsquo;s easier to use an online tool like <a href="https://gchq.github.io/CyberChef">CyberChef</a> or <a href="https://jwt.io/">jwt.io</a>.</p>
+<h4 id="jwt-sessions-10-pts">JWT Sessions (10 pts.)</h4>
 <p>In this challenge we are given some information about the use of JWT tokens, now we are asked the <em>HTTP header used by the browser to send JWTs to the server</em>. Once again Google is your friend!</p>
 <p>If you want to solve this challenge on your own, take out the developer tools in your browser, go to the network tab and start looking around for HTTP headers that could refer to the use of JWT tokens. You&rsquo;re <em>authorized</em> to do that!</p>
 <hr>
-<h2 id=conclusions>Conclusions</h2>
+<h2 id="conclusions">Conclusions</h2>
 <p>Hope this article is useful to anyone who&rsquo;s meaning to get into cryptography or CTFs in general.
 Writing this article allowed me to go back and review my knowledge of basic cryptography as well as exploring a bit out of my comfort zone (when it came to more complex challenges not included in the writeup).</p>
 </div>
-</article>
-</main>
-</div>
-<footer>
-<hr>
-<p class=copyright>
-Copyright © 2023
-<a href=https://lessonsec.com><strong>Matteo [0xless] Cosentino</strong></a>.
+    </article>
+  </main>
+
+    </div>
+    <footer>
+  <hr />
+
+  <p class="copyright">
+    Copyright © 2023
+    <a href="https://lessonsec.com"><strong>Matteo [0xless] Cosentino</strong></a>.
 </footer>
-<script data-goatcounter=https://lessonsec.goatcounter.com/count async src=https://lessonsec.com/script/count.js></script>
-</body>
+
+<script data-goatcounter="https://lessonsec.goatcounter.com/count"
+        async src="https://lessonsec.com/script/count.js"></script>
+
+
+
+  </body>
 </html>

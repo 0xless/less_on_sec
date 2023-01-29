@@ -1,2 +1,102 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>less on sec</title><link>https://lessonsec.com/</link><description>Recent content on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 30 Dec 2022 22:30:14 +0100</lastBuildDate><atom:link href="https://lessonsec.com/index.xml" rel="self" type="application/rss+xml"/><item><title>Attacking RKE: How to hack a car open</title><link>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</link><pubDate>Fri, 30 Dec 2022 22:30:14 +0100</pubDate><guid>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</guid><description>I&amp;rsquo;ve always found cybersecurity to be more interesting when implications reflect in the &amp;ldquo;real world&amp;rdquo; and this is the reason hacking physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!</description></item><item><title>CVE-2022-44900: path traversal vulnerability in py7zr</title><link>https://lessonsec.com/cve/cve-2022-44900/</link><pubDate>Tue, 06 Dec 2022 22:19:25 +0100</pubDate><guid>https://lessonsec.com/cve/cve-2022-44900/</guid><description>Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.</description></item><item><title>Walkthrough: BLE CTF</title><link>https://lessonsec.com/posts/walkthrough-ble-ctf/</link><pubDate>Sun, 17 Apr 2022 14:08:32 +0200</pubDate><guid>https://lessonsec.com/posts/walkthrough-ble-ctf/</guid><description>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</description></item><item><title>Email spoofing 101</title><link>https://lessonsec.com/posts/email-spoofing-101/</link><pubDate>Sat, 05 Feb 2022 16:40:50 +0100</pubDate><guid>https://lessonsec.com/posts/email-spoofing-101/</guid><description>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</description></item><item><title>Business Card</title><link>https://lessonsec.com/smart-business-card/</link><pubDate>Fri, 29 Oct 2021 00:00:00 +0000</pubDate><guid>https://lessonsec.com/smart-business-card/</guid><description>{{ .Content }}</description></item><item><title>Walkthrough: CryptoHack CTF</title><link>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</link><pubDate>Sun, 03 Oct 2021 12:41:44 +0200</pubDate><guid>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</guid><description>Recently I&amp;rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&amp;rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</description></item><item><title>Analysis of a Remote Control</title><link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link><pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate><guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid><description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</description></item><item><title>Cloning RFID tags for fun and profit</title><link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link><pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate><guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops.</description></item><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/intrudo/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/intrudo/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
-Intrudo logo Check it out: https://github.</description></item><item><title>Whoami</title><link>https://lessonsec.com/whoami/</link><pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate><guid>https://lessonsec.com/whoami/</guid><description>Hi, I&amp;rsquo;m Matteo [0xless] Cosentino. I&amp;rsquo;m a penetration tester by day and a security researcher by night. I see hacking as a tool to learn new things and I’ve always been fascinated by breaking stuff.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>less on sec</title>
+    <link>https://lessonsec.com/</link>
+    <description>Recent content on less on sec</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 30 Dec 2022 22:30:14 +0100</lastBuildDate><atom:link href="https://lessonsec.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Attacking RKE: How to hack a car open</title>
+      <link>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</link>
+      <pubDate>Fri, 30 Dec 2022 22:30:14 +0100</pubDate>
+      
+      <guid>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</guid>
+      <description>I&amp;rsquo;ve always found cybersecurity to be more interesting when implications reflect in the &amp;ldquo;real world&amp;rdquo; and this is the reason hacking physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!</description>
+    </item>
+    
+    <item>
+      <title>CVE-2022-44900: path traversal vulnerability in py7zr</title>
+      <link>https://lessonsec.com/cve/cve-2022-44900/</link>
+      <pubDate>Tue, 06 Dec 2022 22:19:25 +0100</pubDate>
+      
+      <guid>https://lessonsec.com/cve/cve-2022-44900/</guid>
+      <description>Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.</description>
+    </item>
+    
+    <item>
+      <title>Walkthrough: BLE CTF</title>
+      <link>https://lessonsec.com/posts/walkthrough-ble-ctf/</link>
+      <pubDate>Sun, 17 Apr 2022 14:08:32 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/walkthrough-ble-ctf/</guid>
+      <description>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</description>
+    </item>
+    
+    <item>
+      <title>Email spoofing 101</title>
+      <link>https://lessonsec.com/posts/email-spoofing-101/</link>
+      <pubDate>Sat, 05 Feb 2022 16:40:50 +0100</pubDate>
+      
+      <guid>https://lessonsec.com/posts/email-spoofing-101/</guid>
+      <description>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</description>
+    </item>
+    
+    <item>
+      <title>Business Card</title>
+      <link>https://lessonsec.com/smart-business-card/</link>
+      <pubDate>Fri, 29 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://lessonsec.com/smart-business-card/</guid>
+      <description>{{ .Content }}</description>
+    </item>
+    
+    <item>
+      <title>Walkthrough: CryptoHack CTF</title>
+      <link>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</link>
+      <pubDate>Sun, 03 Oct 2021 12:41:44 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</guid>
+      <description>Recently I&amp;rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&amp;rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</description>
+    </item>
+    
+    <item>
+      <title>Analysis of a Remote Control</title>
+      <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
+      <pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
+      <description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</description>
+    </item>
+    
+    <item>
+      <title>Cloning RFID tags for fun and profit</title>
+      <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
+      <pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
+      <description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops.</description>
+    </item>
+    
+    <item>
+      <title>Dev Chronicles: Creating an HTTP attack client</title>
+      <link>https://lessonsec.com/posts/intrudo/</link>
+      <pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/intrudo/</guid>
+      <description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+        Intrudo logo    Check it out: https://github.</description>
+    </item>
+    
+    <item>
+      <title>Whoami</title>
+      <link>https://lessonsec.com/whoami/</link>
+      <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://lessonsec.com/whoami/</guid>
+      <description>Hi, I&amp;rsquo;m Matteo [0xless] Cosentino. I&amp;rsquo;m a penetration tester by day and a security researcher by night. I see hacking as a tool to learn new things and I’ve always been fascinated by breaking stuff.</description>
+    </item>
+    
+  </channel>
+</rss>

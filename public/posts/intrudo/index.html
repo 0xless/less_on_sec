@@ -1,96 +1,146 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=description content="Personal blog on cybersecurity, harware hacking and security research.">
-<title> Dev Chronicles: Creating an HTTP attack client | less on sec </title>
-<link rel=stylesheet href=/css/reset.css>
-<link rel=stylesheet href=/css/font.css>
-<link rel=stylesheet href=/css/smigle.css>
-<link rel=stylesheet href=/css/custom.css>
-<link rel=canonical href=https://lessonsec.com/posts/intrudo/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/site.webmanifest>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff"><meta name=og:title content="Dev Chronicles: Creating an HTTP attack client">
-<meta name=twitter:title content="Dev Chronicles: Creating an HTTP attack client">
-<meta property="og:url" content="https://lessonsec.com/posts/intrudo/">
-<meta property="og:description" content><meta name=og:image content="[/images/intrudo/logo.png]">
-<meta name=twitter:image content="[/images/intrudo/logo.png]"></head>
-<body>
-<header>
-<div id=brand>
-<a class=icon-link href=https://lessonsec.com>
-<img class=icon src=/images/logo_white.svg>
-</a>
-<div class=text>
-<a href=https://lessonsec.com><h1>less on sec</h1></a>
-<h3>exploring, hacking and breaking stuff</h3>
-</div>
-</div>
-<nav>
-<div class=responsive_div_top>
-<a href=/><b>Home</b></a>
-|
-<a href=/whoami/><b>Whoami</b></a>
-|
-<a href=/posts/><b>Posts</b></a>
-|
-<a href=/cve/><b>CVE</b></a>
-</div>
-<div class=responsive_div_bottom>
-Links:
-<a href=https://github.com/0xless>GitHub</a>
-|
-<a href=https://www.linkedin.com/in/matteo-cosentino/>Linkedin</a>
-|
-<a href=mailto:contact@lessonsec.com>Email</a>
-</div>
-</nav>
-<hr>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Personal blog on cybersecurity, harware hacking and security research."
+  />
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+      	<title> Dev Chronicles: Creating an HTTP attack client | less on sec </title>
+      
+    
+  
+  <link rel="stylesheet" href="/css/reset.css"/>
+  <link rel="stylesheet" href="/css/font.css"/>
+  <link rel="stylesheet" href="/css/smigle.css"/>
+  
+    <link rel="stylesheet" href="/css/custom.css"/>
+  
+  <link rel="canonical" href="https://lessonsec.com/posts/intrudo/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff"><meta name="og:title" content="Dev Chronicles: Creating an HTTP attack client" />
+		<meta name="twitter:title" content="Dev Chronicles: Creating an HTTP attack client" />
+		<meta property="og:url" content="https://lessonsec.com/posts/intrudo/" />
+		<meta property="og:description" content="" /><meta name="og:image" content="[/images/intrudo/logo.png]" />
+			<meta name="twitter:image" content="[/images/intrudo/logo.png]" /></head>
+
+  <body>
+    <header>
+  <div id="brand">
+    <a class="icon-link" href="https://lessonsec.com">
+      <img
+        class="icon"
+        src="/images/logo_white.svg"
+      />
+    </a>
+    <div class="text">
+      <a href="https://lessonsec.com"><h1>less on sec</h1></a>
+      <h3>exploring, hacking and breaking stuff</h3>
+    </div>
+  </div>
+  <nav>
+	<div class="responsive_div_top">
+		
+		
+		
+		<a href="/"><b>Home</b></a>
+		
+		 | 
+		<a href="/whoami/"><b>Whoami</b></a>
+		
+		 | 
+		<a href="/posts/"><b>Posts</b></a>
+		
+		 | 
+		<a href="/cve/"><b>CVE</b></a>
+		
+		
+		
+	</div>
+
+	<div class="responsive_div_bottom">
+		Links: 
+		
+		
+		<a href="https://github.com/0xless">GitHub</a>
+		
+		 | 
+		<a href="https://www.linkedin.com/in/matteo-cosentino/">Linkedin</a>
+		
+		 | 
+		<a href="mailto:contact@lessonsec.com">Email</a>
+		
+	</div>
+      
+  
+  </nav>
+  <hr />
 </header>
-<div id=content>
-<main>
-<article>
-<h1>Dev Chronicles: Creating an HTTP attack client</h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2021-04-01</time>
-</strong>
-<span> • 1525 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/dev-chronicles>Dev Chronicles</a>,
-<a href=/tags/http>HTTP</a>
+
+    <div id="content">
+      
+  <main>
+    <article>
+      <h1>Dev Chronicles: Creating an HTTP attack client</h1>
+      <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2021-04-01</time>
+    
+    
+  </strong>
+  <span> • 1525 words</span>
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/dev-chronicles">Dev Chronicles</a>, 
+        <a href="/tags/http">HTTP</a>
+    </div>
+  
 </div>
-</div>
-<div><p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href=https://portswigger.net/burp/documentation/desktop/tools/intruder>burp intruder</a>.</p>
+
+      <div><p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after <a href="https://portswigger.net/burp/documentation/desktop/tools/intruder">burp intruder</a>.</p>
 <table>
 <thead>
 <tr>
-<th style=text-align:center><img src=/images/intrudo/logo.png#center alt="intrudo logo"></th>
+<th style="text-align:center"><img src="/images/intrudo/logo.png#center" alt="intrudo logo"></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style=text-align:center>Intrudo logo</td>
+<td style="text-align:center">Intrudo logo</td>
 </tr>
 </tbody>
 </table>
-<p>Check it out: <a href=https://github.com/0xless/Intrudo>https://github.com/0xless/Intrudo</a></p>
-<h3 id=a-little-of-background>A little of background</h3>
+<p>Check it out: <a href="https://github.com/0xless/Intrudo">https://github.com/0xless/Intrudo</a></p>
+<h3 id="a-little-of-background">A little of background</h3>
 <p>While working on CTFs I would usually write a bunch of lines of python to automate attacks, it worked fine, but I felt like I needed to improve my workflow. So I decided to learn new approaches and strengthen my use of commercial offensive tools.<br>
-I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that <a href=https://portswigger.net/web-security>PortSwigger created for this reason</a>.</p>
-<p>The idea of developing this tool came to me when working on SQL injection challenges. The labs and the learning material were great, but the throttling on the requests in burp intruder (community version only) was making it difficult to complete these challenges. Due to the throttling, completing a challenge would take several hours since for every request sent, you have to wait more and more.</p>
-<p>Every challenge was focused on retrieving an administrative password, in some of these challenges a request needed to be sent for every possible letter and digit for each character of the password. Now these challenges could be solved in two ways. You could either send requests to discover one character at time or try to automate it using the &ldquo;cluster bomb&rdquo; attack. In the first scenario, you&rsquo;d have to adjust the parameters and manually launch the attack every 30 minutes or so. In the second scenario, you could automate the whole thing, if the challenge password didn&rsquo;t change mid-attack because the client took so long to send the requests.</p>
+I have used burp suite in the past, but I have not taken the time to explore it thoroughly, so I figured the best way to do that would be the labs that <a href="https://portswigger.net/web-security">PortSwigger created for this reason</a>.</p>
+<p>The idea of developing this tool came to me when working on SQL injection challenges. The labs and the learning material were great, but the throttling on the requests in burp intruder (community version only) was making it difficult to complete these challenges.  Due to the throttling, completing a challenge would take several hours since for every request sent, you have to wait more and more.</p>
+<p>Every challenge was focused on retrieving an administrative password, in some of these challenges a request needed to be sent for every possible letter and digit for each character of the password.  Now these challenges could be solved in two ways. You could either send requests to discover one character at time or try to automate it using the &ldquo;cluster bomb&rdquo; attack. In the first scenario, you&rsquo;d have to adjust the parameters and manually launch the attack every 30 minutes or so. In the second scenario, you could automate the whole thing, if the challenge password didn&rsquo;t change mid-attack because the client took so long to send the requests.</p>
 <p>One would assume these challenges were developed <em>specifically</em> to make it harder to solve for those who didn&rsquo;t have a paid version of the software. I&rsquo;m not implying they have a malicious intent, but they could have made it easier for <em>everybody</em> to solve the challenges and learn from the awesome materials they share.</p>
 <p>After my experience with PortSwigger&rsquo;s labs, I decided to develop Intrudo; a fast, throttling free alternative to burp intruder.</p>
-<h3 id=the-initial-approach>The initial approach</h3>
-<p>My first idea was to use multithreading so I started surfing the web for ideas and found <a href=https://docs.aiohttp.org/en/stable/>aiohttp</a>, and asynchronous HTTP Client/Server based on <a href=https://docs.aiohttp.org/en/stable/glossary.html#term-asyncio>asyncio</a>. It wasn&rsquo;t multithreading but it seemed perfect for this project.</p>
+<h3 id="the-initial-approach">The initial approach</h3>
+<p>My first idea was to use multithreading so I started surfing the web for ideas and found <a href="https://docs.aiohttp.org/en/stable/">aiohttp</a>, and asynchronous HTTP Client/Server based on <a href="https://docs.aiohttp.org/en/stable/glossary.html#term-asyncio">asyncio</a>. It wasn&rsquo;t multithreading but it seemed perfect for this project.</p>
 <p>Unfortunately, I was not lucky with the choice of developing around <code>aiohttp</code> as the client was strict on what requests can be sent and how they are sent.</p>
 <p>I learned this the hard way, of course. I spent a few days developing with <code>aiohttp</code> and all I could achieve was an incredibly fast fuzzer that would only work on URL parameters. Big let down.</p>
 <p>At this point I could try two things:</p>
@@ -98,45 +148,45 @@ I have used burp suite in the past, but I have not taken the time to explore it 
 <li>see if I could find some libraries I could fork</li>
 <li>implement my own client consisting of bare bones sockets and some good ol' <code>asyncio</code> magic</li>
 </ul>
-<h3 id=the-wrong-way>The wrong way</h3>
+<h3 id="the-wrong-way">The wrong way</h3>
 <p>So I decided to try and modify some libraries first. It turns out every library that implements an HTTP client wants to ensure it is compliant and do so by thoroughly reviewing the data an user would want to send.
 Usually these libraries make you specify method, URL, headers and body of the request separately.</p>
-<p>While this approach with HTTP complaint requests works well for standard clients and preventing errors, it is not flexible enough for this type of project. This makes it incredibly hard to implement complex attack logic, work with headers and cookies and send non-HTTP compliant malformed data.</p>
+<p>While this approach with HTTP complaint requests works well for standard clients and preventing errors, it is not flexible enough for this type of project.  This makes it incredibly hard to implement complex attack logic, work with headers and cookies and send non-HTTP compliant malformed data.</p>
 <p>After looking around, studying the HTTP protocol specifications and coding for a few hours, I was able to read some requests (non-chunked transfer encoding ones) and manage content compression!</p>
-<p>Well, to be completely honest, I borrowed and modified some code from <a href=https://github.com/urllib3/urllib3/blob/main/src/urllib3/>urllib3</a> to handle the decompression.</p>
+<p>Well, to be completely honest, I borrowed and modified some code from <a href="https://github.com/urllib3/urllib3/blob/main/src/urllib3/">urllib3</a> to handle the decompression.</p>
 <p>I did this for two reasons:</p>
 <ul>
 <li>the code is clean, simple and well tested</li>
 <li>someone has already considered aspects of the HTTP standard I didn&rsquo;t even know existed</li>
 </ul>
 <p>Since <code>urllib3</code> worked so well I decided to try and use as much code as I could.<br>
-One tweak here and one tweak there and I got myself into completely modifying <code>urllib3</code>&mldr; Bad idea!<br>
+One tweak here and one tweak there and I got myself into completely modifying <code>urllib3</code>&hellip; Bad idea!<br>
 <code>urllib3</code> offers great client functionalities, but it&rsquo;s too high level and wouldn&rsquo;t let me work with <code>asyncio</code> streams to read data.</p>
 <p><code>urllib3</code> requests are made by <code>http.client</code>, a standard python library. So guess, what I tried next? You guessed correctly, I attempted to hack <code>http.client</code> to work with <code>asyncio</code>.
 I knew from the beginning that it wasn&rsquo;t a smart idea, and it turns out I was right: modifying the <code>http</code> library to suit my needs is an hard task. <code>http.client</code> would only read file-like objects and there was no way I could make it to use <code>asyncio</code> streams (without rewriting a huge portion of the code, of course).</p>
-<p>If you can&rsquo;t beat &lsquo;em, join &lsquo;em, right? So I decided to &ldquo;transform&rdquo; <code>asyncio</code> streams into files with the hope <code>urllib3</code> will come to like them. At this point you may think: &ldquo;<em>less, if you read the whole content of a socket, the client would not be asynchronous anymore!</em>&rdquo;, and my answer to that would be <del>"<em>mind your own business</em>"</del> &ldquo;<em>we can manage sockets in some kind of spooled way!</em>&rdquo;. But of course that didn&rsquo;t pan out.</p>
+<p>If you can&rsquo;t beat &lsquo;em, join &lsquo;em, right? So I decided to &ldquo;transform&rdquo; <code>asyncio</code> streams into files with the hope <code>urllib3</code> will come to like them.  At this point you may think: &ldquo;<em>less, if you read the whole content of a socket, the client would not be asynchronous anymore!</em>&rdquo;, and my answer to that would be <del>&quot;<em>mind your own business</em>&quot;</del> &ldquo;<em>we can manage sockets in some kind of spooled way!</em>&rdquo;. But of course that didn&rsquo;t pan out.</p>
 <p>After a few hours of unsuccessful attempts, I decided to take a step back and code the whole client from scratch.</p>
-<h3 id=the-right-way>The right way?</h3>
-<p>I quickly realized it wasn&rsquo;t as easy as I expected it to be, but I did find some <a href=https://www.jmarshall.com/easy/http/>well written documents</a> that helped me better understand what I was I was looking for. So, the custom HTTP client adventure begins!</p>
+<h3 id="the-right-way">The right way?</h3>
+<p>I quickly realized it wasn&rsquo;t as easy as I expected it to be, but I did find some <a href="https://www.jmarshall.com/easy/http/">well written documents</a> that helped me better understand what I was I was looking for. So, the custom HTTP client adventure begins!</p>
 <p>I was able to put together some code I had already written and the decompression module from <code>urllib3</code>. That resulted in an HTTP 1.0 semi-compliant client (it would have been nice if HTTP 1.0 was used anytime in history, but sadly it has not).
 I want to make it HTTP 1.1 compliant to the extent that I need the client to be compliant, so the only thing missing would be to manage
 <code>chunked transfer encoding</code>.</p>
 <p>After avoiding this for a whole week, I realized it was easier than I expected. If I hadn&rsquo;t wasted so much time trying to poke at the libraries, I probably would have had a nice piece of client already.
 But you can&rsquo;t cry over spilled milk, so let&rsquo;s get back to work! After 1 hour of coding and 1 hour of debugging, I was able to achieve HTTP 1.1 compliance!</p>
 <p>And just like that &ldquo;cliente&rdquo; was born: a fully asynchronous, unrestricted, HTTP attack client. Simple yet effective.</p>
-<h3 id=the-right-way-1>The right way!</h3>
+<h3 id="the-right-way-1">The right way!</h3>
 <p>Everything seemed to work smoothly after the custom client was complete.
 I implemented the payload position logics just like in burp intruder (pitchfork, sniper, cluster bomb and battering ram), it was not easy to work with two delimiters: I had to play around a little bit with <code>regex</code> and had to work with payload position offsets given by the substitution of a text with a payload. To this day I&rsquo;m sure there must be a better solution.</p>
 <p>After that I implemented a few simple callback mechanisms to manage, analyze and store incoming responses which match user specified criteria.</p>
 <p>It&rsquo;s only a draft, but the very first version of Intrudo was complete!</p>
 <p>Here&rsquo;s a little demo of the speed Intrudo can offer at the moment:</p>
-<p><img src=/images/intrudo/demo.gif#center alt="intrudo demo"></p>
-<h3 id=what-i-learned>What I learned</h3>
-<p>Of course the main takeaway is a deeper understanding of the HTTP protocol, especially when it comes to encodings and compression methods, since I had to work with these directly.</p>
+<p><img src="/images/intrudo/demo.gif#center" alt="intrudo demo"></p>
+<h3 id="what-i-learned">What I learned</h3>
+<p>Of course the main takeaway is a deeper understanding of the HTTP protocol, especially when it comes to encodings and compression methods, since I  had to work with these directly.</p>
 <p>Working with raw HTTP requests was also the main challenge, ensuring that an user specified request is acceptable by the server was an hard task. Since there are no debug messages this process was based on a &ldquo;try and fail&rdquo; method and I had to read multiple rfc documents on the standard but I could complete this task, at least for the majority of servers I&rsquo;ve experimented with.</p>
-<p>Another interesting thing I got from this project is a grasp of asynchronous programming. I had studied it in theory but learning a framework to actually write asynchronous programs is different thing. <code>asyncio</code> is a powerful tool I will be using in other projects.</p>
+<p>Another interesting thing I got from this project is a grasp of asynchronous programming. I had studied it in theory but learning a framework to actually write asynchronous programs is different thing.  <code>asyncio</code> is a powerful tool I will be using in other projects.</p>
 <p>Finally I had to mess around with <code>regex</code> and learned about greedy <code>regex</code>. Handling the placeholder delimiters in the requests wasn&rsquo;t straightforward and for the sake of performance (to avoid recomputing placeholder positions for each payload inserted) I had to develop a module that would insert the payload in the desired position considering the offsets from previously inserted payloads.</p>
-<h3 id=to-be-continued>To be continued</h3>
+<h3 id="to-be-continued">To be continued</h3>
 <p>There are a few things that need to be done:</p>
 <ul>
 <li>The callbacks are not as complete as burp intruder ones.</li>
@@ -146,15 +196,22 @@ I implemented the payload position logics just like in burp intruder (pitchfork,
 <li>The timeout on requests is to be calculated with an adaptive function to optimize the throughput.</li>
 </ul>
 </div>
-</article>
-</main>
-</div>
-<footer>
-<hr>
-<p class=copyright>
-Copyright © 2023
-<a href=https://lessonsec.com><strong>Matteo [0xless] Cosentino</strong></a>.
+    </article>
+  </main>
+
+    </div>
+    <footer>
+  <hr />
+
+  <p class="copyright">
+    Copyright © 2023
+    <a href="https://lessonsec.com"><strong>Matteo [0xless] Cosentino</strong></a>.
 </footer>
-<script data-goatcounter=https://lessonsec.goatcounter.com/count async src=https://lessonsec.com/script/count.js></script>
-</body>
+
+<script data-goatcounter="https://lessonsec.goatcounter.com/count"
+        async src="https://lessonsec.com/script/count.js"></script>
+
+
+
+  </body>
 </html>
