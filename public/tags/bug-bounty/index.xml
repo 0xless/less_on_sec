@@ -1,21 +1,2 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Bug Bounty on less on sec</title>
-    <link>https://lessonsec.com/tags/bug-bounty/</link>
-    <description>Recent content in Bug Bounty on less on sec</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 02 Nov 2023 23:25:14 +0100</lastBuildDate><atom:link href="https://lessonsec.com/tags/bug-bounty/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>I hacked the Dutch government and all I got was this lousy t-shirt</title>
-      <link>https://lessonsec.com/posts/dutch_government_bounty/</link>
-      <pubDate>Thu, 02 Nov 2023 23:25:14 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/posts/dutch_government_bounty/</guid>
-      <description>Recently, I was awarded a cool t-shirt from the Dutch government for disclosing and reporting a vulnerability under their National Cyber Security Centre responsible disclosure program.
-        Lousy t-shirt    I was able to discover a vulnerability in one of the government&amp;rsquo;s websites.</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Bug Bounty on less on sec</title><link>https://lessonsec.com/tags/bug-bounty/</link><description>Recent content in Bug Bounty on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 02 Nov 2023 23:25:14 +0100</lastBuildDate><atom:link href="https://lessonsec.com/tags/bug-bounty/index.xml" rel="self" type="application/rss+xml"/><item><title>I hacked the Dutch government and all I got was this lousy t-shirt</title><link>https://lessonsec.com/posts/dutch_government_bounty/</link><pubDate>Thu, 02 Nov 2023 23:25:14 +0100</pubDate><guid>https://lessonsec.com/posts/dutch_government_bounty/</guid><description>Recently, I was awarded a cool t-shirt from the Dutch government for disclosing and reporting a vulnerability under their National Cyber Security Centre responsible disclosure program.
+Lousy t-shirt I was able to discover a vulnerability in one of the government&amp;rsquo;s websites.</description></item></channel></rss>
