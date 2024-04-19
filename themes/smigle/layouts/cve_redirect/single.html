@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<script data-goatcounter="https://lessonsec.goatcounter.com/count" src="https://lessonsec.com/script/count.js"></script>
+
+		<!--
+		<noscript>
+			<img src="https://lessonsec.goatcounter.com/count?p={{ .RelPermalink }}&t={{ .Title }}">
+		</noscript>
+		-->
+		
+	  {{ if (eq .Title .Site.Title) }}
+	    {{ with $title := .Title }}
+	      <title>{{ . }}</title>
+	    {{ end }}
+	  {{ else }}
+	  
+	  
+	  {{ if (lt (len .Title) 4) }}
+
+	    {{ with $title := printf "%s | %s" (upper .Title) .Site.Title }}
+	      
+	      	<title> {{ . }} </title>
+	      {{ end }}
+	    {{ else }}
+	    {{ with $title := printf "%s | %s"  .Title .Site.Title }}
+	      
+	      	<title> {{ . }} </title>
+	      {{ end }}
+	    {{ end }}
+	  {{ end }}
+	  
+	{{- if .IsHome -}}
+		<meta name="og:title" content="{{ site.Title }}" />
+		<meta name="twitter:title" content="{{ site.Title }}" />
+		<meta property="og:type" content="website" />
+		<meta property="og:description" content="{{ site.Params.Description }}" />
+		<meta property="og:url" content="{{ site.BaseURL }}" />
+		<meta name="og:image" content="{{ site.Params.image }}" />
+		<meta name="twitter:image" content="{{ site.Params.image }}" />
+		
+	{{- else -}}
+		<meta name="og:title" content="{{ .Page.Title }}" />
+		<meta name="twitter:title" content="{{ .Page.Title }}" />
+		<meta property="og:url" content="{{ .Page.Permalink }}" />
+		<meta property="og:description" content="{{ .Params.Description }}" />
+	{{- if isset .Params "image" -}}
+			<meta name="og:image" content="{{ .Params.image }}" />
+			<meta name="twitter:image" content="{{ .Params.image }}" />
+	{{- else -}}
+			<meta name="og:image" content="{{ site.Params.image }}" />
+			<meta name="twitter:image" content="{{ site.Params.image }}" />
+		{{- end -}}
+	{{- end -}}
+  
+	</head>
+	<body style="background-color:#000" onload="window.location.href={{ .Params.location }}">
+	</body>
+</html>

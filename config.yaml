@@ -51,7 +51,7 @@ params:
 #    - name: Twitter
 #      url: https://twitter.com/0xless
     - name: Email
-      url: mailto:contact@lessonsec.com
+      url: mailto:contact[@]lessonsec.com
       
 # Prevents automatic "pluralization" of page titles
 pluralizeListTitles: False
