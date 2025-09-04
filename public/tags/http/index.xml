@@ -1,2 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HTTP on less on sec</title><link>https://lessonsec.com/tags/http/</link><description>Recent content in HTTP on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 01 Apr 2021 23:23:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/http/index.xml" rel="self" type="application/rss+xml"/><item><title>Dev Chronicles: Creating an HTTP attack client</title><link>https://lessonsec.com/posts/intrudo/</link><pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate><guid>https://lessonsec.com/posts/intrudo/</guid><description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
-Intrudo logo Check it out: https://github.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HTTP on less on sec</title>
+    <link>https://lessonsec.com/tags/http/</link>
+    <description>Recent content in HTTP on less on sec</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 01 Apr 2021 23:23:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dev Chronicles: Creating an HTTP attack client</title>
+      <link>https://lessonsec.com/posts/intrudo/</link>
+      <pubDate>Thu, 01 Apr 2021 23:23:00 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/posts/intrudo/</guid>
+      <description>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+        Intrudo logo    Check it out: https://github.</description>
+    </item>
+    
+  </channel>
+</rss>

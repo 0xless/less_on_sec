@@ -1,233 +1,433 @@
-<!doctype html><html lang=en>
-<head>
-<meta name=generator content="Hugo 0.92.2">
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=description content="Personal blog on cybersecurity, harware hacking and security research.">
-<title>less on sec</title>
-<link rel=stylesheet href=/css/reset.css>
-<link rel=stylesheet href=/css/font.css>
-<link rel=stylesheet href=/css/smigle.css>
-<link rel=stylesheet href=/css/custom.css>
-<link rel=canonical href=https://lessonsec.com/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/site.webmanifest>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff"><meta name=og:title content="less on sec">
-<meta name=twitter:title content="less on sec">
-<meta property="og:type" content="website">
-<meta property="og:description" content="Personal blog on cybersecurity, harware hacking and security research.">
-<meta property="og:url" content="https://lessonsec.com">
-<meta name=og:image content="images/logo_white.svg">
-<meta name=twitter:image content="images/logo_white.svg"></head>
-<body>
-<header>
-<div id=brand>
-<a class=icon-link href=https://lessonsec.com>
-<img class=icon src=/images/logo_white.svg>
-</a>
-<div class=text>
-<a href=https://lessonsec.com><h1>less on sec</h1></a>
-<h3>exploring, hacking and breaking stuff</h3>
-</div>
-</div>
-<nav>
-<div class=responsive_div_top>
-<a href=/><b>Home</b></a>
-|
-<a href=/whoami/><b>Whoami</b></a>
-|
-<a href=/posts/><b>Posts</b></a>
-|
-<a href=/cve/><b>CVE</b></a>
-</div>
-<div class=responsive_div_bottom>
-Links:
-<a href=https://github.com/0xless>GitHub</a>
-|
-<a href=https://www.linkedin.com/in/matteo-cosentino/>Linkedin</a>
-|
-<a href=mailto:contact[@]lessonsec.com>Email</a>
-</div>
-</nav>
-<hr>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta name="generator" content="Hugo 0.92.2" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Personal blog on cybersecurity, harware hacking and security research."
+  />
+  
+  
+  
+  
+  
+    
+      <title>less on sec</title>
+    
+  
+  <link rel="stylesheet" href="/css/reset.css"/>
+  <link rel="stylesheet" href="/css/font.css"/>
+  <link rel="stylesheet" href="/css/smigle.css"/>
+  
+    <link rel="stylesheet" href="/css/custom.css"/>
+  
+  <link rel="canonical" href="https://lessonsec.com/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff"><meta name="og:title" content="less on sec" />
+		<meta name="twitter:title" content="less on sec" />
+		<meta property="og:type" content="website" />
+		<meta property="og:description" content="Personal blog on cybersecurity, harware hacking and security research." />
+		<meta property="og:url" content="https://lessonsec.com" />
+		<meta name="og:image" content="images/logo_white.svg" />
+		<meta name="twitter:image" content="images/logo_white.svg" /></head>
+
+  <body>
+    <header>
+  <div id="brand">
+    <a class="icon-link" href="https://lessonsec.com">
+      <img
+        class="icon"
+        src="/images/logo_white.svg"
+      />
+    </a>
+    <div class="text">
+      <a href="https://lessonsec.com"><h1>less on sec</h1></a>
+      <h3>exploring, hacking and breaking stuff</h3>
+    </div>
+  </div>
+  <nav>
+	<div class="responsive_div_top">
+		
+		
+		
+		<a href="/"><b>Home</b></a>
+		
+		 | 
+		<a href="/whoami/"><b>Whoami</b></a>
+		
+		 | 
+		<a href="/posts/"><b>Posts</b></a>
+		
+		 | 
+		<a href="/cve/"><b>CVE</b></a>
+		
+		
+		
+	</div>
+
+	<div class="responsive_div_bottom">
+		Links: 
+		
+		
+		<a href="https://github.com/0xless">GitHub</a>
+		
+		 | 
+		<a href="https://www.linkedin.com/in/matteo-cosentino/">Linkedin</a>
+		
+		 | 
+		<a href="mailto:contact[@]lessonsec.com">Email</a>
+		
+	</div>
+      
+  
+  </nav>
+  <hr />
 </header>
-<div id=content>
-<main>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/dutch_government_bounty/>I hacked the Dutch government and all I got was this lousy t-shirt</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2023-11-02</time>
-</strong>
-<span> • 262 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/bug-bounty>Bug Bounty</a>
+
+    <div id="content">
+      
+	<main>
+		
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/nrf51-bypass/">nRF51 RBPCONF bypass for firmware dumping</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2025-09-04</time>
+    
+    
+  </strong>
+   <span> • 1603 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/hardware-hacking">Hardware hacking</a>, 
+        <a href="/tags/physical-security">Physical security</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>Recently, I was awarded a cool t-shirt from the Dutch government for disclosing and reporting a vulnerability under their National Cyber Security Centre responsible disclosure program.
-Lousy t-shirt I was able to discover a vulnerability in one of the government&rsquo;s websites.</p>
-<a href=https://lessonsec.com/posts/dutch_government_bounty/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>A while ago I read about the firmware dumping technique proposed by Include Security to bypass RBPCONF (Readback Protection) on nRF51 family MCUs. Recently I could spend some time attempting to replicate the effects of their research.</p>
+    
+      <a href="https://lessonsec.com/posts/nrf51-bypass/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/>Attacking RKE: How to hack a car open</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2022-12-30</time>
-</strong>
-<div>
-<span>Published on </span>
-<a href=https://www.secjuice.com>www.secjuice.com</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/dutch_government_bounty/">I hacked the Dutch government and all I got was this lousy t-shirt</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2023-11-02</time>
+    
+    
+  </strong>
+   <span> • 262 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/bug-bounty">Bug Bounty</a>
+    </div>
+  
 </div>
-<div>
-<span>Tags:</span>
-<a href=/tags/radio>Radio</a>,
-<a href=/tags/physical-security>Physical security</a>,
-<a href=/tags/automotive>Automotive</a>
-</div>
-</div>
-<div class=summary-body>
-<p>I&rsquo;ve always found cybersecurity to be more interesting when implications reflect in the &ldquo;real world&rdquo; and this is the reason hacking physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!</p>
-<a href=https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>Recently, I was awarded a cool t-shirt from the Dutch government for disclosing and reporting a vulnerability under their National Cyber Security Centre responsible disclosure program.
+        Lousy t-shirt    I was able to discover a vulnerability in one of the government&rsquo;s websites.</p>
+    
+      <a href="https://lessonsec.com/posts/dutch_government_bounty/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/walkthrough-ble-ctf/>Walkthrough: BLE CTF</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2022-04-17</time>
-</strong>
-<span> • 4399 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/ctfs>CTFs</a>,
-<a href=/tags/radio>Radio</a>,
-<a href=/tags/ble>BLE</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/">Attacking RKE: How to hack a car open</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2022-12-30</time>
+    
+    
+  </strong>
+  
+  
+  
+  
+    <div>
+      <span>Published on </span>
+      
+      <a href=https://www.secjuice.com>www.secjuice.com</a>
+    </div>
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/radio">Radio</a>, 
+        <a href="/tags/physical-security">Physical security</a>, 
+        <a href="/tags/hardware-hacking">Hardware hacking</a>, 
+        <a href="/tags/automotive">Automotive</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</p>
-<a href=https://lessonsec.com/posts/walkthrough-ble-ctf/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>I&rsquo;ve always found cybersecurity to be more interesting when implications reflect in the &ldquo;real world&rdquo; and this is the reason hacking physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!</p>
+    
+      <a href="https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/email-spoofing-101/>Email spoofing 101</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2022-02-05</time>
-</strong>
-<span> • 3000 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/dns>DNS</a>,
-<a href=/tags/email>Email</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/walkthrough-ble-ctf/">Walkthrough: BLE CTF</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2022-04-17</time>
+    
+    
+  </strong>
+   <span> • 4399 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/ctfs">CTFs</a>, 
+        <a href="/tags/radio">Radio</a>, 
+        <a href="/tags/ble">BLE</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</p>
-<a href=https://lessonsec.com/posts/email-spoofing-101/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</p>
+    
+      <a href="https://lessonsec.com/posts/walkthrough-ble-ctf/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/walkthrough-cryptohack-ctf/>Walkthrough: CryptoHack CTF</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2021-10-03</time>
-</strong>
-<span> • 1649 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/ctfs>CTFs</a>,
-<a href=/tags/cryptography>Cryptography</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/email-spoofing-101/">Email spoofing 101</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2022-02-05</time>
+    
+    
+  </strong>
+   <span> • 3000 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/dns">DNS</a>, 
+        <a href="/tags/email">Email</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
-<a href=https://lessonsec.com/posts/walkthrough-cryptohack-ctf/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</p>
+    
+      <a href="https://lessonsec.com/posts/email-spoofing-101/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/analysis-of-a-remote-control/>Analysis of a Remote Control</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2021-07-15</time>
-</strong>
-<span> • 1443 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/radio>Radio</a>,
-<a href=/tags/sdr>SDR</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/walkthrough-cryptohack-ctf/">Walkthrough: CryptoHack CTF</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2021-10-03</time>
+    
+    
+  </strong>
+   <span> • 1649 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/ctfs">CTFs</a>, 
+        <a href="/tags/cryptography">Cryptography</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</p>
-<a href=https://lessonsec.com/posts/analysis-of-a-remote-control/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>Recently I&rsquo;ve been meaning to get into cryptography more seriously, and to be honest I&rsquo;ve also been postponing it for a while too, so I figured it was time I wrote this article to get motivated!</p>
+    
+      <a href="https://lessonsec.com/posts/walkthrough-cryptohack-ctf/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/>Cloning RFID tags for fun and profit</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2021-04-20</time>
-</strong>
-<span> • 3021 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/rfid>RFID</a>,
-<a href=/tags/radio>Radio</a>,
-<a href=/tags/physical-security>Physical security</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/analysis-of-a-remote-control/">Analysis of a Remote Control</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2021-07-15</time>
+    
+    
+  </strong>
+   <span> • 1443 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/radio">Radio</a>, 
+        <a href="/tags/sdr">SDR</a>, 
+        <a href="/tags/hardware-hacking">Hardware hacking</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.</p>
-<a href=https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</p>
+    
+      <a href="https://lessonsec.com/posts/analysis-of-a-remote-control/">Read more...</a>
+    
+  </div>
 </article>
-<article>
-<h1 class=summary-title><a href=https://lessonsec.com/posts/intrudo/>Dev Chronicles: Creating an HTTP attack client</a></h1>
-<div class=post-meta>
-<strong>
-<span>Posted on</span>
-<time>2021-04-01</time>
-</strong>
-<span> • 1525 words</span>
-<div>
-<span>Tags:</span>
-<a href=/tags/dev-chronicles>Dev Chronicles</a>,
-<a href=/tags/http>HTTP</a>
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/">Cloning RFID tags for fun and profit</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2021-04-20</time>
+    
+    
+  </strong>
+   <span> • 3021 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/rfid">RFID</a>, 
+        <a href="/tags/radio">Radio</a>, 
+        <a href="/tags/physical-security">Physical security</a>, 
+        <a href="/tags/hardware-hacking">Hardware hacking</a>
+    </div>
+  
 </div>
-</div>
-<div class=summary-body>
-<p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
-Intrudo logo Check it out: https://github.</p>
-<a href=https://lessonsec.com/posts/intrudo/>Read more...</a>
-</div>
+
+  <div class="summary-body">
+    <p>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &ldquo;bar code&rdquo; in shops.</p>
+    
+      <a href="https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/">Read more...</a>
+    
+  </div>
 </article>
-<div>
-</br>
-[1 of 1]
+
+		
+			<article>
+  <h1 class="summary-title"><a href="https://lessonsec.com/posts/intrudo/">Dev Chronicles: Creating an HTTP attack client</a></h1>
+  <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2021-04-01</time>
+    
+    
+  </strong>
+   <span> • 1525 words</span> 
+  
+  
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/dev-chronicles">Dev Chronicles</a>, 
+        <a href="/tags/http">HTTP</a>
+    </div>
+  
 </div>
-</main>
+
+  <div class="summary-body">
+    <p>Intrudo is a tool for automating customized attacks against web applications loosely shaped after burp intruder.
+        Intrudo logo    Check it out: https://github.</p>
+    
+      <a href="https://lessonsec.com/posts/intrudo/">Read more...</a>
+    
+  </div>
+</article>
+
+		
+		<div>
+  
+  </br>
+  [1 of 1]
+  
 </div>
-<footer>
-<hr>
-<p class=copyright>
-Copyright © 2024
-<a href=https://lessonsec.com><strong>Matteo [0xless] Cosentino</strong></a>.
+
+	</main>
+
+    </div>
+    <footer>
+  <hr />
+
+  <p class="copyright">
+    Copyright © 2025
+    <a href="https://lessonsec.com"><strong>Matteo [0xless] Cosentino</strong></a>.
 </footer>
-<script data-goatcounter=https://lessonsec.goatcounter.com/count async src=https://lessonsec.com/script/count.js></script>
-</body>
+
+<script data-goatcounter="https://lessonsec.goatcounter.com/count"
+        async src="https://lessonsec.com/script/count.js"></script>
+
+
+
+  </body>
 </html>

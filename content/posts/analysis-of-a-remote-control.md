@@ -4,6 +4,7 @@ date: 2021-07-15T16:45:40+02:00
 tags:
   - Radio
   - SDR
+  - Hardware hacking
 
 images:
   - /images/rc_analysis/complete.jpeg

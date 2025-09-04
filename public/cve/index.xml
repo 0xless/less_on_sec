@@ -1,2 +1,57 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Cve on less on sec</title><link>https://lessonsec.com/cve/</link><description>Recent content in Cve on less on sec</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 20 Mar 2024 10:26:46 +0200</lastBuildDate><atom:link href="https://lessonsec.com/cve/index.xml" rel="self" type="application/rss+xml"/><item><title>CVE-2024-29019: Authentication bypass via Cross site request forgery in ESPhome</title><link>https://lessonsec.com/cve/cve-2024-29019/</link><pubDate>Wed, 20 Mar 2024 10:26:46 +0200</pubDate><guid>https://lessonsec.com/cve/cve-2024-29019/</guid><description/></item><item><title>CVE-2024-27287: Cross-site scripting (stored) in ESPHome</title><link>https://lessonsec.com/cve/cve-2024-27287/</link><pubDate>Tue, 05 Mar 2024 10:26:46 +0200</pubDate><guid>https://lessonsec.com/cve/cve-2024-27287/</guid><description/></item><item><title>CVE-2024-27081: Remote code execution via arbitrary file write in ESPHome</title><link>https://lessonsec.com/cve/cve-2024-27081/</link><pubDate>Sun, 25 Feb 2024 10:26:46 +0200</pubDate><guid>https://lessonsec.com/cve/cve-2024-27081/</guid><description/></item><item><title>CVE-2023-27216: OS command injection vulnerability in D-Link DSL-3782</title><link>https://lessonsec.com/cve/cve-2023-27216/</link><pubDate>Tue, 11 Apr 2023 06:00:00 +0200</pubDate><guid>https://lessonsec.com/cve/cve-2023-27216/</guid><description>An issue found in D-Link DSL-3782 v.1.03 allows remote authenticated users to execute arbitrary code as root via OS command injection in multiple setting pages.
-Settings known to be affected by this issues are:</description></item><item><title>CVE-2022-44900: path traversal vulnerability in py7zr</title><link>https://lessonsec.com/cve/cve-2022-44900/</link><pubDate>Tue, 06 Dec 2022 22:19:25 +0100</pubDate><guid>https://lessonsec.com/cve/cve-2022-44900/</guid><description>Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cve on less on sec</title>
+    <link>https://lessonsec.com/cve/</link>
+    <description>Recent content in Cve on less on sec</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 20 Mar 2024 10:26:46 +0200</lastBuildDate><atom:link href="https://lessonsec.com/cve/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CVE-2024-29019: Authentication bypass via Cross site request forgery in ESPhome</title>
+      <link>https://lessonsec.com/cve/cve-2024-29019/</link>
+      <pubDate>Wed, 20 Mar 2024 10:26:46 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/cve/cve-2024-29019/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CVE-2024-27287: Cross-site scripting (stored) in ESPHome</title>
+      <link>https://lessonsec.com/cve/cve-2024-27287/</link>
+      <pubDate>Tue, 05 Mar 2024 10:26:46 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/cve/cve-2024-27287/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CVE-2024-27081: Remote code execution via arbitrary file write in ESPHome</title>
+      <link>https://lessonsec.com/cve/cve-2024-27081/</link>
+      <pubDate>Sun, 25 Feb 2024 10:26:46 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/cve/cve-2024-27081/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CVE-2023-27216: OS command injection vulnerability in D-Link DSL-3782</title>
+      <link>https://lessonsec.com/cve/cve-2023-27216/</link>
+      <pubDate>Tue, 11 Apr 2023 06:00:00 +0200</pubDate>
+      
+      <guid>https://lessonsec.com/cve/cve-2023-27216/</guid>
+      <description>An issue found in D-Link DSL-3782 v.1.03 allows remote authenticated users to execute arbitrary code as root via OS command injection in multiple setting pages.
+Settings known to be affected by this issues are:</description>
+    </item>
+    
+    <item>
+      <title>CVE-2022-44900: path traversal vulnerability in py7zr</title>
+      <link>https://lessonsec.com/cve/cve-2022-44900/</link>
+      <pubDate>Tue, 06 Dec 2022 22:19:25 +0100</pubDate>
+      
+      <guid>https://lessonsec.com/cve/cve-2022-44900/</guid>
+      <description>Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.</description>
+    </item>
+    
+  </channel>
+</rss>

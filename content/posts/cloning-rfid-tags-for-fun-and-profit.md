@@ -13,6 +13,7 @@ tags:
   - RFID
   - Radio
   - Physical security
+  - Hardware hacking
 image:
   - /images/rfid/main.jpg
 ---

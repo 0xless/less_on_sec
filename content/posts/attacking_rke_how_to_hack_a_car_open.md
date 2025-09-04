@@ -5,6 +5,7 @@ date: 2022-12-30T22:30:14+01:00
 tags:
   - Radio
   - Physical security
+  - Hardware hacking
   - Automotive
 
 location: "https://www.secjuice.com/attacking-rke-how-to-hack-a-car-open/"
