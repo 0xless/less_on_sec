@@ -17,7 +17,7 @@ images:
   - /images/rc_analysis/signal_zoom.jpeg
 
 image:
-  - /images/rc_analysis/pcb.png
+  - /images/rc_analysis/pcb.jpg
 ---
 
 A couple of days ago I found some old remote controls around the house and decided it was time to take out my old **RTL-SDR** and put it to good use. 
@@ -43,7 +43,7 @@ The very next step was to open up the remote and visually inspect the board.
 
 Inside the plastic casing I found this simple PCB.
 
-| ![RC pcb board](/images/rc_analysis/pcb.png#center) |
+| ![RC pcb board](/images/rc_analysis/pcb.jpg#center) |
 | :-------------------------------------------------: |
 |                      PCB board                      |
 

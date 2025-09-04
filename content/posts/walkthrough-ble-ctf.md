@@ -3,8 +3,8 @@ title: "Walkthrough: BLE CTF"
 date: 2022-04-17T14:08:32+02:00
 toc: false
 images:
-  - /images/BLE_CTF/gatt_server.png
-  - /images/BLE_CTF/gatt_server.png
+  - /images/BLE_CTF/gatt_server.jpg
+  - /images/BLE_CTF/gatt_server.jpg
 tags:
   - CTFs
   - Radio
@@ -48,7 +48,7 @@ A characteristic is a data value sent between the server and the client.
 These characteristics can have descriptors that provide additional information about them. 
 Characteristics are often grouped in services if they have purposes related to each other. Services can have several characteristics.
 
-| ![GATT server layout](/images/BLE_CTF/gatt_server.png#center) |
+| ![GATT server layout](/images/BLE_CTF/gatt_server.jpg#center) |
 | :----------------------------------------------------------: |
 | GATT Server content layout <br />Credits - Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things |
 
@@ -62,7 +62,7 @@ While UUID vary depending on the device functionality some UUID remains the same
 
 Finally, there are characteristic properties. Properties indicate how to interact with a characteristic and what to expect from it.
 
-|     ![properties](/images/BLE_CTF/properties.png#center)     |
+|     ![properties](/images/BLE_CTF/properties.jpg#center)     |
 | :----------------------------------------------------------: |
 | GATT chatateristic proprieties  <br />Credits - devzone.nordicsemi.com |
 

@@ -6,7 +6,7 @@ image:
   - /images/dutch_government_bounty/tshirt.jpeg
 images:
   - /images/dutch_government_bounty/tshirt.jpeg
-  - /images/dutch_government_bounty/poc.png
+  - /images/dutch_government_bounty/poc.jpg
 tags:
   - Bug Bounty
 ---
@@ -50,9 +50,9 @@ link=https%3A%2F%2Fexample.org<h1>hack</h1>
 
 With the received email looking like this:
 
-| ![poc email](/images/dutch_government_bounty/poc.png#center) |
-| :-------------------------------------------------: |
-|                  PoC email with injected HTML code                |
+| ![poc email](/images/dutch_government_bounty/poc.jpg#center) |
+| :----------------------------------------------------------: |
+|              PoC email with injected HTML code               |
 
 At this point I stopped testing in accordance to the rules of the responsible disclosure program and reported the issue.   
 

@@ -6,7 +6,7 @@ tags:
  - Dev Chronicles
  - HTTP
 image:
- - /images/intrudo/logo.png
+ - /images/intrudo/logo.jpg
 ---
 
 Intrudo is a tool for automating customized attacks against web applications loosely shaped after [burp intruder](https://portswigger.net/burp/documentation/desktop/tools/intruder).  

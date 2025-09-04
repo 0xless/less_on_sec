@@ -105,7 +105,7 @@
     
     
   </strong>
-  <span> • 1603 words</span>
+  <span> • 1860 words</span>
   
   
   
@@ -118,9 +118,11 @@
   
 </div>
 
-      <div><p>A while ago I read about the <a href="https://blog.includesecurity.com/2015/11/firmware-dumping-technique-for-an-arm-cortex-m0-soc/">firmware dumping technique proposed by Include Security</a> to bypass <strong>RBPCONF (Readback Protection)</strong> on nRF51 family MCUs. Recently I could spend some time attempting to replicate the effects of their research.</p>
+      <div><p>A while ago I read about the <a href="https://blog.includesecurity.com/2015/11/firmware-dumping-technique-for-an-arm-cortex-m0-soc/">firmware dumping technique proposed by Include Security</a> to bypass RBPCONF (Readback Protection) on nRF51 family MCUs. Recently I could spend some time attempting to replicate the effects of their research.</p>
 <p>The nRF51 series is Nordic Semiconductor’s family of low-power SoCs built around an ARM Cortex-M0. If you’ve played with Bluetooth Low Energy (BLE) gadgets from a few years back such as beacons, smart locks or fitness trackers there’s a good chance they had an nRF51 inside.</p>
-<p>So I visited Aliexpress, bought two of the cheapest board I could find featuring an nRF51822 and went to work.</p>
+<p>This technique is significant because retrieving the firmware is almost always the first step before any meaningful reverse engineering. Once the binary is available, an attacker can perform static or dynamic analysis to uncover hardcoded secrets, or look for exploitable bugs that could compromise the security of the system. For connected products such as smart locks, wearables, and IoT sensors, the impact of such access can be substantial.</p>
+<p>What makes this bypass interesting is its non-invasive nature. Other approaches often involve some type of glitching, manipulating reset lines, or even destructive decapsulation, all of which risk damaging the device and require specialized equipment. In this case, the attack relies only on software manipulation through standard debugging interfaces. The target remains fully functional while its memory is exfiltrated, making the method practical and appealing.</p>
+<p>So I decided to visit Aliexpress, bought two of the cheapest board I could find featuring an nRF51822 and went to work.</p>
 <h2 id="nrf51-security-in-a-nutshell">nRF51 security in a nutshell</h2>
 <p>As numerous other MCUs, the nRF51 family offers some way to prevent final users of the device from reading the flash memory of the MCU and recover the firmware. Much of the device’s security posture is controlled through a set of non-volatile registers called <strong>User Information Configuration Registers (UICR)</strong> located at address <code>0x10001000</code>. This registers are what allows for enabling protections on this devices family.</p>
 <table>
@@ -136,8 +138,8 @@
 </tbody>
 </table>
 <p>Registers inside UICR we are going to focus onto are: <code>CLENR0</code> and <code>RBPCONF</code>.</p>
-<p>Register <code>CLENR0</code> is what allows dividing code flash in two areas: <strong>Code Region 0 (CR0)</strong> and <strong>Code Region 1 (CR1)</strong>. CR0 always starts at <code>0x00000000</code>, and its size is defined by the <code>CLENR0</code> register. Everything above that boundary falls into CR1. If <code>CLENR0</code> is left untouched (<code>0xFFFFFFFF</code>), the whole flash is simply treated as CR1.</p>
-<p>There are a few differences between CR0 and CR1:</p>
+<p>Register <code>CLENR0</code> is what allows dividing code flash in two areas: Code Region 0 (CR0) and Code Region 1 (CR1). CR0 always starts at <code>0x00000000</code>, and its size is defined by the <code>CLENR0</code> register. Everything above that boundary falls into CR1. If <code>CLENR0</code> is left untouched (<code>0xFFFFFFFF</code>), the whole flash is simply treated as CR1.</p>
+<p>sThere are a few differences between CR0 and CR1:</p>
 <ul>
 <li>Code running in CR0 cannot be modified by code running in CR1.</li>
 <li>Pages of CR0 cannot be erased, CR0 is erasable only via chip-wide wipe (<code>ERASEALL</code>)</li>
@@ -158,7 +160,7 @@
 </tbody>
 </table>
 <p><code>PR0</code> register allows for locking CR0 memory area. This protection, when enabled, prevents firmware running from CR1 from reading CR0 memory as well as locking the read-back on CR0 area from SWD debugger.</p>
-<p>The nRF51 also exposes the <code>PALL</code> protection, which locks down all code memory (both CR0 and CR1). Once <code>PALL</code> is enabled, no external debugger reads are possible. The only way to disable this protection is to perform a full chip erase (<code>ERASEALL</code>), which wipes both application and configuration data, protecting the firmware from exfiltration. The PALL mechanism is intended as &ldquo;production lock&rdquo; and is the strongest protection mechanism available in these MCUs.</p>
+<p>The nRF51 also exposes the <code>PALL</code> protection, which locks down all code memory (both CR0 and CR1). Once <code>PALL</code> is enabled, no external debugger reads are possible. The only way to disable this protection is to perform a full chip erase (<code>ERASEALL</code>), which wipes both application and configuration data, protecting the firmware from exfiltration. The <code>PALL</code> mechanism is intended as &ldquo;production lock&rdquo; and is the strongest protection mechanism available in these MCUs.</p>
 <p>One security measure other SoCs offer, is to completely disable debugger accesses. However this is not a possibility with the nRF51 and even though the debugger won&rsquo;t be able to access flash memory directly, this poses a risk to the device and it is exactly the weakness we are abusing to access the whole memory.</p>
 <h3 id="exploiting-rbpconf">Exploiting RBPCONF</h3>
 <p>The protection mechanisms in place allow only code already present in the CR0 to read flash memory.</p>
@@ -209,7 +211,7 @@ With this knowledge available it&rsquo;s just a matter of finding a load instruc
 <p>Once board&rsquo;s pins VCC, GND, SWDIO and SWDCLK are connected to J-Link&rsquo;s corresponding pins it was possible to obtain SWD debug access both with J-Link suite tools and with OpenOCD using the commands:</p>
 <p><code>openocd -f /usr/share/openocd/scripts/interface/jlink.cfg -c &quot;transport select swd&quot; -f /usr/share/openocd/scripts/target/nrf51.cfg</code></p>
 <p><code>JLinkGDBServer -device nrf51822_XXAA -if SWD</code></p>
-<p>Personally I&rsquo;m more keen on using OpenOCD for this exploitation specifically because J-Link suite would allow opening  a GDB connection to nRF51 if the <code>PALL</code> protection was enabled.</p>
+<p>Personally I&rsquo;m more keen on using OpenOCD for this exploitation specifically because J-Link suite wouldn&rsquo;t allow opening  a GDB connection to nRF51 if the <code>PALL</code> protection is enabled.</p>
 <p>Once the SWD connection is achieved, we need to flash the device with a custom firmware, to do so I used SEGGER Embedded Studio as it was the fastest way to setup the SDK and toolchain for our target device.</p>
 <p>For this demo a firmware containing a single <code>printf(&quot;SECRET&quot;)</code> is used and the objective will be to confirm whether the string can still be retrieved with <code>PALL</code> protection enabled.</p>
 <table>
@@ -291,7 +293,9 @@ Once the load instruction is located, it is necessary to attempt reading bytes f
 </tbody>
 </table>
 <p>and as expected we are able to read the first byte of protected memory.</p>
-<p>Now it&rsquo;s time to render the exploit practical and to automate the firmware extraction and we can achieve this in several ways, I&rsquo;ve decided to simply script the interaction with GDB commands. The extraction script will look something like this:</p>
+<p>Now it&rsquo;s time to render the exploit practical and to automate the firmware extraction and we can achieve this in several ways, I&rsquo;ve decided to simply script the interaction with GDB commands.
+Depending on the exact MCU you&rsquo;re working with, you may encounter different flash sizes. In this case we are working with an <code>nRF51822_XXAA</code> which is the most commonly available variant of nRF51822 around and features 256kB of flash memory.</p>
+<p>The extraction script will look something like this:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">set $i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
 set $end <span style="color:#f92672">=</span> 0x3FFFF
 <span style="color:#66d9ef">while</span> $i &lt;<span style="color:#f92672">=</span> $end
@@ -316,8 +320,11 @@ end
 </tr>
 </tbody>
 </table>
-<p>After letting it run the script will have gone through the entire code space.</p>
-<p>For ease of use I&rsquo;ve decided to write a more &ldquo;usable&rdquo; script capable of automatically detecting the load function, dump the firmware and reassemble it to generate a binary output. You can find it at: <a href="https://github.com/0xless/nRF51-RBPCONF-Bypass">https://github.com/0xless/nRF51-RBPCONF-Bypass</a></p>
+<p>After letting it run the script will have gone through the entire code space. A simple parser will then be used to cleanup the retrieved data and rebuild the binary file.</p>
+<blockquote>
+<p>For ease of use I&rsquo;ve decided to write a more usable script capable of automatically detecting the load function, dump the firmware and reassemble it to generate a binary output.</p>
+<p>You can find it at: <a href="https://github.com/0xless/nRF51-RBPCONF-Bypass">https://github.com/0xless/nRF51-RBPCONF-Bypass</a></p>
+</blockquote>
 <p>Once the script has finished running, in under 54 minutes, we get <code>firmware.bin</code> file:</p>
 <table>
 <thead>
@@ -345,7 +352,8 @@ end
 </tbody>
 </table>
 <p>This proves the functioning of the exploit and the practicality of this attack.</p>
-<p>The PoC script developed for this attack is far from perfect, it takes a lot of time to execute and the GDB + Python interaction is a bit &ldquo;hacky&rdquo;.  A huge improvement it is possible to make is to aim for instructions that load more bytes of flash to registers an example would be <code>LDMIA Rn!, {Rlist}</code> that allow up to 32 bytes loads in a single step. When reading the memory, it is easy to evaluate the OPCODE of the instruction just read, if it&rsquo;s a <code>LDMIA</code> instruction, then we can edit the PC register value to jump there and attempt exfiltraring memory at higher speed.</p>
+<p>The PoC script developed for this attack is far from perfect, it takes a lot of time to execute and the GDB + Python interaction is a bit &ldquo;hacky&rdquo;.  A huge improvement it is possible to make is to aim to find instructions that load more bytes of flash memory to registers; an example would be <code>LDMIA Rn!, {Rlist}</code> that allow up to 32 bytes loads in a single step. When reading the memory, it is easy to evaluate the OPCODE of the instruction just read, if it&rsquo;s a <code>LDMIA</code> instruction, then we can edit the PC register value to jump there and attempt exfiltrating memory at higher speed.</p>
+<p>I&rsquo;ve attempted sketching this using GDB scripting, but as the complexity of the project increased I realized this scripting language was not the tool for the job. For future developments I want to rewrite the whole script in python using library <code>pyswd</code> which looks promising in handling SWD interactions directly via python, however it is compatible with ST-Link debuggers only (which I don&rsquo;t own).</p>
 <h2 id="conclusions">Conclusions</h2>
 <p>The nRF51’s RBPCONF was designed to keep firmware safe, but not allowing final users to disable debugger access weakens the model. Even under PALL protection, careful register manipulation and instruction reuse make full extraction possible with modest tools.</p>
 <p>In this post we demonstrated how it is possible to do so and walked all the steps needed to discover the issue and replicate the attack.</p>

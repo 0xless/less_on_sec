@@ -6,7 +6,7 @@ aliases:
   - /posts/cloning-rfid-for-fun-and-profit
   - /posts/cloning-rfid-tags-for-fun-and-profit
 images:
-  - /images/rfid/t55xx.png
+  - /images/rfid/t55xx.jpg
   - /images/rfid/bricked.jpg
   - /images/rfid/cloned.jpg
 tags:
@@ -106,7 +106,7 @@ This tag features 8 x 32 bit blocks in page 0 and 4 x 32 blocks in page 1.
 Page 1 blocks are meant to be used for configuration purposes along with block 0 and 7 in page 0.
 Blocks 1 to 6 in page 0 are dedicated to user data.
 
-|           ![t55xx](/images/rfid/t55xx.png#center)            |
+|           ![t55xx](/images/rfid/t55xx.jpg#center)            |
 | :----------------------------------------------------------: |
 | T55xx memory layout<br />Credit - Microchip ATA5577C datasheet |
 
