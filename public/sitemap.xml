@@ -2,10 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://lessonsec.com/tags/hardware-hacking/</loc>
-    <lastmod>2025-09-04T21:41:00+02:00</lastmod>
+    <loc>https://lessonsec.com/cve/</loc>
+    <lastmod>2026-01-14T00:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/cve/cve-2025-65396/</loc>
+    <lastmod>2026-01-14T00:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/cve/cve-2025-65397/</loc>
+    <lastmod>2026-01-14T00:00:00+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/</loc>
+    <lastmod>2026-01-14T00:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/hardware-hacking/</loc>
     <lastmod>2025-09-04T21:41:00+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/posts/nrf51-bypass/</loc>
@@ -19,9 +28,6 @@
   </url><url>
     <loc>https://lessonsec.com/tags/</loc>
     <lastmod>2025-09-04T21:41:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/cve/</loc>
-    <lastmod>2024-03-20T10:26:46+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/cve/cve-2024-29019/</loc>
     <lastmod>2024-03-20T10:26:46+02:00</lastmod>
