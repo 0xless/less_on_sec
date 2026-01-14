@@ -1,3 +1,4 @@
+/*Tables for image caption*/
 table
 {
     width: 100%;
@@ -10,6 +11,7 @@ table thead tr th img[src$='#center']
     margin: auto; 
 }
 
+/*Image orientation*/
 img[src$='#center']
 {
     display: block;
@@ -56,3 +58,13 @@ img[src$='#floatright']
 	}
 }
 
+/*CVE Index page hanging text in title*/
+.date {
+  display: inline-block;
+  width: 100px; 
+}
+.title {
+  text-indent: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

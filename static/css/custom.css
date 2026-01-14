@@ -1,3 +1,4 @@
+/*Tables for image caption*/
 table
 {
     width: 100%;
@@ -10,6 +11,7 @@ table thead tr th img[src$='#center']
     margin: auto; 
 }
 
+/*Image orientation*/
 img[src$='#center']
 {
     display: block;
@@ -56,3 +58,23 @@ img[src$='#floatright']
 	}
 }
 
+/*Overflow in title wrap under itself*/
+#postsByDate li {
+  display: flex;            /* keep date and title side by side */
+  align-items: flex-start;  /* align at top */
+  margin-bottom: 1em;       /* increase space between posts */
+}
+
+#postsByDate .date {
+  flex: 0 0 80px;           /* fixed width for date column */
+  margin-right: 1em;        /* space between date and title */
+  text-align: right;        /* aligns date nicely */
+  font-size: 1.1em;         /* increase title size */
+}
+
+#postsByDate .title {
+  flex: 1;                  /* title takes remaining space */
+  font-size: 1.1em;         /* increase title size */
+  line-height: 1.4;         /* improves readability */
+  word-wrap: break-word;    /* wrap long titles */
+}
