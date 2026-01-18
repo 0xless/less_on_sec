@@ -1,21 +1,82 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
+
     <title>Bug Bounty on less on sec</title>
     <link>https://lessonsec.com/tags/bug-bounty/</link>
-    <description>Recent content in Bug Bounty on less on sec</description>
+    <description>
+      Recent content in Bug Bountyon less on sec
+    </description>
+
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 02 Nov 2023 23:25:14 +0100</lastBuildDate><atom:link href="https://lessonsec.com/tags/bug-bounty/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>I hacked the Dutch government and all I got was this lousy t-shirt</title>
-      <link>https://lessonsec.com/posts/dutch_government_bounty/</link>
-      <pubDate>Thu, 02 Nov 2023 23:25:14 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/posts/dutch_government_bounty/</guid>
-      <description>Recently, I was awarded a cool t-shirt from the Dutch government for disclosing and reporting a vulnerability under their National Cyber Security Centre responsible disclosure program.
+    <language>en</language>
+    <lastBuildDate>Thu, 02 Nov 2023 23:25:14 &#43;0100</lastBuildDate>
+    <atom:link href="https://lessonsec.com/tags/bug-bounty/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>I hacked the Dutch government and all I got was this lousy t-shirt</title>
+        <link>https://lessonsec.com/posts/dutch_government_bounty/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/dutch_government_bounty/</guid>
+        <pubDate>Thu, 02 Nov 2023 23:25:14 &#43;0100</pubDate><description>Recently, I was awarded a cool t-shirt from the Dutch government for disclosing and reporting a vulnerability under their National Cyber Security Centre responsible disclosure program.
         Lousy t-shirt    I was able to discover a vulnerability in one of the government&amp;rsquo;s websites.</description>
-    </item>
-    
+	<content:encoded>&lt;p&gt;Recently, I was awarded a cool t-shirt from the &lt;strong&gt;Dutch government&lt;/strong&gt; for disclosing and reporting a vulnerability under their &lt;strong&gt;National Cyber Security Centre&lt;/strong&gt; &lt;a href=&#34;https://www.government.nl/topics/cybercrime/fighting-cybercrime-in-the-netherlands/responsible-disclosure&#34;&gt;responsible disclosure program&lt;/a&gt;.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/dutch_government_bounty/tshirt.jpeg#center&#34; alt=&#34;Lousy t-shirt&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Lousy t-shirt&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I was able to discover a vulnerability in one of the government&amp;rsquo;s websites.
+The platform allows users to compile a survey and offers the possibility to save progress and receive a link via email to resume the it in a second time.&lt;/p&gt;
+&lt;p&gt;Testing this functionality I was able to find the parameter responsible for setting the URL to resume the survey in a POST request. This parameter was also not subject to sanification, and so it was possible to inject HTML code into email sent from &lt;code&gt;noreply@[governmentdomain].nl&lt;/code&gt; effectively allowing unauthenticated users to send emails with forged contents to arbitrary addresses, impersonating the Dutch government.&lt;/p&gt;
+&lt;p&gt;As a proof of concept, consider this POST request:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-http&#34; data-lang=&#34;http&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;POST&lt;/span&gt; /[endpoint] &lt;span style=&#34;color:#66d9ef&#34;&gt;HTTP&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.1&lt;/span&gt;
+Host&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;[governmentdomain].nl&lt;/span&gt;
+User-Agent&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;Mozilla/5.0(X11; Linux x86_64; rv: 108.0) Gecko/20100101 Firefox/108.0&lt;/span&gt;
+Accept&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;application/json, text/javascript, */*; q=0.01&lt;/span&gt;
+Accept-Language&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;en-US,en;q=0.5&lt;/span&gt;
+Accept-Encoding&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;gzip, deflate, br&lt;/span&gt;
+Referer&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;[...]&lt;/span&gt;
+Content-Type&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;application/x-www-form-urlencoded; charset=UTF-8&lt;/span&gt;
+X-Requested-With&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;XMLHttpRequest&lt;/span&gt;
+Content-Length&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;191&lt;/span&gt;
+Origin&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;https://[governmentdomain].nl&lt;/span&gt;
+Connection&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;keep-alive&lt;/span&gt;
+Cookie&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;[...]&lt;/span&gt;
+Sec-Fetch-Dest&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;empty&lt;/span&gt;
+Sec-Fetch-Mode&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;cors&lt;/span&gt;
+Sec-Fetch-Site&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;same-origin&lt;/span&gt;
+Pragma&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;no-cache&lt;/span&gt;
+Cache-Control&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;no-cache&lt;/span&gt;
+
+[...]
+link=https%3A%2F%2Fexample.org&amp;lt;h1&amp;gt;hack&amp;lt;/h1&amp;gt;
+[...]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With the received email looking like this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/dutch_government_bounty/poc.jpg#center&#34; alt=&#34;poc email&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;PoC email with injected HTML code&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;At this point I stopped testing in accordance to the rules of the responsible disclosure program and reported the issue.&lt;/p&gt;
+&lt;p&gt;Thanks to the Dutch National Cyber Security Centre for promptly fixing the issue and awarding me the t-shirt. It&amp;rsquo;s great to see a government taking proactive steps towards improving their cybersecurity posture and promoting responsible disclosure.&lt;/p&gt;
+</content:encoded>
+
+      </item>
+
   </channel>
 </rss>

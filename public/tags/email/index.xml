@@ -1,20 +1,287 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
+
     <title>Email on less on sec</title>
     <link>https://lessonsec.com/tags/email/</link>
-    <description>Recent content in Email on less on sec</description>
+    <description>
+      Recent content in Emailon less on sec
+    </description>
+
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sat, 05 Feb 2022 16:40:50 +0100</lastBuildDate><atom:link href="https://lessonsec.com/tags/email/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Email spoofing 101</title>
-      <link>https://lessonsec.com/posts/email-spoofing-101/</link>
-      <pubDate>Sat, 05 Feb 2022 16:40:50 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/posts/email-spoofing-101/</guid>
-      <description>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</description>
-    </item>
-    
+    <language>en</language>
+    <lastBuildDate>Sat, 05 Feb 2022 16:40:50 &#43;0100</lastBuildDate>
+    <atom:link href="https://lessonsec.com/tags/email/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>Email spoofing 101</title>
+        <link>https://lessonsec.com/posts/email-spoofing-101/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/email-spoofing-101/</guid>
+        <pubDate>Sat, 05 Feb 2022 16:40:50 &#43;0100</pubDate><description>Email spoofing is a technique mostly linked to malicious activities including phishing and spamming. From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.</description>
+	<content:encoded>&lt;p&gt;Email spoofing is a technique mostly linked to malicious activities including phishing and spamming.
+From a formal(ish) standpoint, email spoofing is the act of sending an email with a forged sender address.&lt;/p&gt;
+&lt;p&gt;I got interested in this technique in the last few days, so I decided to experiment a bit with it.&lt;/p&gt;
+&lt;h2 id=&#34;email-spoofing-basics&#34;&gt;Email spoofing basics&lt;/h2&gt;
+&lt;p&gt;This technique is as old as emails are, in fact original transmission protocols (such as SMTP) don&amp;rsquo;t have authentication methods, and while security measures have been adopted these are &lt;a href=&#34;https://labs.bishopfox.com/tech-blog/2017/05/how-we-can-stop-email-spoofing&#34;&gt;not widely employed yet&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;An email is composed of three different parts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Envelope&lt;/strong&gt;: data about sender and receiver addresses.
+This part of message is destined to the server, it&amp;rsquo;s generally not shown to the user by the client.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Header&lt;/strong&gt;: meta-data of the email. Contains information like the subject of the email, the date and some info about sending/receiving addresses.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Body&lt;/strong&gt;: the content of the email.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To get a bit more into details, the SMTP protocol specify two addresses in the envelope addressing part of the message:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;MAIL FROM&lt;/code&gt;: it specifies the &amp;ldquo;return address&amp;rdquo; in case an email bounces.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;RCPT TO&lt;/code&gt;: address to which the email will be delivered.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Other headers are often present, this set of information represent what the receiver will see when reading the email inside of a client.
+The addresses in each header will be present in the form of: &lt;code&gt;Foo Bar &amp;lt;foobar@spam.com&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In particular, these headers are: &lt;code&gt;From:&lt;/code&gt;, &lt;code&gt;Reply-to:&lt;/code&gt;, &lt;code&gt;Sender:&lt;/code&gt;. Each of these headers represents the address visible to the receiving part.&lt;/p&gt;
+&lt;p&gt;In general, it&amp;rsquo;s important to notice the difference between the envelope &lt;code&gt;MAIL FROM&lt;/code&gt; or &lt;a href=&#34;https://datatracker.ietf.org/doc/html/rfc5321&#34;&gt;RFC5321&lt;/a&gt;.MailFrom and the header &lt;code&gt;From:&lt;/code&gt;or &lt;a href=&#34;https://datatracker.ietf.org/doc/html/rfc5322&#34;&gt;RFC5322&lt;/a&gt;.From since the latter is shown to the user and can be easily spoofed and it&amp;rsquo;s shown to the recipient of the email by the client.&lt;/p&gt;
+&lt;p&gt;As anticipated, SMTP doesn&amp;rsquo;t check whether an user is authorized or not to use a particular address in these fields and this is the reason why it&amp;rsquo;s so easy to spoof emails. The only reliable information we can harvest from a spoofed email is the IP from which the email was sent.&lt;/p&gt;
+&lt;h2 id=&#34;available-security-measures&#34;&gt;Available security measures&lt;/h2&gt;
+&lt;p&gt;There are three main security measured against email spoofing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://datatracker.ietf.org/doc/html/rfc7208&#34;&gt;Sender Policy Framework&lt;/a&gt; (SPF)&lt;/strong&gt;
+This method allows the detection of forged sender addresses and it&amp;rsquo;s based on envelope information.
+In particular SPF information are contained inside a &lt;code&gt;TXT&lt;/code&gt; DNS record. These info specify which IP addresses are allowed to send emails on the behalf of the  domain. Allowed senders can be listed explicitly specifying authorized IP ranges, or checking if &lt;code&gt;A&lt;/code&gt;, &lt;code&gt;AAAA&lt;/code&gt; or &lt;code&gt;MX&lt;/code&gt; records resolve to the sender&amp;rsquo;s address.&lt;/p&gt;
+&lt;p&gt;SPF also use 4 qualifiers, these represent the status of the SPF validation.
+Qualifiers can be:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PASS (+) : if the check is passed. The email can be accepted.&lt;/li&gt;
+&lt;li&gt;NEUTRAL (?) : if no policy is in use.&lt;/li&gt;
+&lt;li&gt;FAIL (-) : if the check wasn&amp;rsquo;t successful. The email should be rejected.&lt;/li&gt;
+&lt;li&gt;SOFTFAIL (~) : like fail, but used for debugging. In general emails with SOFTFAIL qualifier are accepted but flagged.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The SPF &lt;code&gt;TXT&lt;/code&gt; DNS record is composed of SPF version (specified with the tag &lt;code&gt;v=&lt;/code&gt; &lt;a href=&#34;http://www.open-spf.org/SPF_vs_Sender_ID/#0.1.3&#34;&gt;it can only be followed by the value &lt;code&gt;spf1&lt;/code&gt;&lt;/a&gt;) and one of more &lt;em&gt;mechanisms&lt;/em&gt;.
+Mechanisms are used to specify if a domain can send the email. Mechanisms include specifying IPv4/IPv6 address ranges or checking if A, MX or PTR records resolve to the domain. Other mechanisms exist but are rarely used.&lt;/p&gt;
+&lt;p&gt;SPF alone is not enough to detect email forging because it checks envelope information only, it would still be possible to keep the original sender in the envelope information and forge only the headers that are interpreted by the client and can&amp;rsquo;t be checked with SPF.
+Usually a failed SPF check is enough to mark the email as spam or even reject it.
+It&amp;rsquo;s worth noting that SPF policies could cause troubles in case of email forwarding even if the sender is authorized. That&amp;rsquo;s because the &amp;ldquo;forwarder&amp;rdquo; is technically not authorized to send emails on the behalf the original domain.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://datatracker.ietf.org/doc/html/rfc6376/&#34;&gt;DomainKeys Identified Mail&lt;/a&gt; (DKIM)&lt;/strong&gt;
+DKIM is an authentication method that allows the receiver to check if the email was authorized by the owner of the domain and functions as an integrity check to make sure the message hasn&amp;rsquo;t been modified.
+This check is possible thanks to an additional header containing a digital signature. A public key, that makes the signature validation possible, is available in a dedicated &lt;code&gt;TXT&lt;/code&gt; DNS record. This method only checks the validity of email&amp;rsquo;s header and body, the envelope addresses are ignored. It&amp;rsquo;s possible to specify which headers to check, but the &lt;code&gt;RFC5322.From&lt;/code&gt; header must always be checked.
+DKIM checks can and should be done at every SMTP hop and should resist relaying across &lt;a href=&#34;https://en.wikipedia.org/wiki/Message_transfer_agent&#34;&gt;MTAs&lt;/a&gt; .&lt;/p&gt;
+&lt;p&gt;Important info contained in the DKIM headers of an email are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;b&lt;/code&gt;: signature of header and body&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;bh&lt;/code&gt;: body hash&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;d&lt;/code&gt;: signing domain&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;s&lt;/code&gt;: selector&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;h&lt;/code&gt;: header fields that has been signed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But information about the protocol, the algorithm used to sign and more can be present in optional tags.&lt;/p&gt;
+&lt;p&gt;The information useful to verify the signature are present in the &lt;code&gt;TXT&lt;/code&gt; DNS record and are presented in the form of key-value pairs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;k&lt;/code&gt;: algorithm to be used&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;v&lt;/code&gt;: version of DKIM&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p&lt;/code&gt;: public key to validate the signature&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;More tags can be present, but are not useful for our analysis.&lt;/p&gt;
+&lt;p&gt;DKIM records are published at &lt;code&gt;selector._domainkey.example.com&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://datatracker.ietf.org/doc/html/rfc7489&#34;&gt;Domain-based Message Authentication, Reporting and Conformance&lt;/a&gt; (DMARC)&lt;/strong&gt;
+DMARC is an email authentication protocol. Using a &lt;code&gt;TXT&lt;/code&gt; DNS record, it dictates the conditions under which an email is considered authenticated.
+It works on top of DKIM and SPF: these two mechanisms, as shown above, offer different checks on the authenticity of an email sender.&lt;br&gt;
+Both DKIM and SPF can offer authenticated identifiers in DMARC, meaning that DKIM &lt;code&gt;d=&lt;/code&gt; tag of a validated DKIM-Signature header field and SPF validated &lt;code&gt;MAIL FROM&lt;/code&gt; field can be used to validate an email&amp;rsquo;s sender.&lt;/p&gt;
+&lt;p&gt;DMARC alignment basically checks that the domain name in the &lt;code&gt;RFC5322.From&lt;/code&gt; field, is &amp;ldquo;aligned&amp;rdquo; (matches) with either DKIM or SPF authenticated identifier.
+There are two types of alignment in DMARC, &lt;em&gt;strict&lt;/em&gt; or &lt;em&gt;relaxed&lt;/em&gt;.
+With strict alignment, the domain needs to be identical, while with relaxed alignment, a domain is considered aligned if the top-level domain match.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s also possible to define policies to specify how to deal with authentication failures.
+These policies are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;none&lt;/code&gt;: no action required by the receivers. It allows the domain to receive feedback reports.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;quarantine&lt;/code&gt;: suggests that emails that fail DMARC check are flagged (marked as spam).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;reject&lt;/code&gt;: suggests that emails that fail DMARC check are discarded.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A &lt;code&gt;TXT&lt;/code&gt; DNS entry for DMARC is composed of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;v&lt;/code&gt;: version&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;p&lt;/code&gt;: policy&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sp&lt;/code&gt;: sub-domain policy&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pct&lt;/code&gt;: percentage of non authenticated emails to which apply the policy&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rua&lt;/code&gt;: email address to send reports to&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The use of &lt;code&gt;pct&lt;/code&gt; is interesting because it can lower the protection offered by DMARC.
+By default &lt;code&gt;pct&lt;/code&gt; is set to 100%, but if it wasn&amp;rsquo;t, the receiver should use a Bernoulli sampling algorithm to check how the policy is to be applied to the email.
+If an email doesn&amp;rsquo;t fall under the percentage specified in &lt;code&gt;pct&lt;/code&gt;, a lower policy is to be applied to the email.
+So if &lt;code&gt;p=reject&lt;/code&gt;, the quarantine policy is to be used and if &lt;code&gt;p=quarantine&lt;/code&gt;, the &lt;code&gt;none&lt;/code&gt; policy is to be applied.&lt;/p&gt;
+&lt;p&gt;DMARC records are published at &lt;code&gt;_dmarc.example.com&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;While SPF and DKIM work properly, they both have defects:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SPF checks the envelope from address, leaving the header from address not considered.
+This means that a malicious user can send an email from a whitelisted domain and spoof the header from address. This can lead to a situation in which the email is considered valid, but a domain different than the expected one is shown to the receiver.&lt;/li&gt;
+&lt;li&gt;DKIM only checks parts of the email, this means that, leaving such parts untouched, a malicious user can &lt;a href=&#34;https://www.zdnet.com/article/dkim-useless-or-just-disappointing/&#34;&gt;add other headers&lt;/a&gt; and make the receiving part see an apparently valid message, but with spoofed parts.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This leaves DMARC as the only viable solution for a more comprehensive domain security.&lt;/p&gt;
+&lt;h2 id=&#34;vulnerable-configurations&#34;&gt;Vulnerable configurations&lt;/h2&gt;
+&lt;p&gt;When it comes to email security implemented with DMARC, there are 4 main vulnerable scenarios to consider:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Case 1&lt;br&gt;
+There is a DMARC DNS record, this entry describes a DMARC entry and it has a policy different than &amp;ldquo;none&amp;rdquo;.
+In this case it&amp;rsquo;s impossible to spoof an email from this domain.&lt;/li&gt;
+&lt;li&gt;Case 2&lt;br&gt;
+There is a DMARC DNS record and a valid DMARC entry, but the policy is set to &amp;ldquo;none&amp;rdquo;, meaning that, even if feedback reports will be sent, the domain is spoofable in emails.&lt;/li&gt;
+&lt;li&gt;Case 3&lt;br&gt;
+There is no DMARC DNS record in a domain that is used to send emails. This is the worst possible scenario because the domain is completely unprotected.&lt;/li&gt;
+&lt;li&gt;Case 4&lt;br&gt;
+There is no DMARC DNS record in a domain not used to send emails. The domain is spoofable, but the impact is not as big as in case 3.
+It is suggested to have DMARC in place even for domain not used to send emails, but it&amp;rsquo;s not fundamental.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Of course to thoroughly evaluate the security in place, it&amp;rsquo;s important to consider eventual SPF and DKIM policies, even if no DMARC protection is set up.&lt;/p&gt;
+&lt;p&gt;The most direct way to check the configuration is to query the DNS, for this article I&amp;rsquo;ll specify the way to do this in a unix based system, but more info can be found &lt;a href=&#34;https://www.cisco.com/c/en/us/support/docs/security/secure-email-gateway/217073-how-to-use-dig-nslookup-to-find-spf-dki.html&#34;&gt;here&lt;/a&gt;. We will use google.com as a domain for our experiments.&lt;/p&gt;
+&lt;h3 id=&#34;find-the-spf-record&#34;&gt;Find the SPF record&lt;/h3&gt;
+&lt;p&gt;Using &lt;code&gt;dig&lt;/code&gt; it&amp;rsquo;s possible to get &lt;code&gt;TXT&lt;/code&gt; records for a domain.
+The command is &lt;code&gt;dig google.com txt&lt;/code&gt; and the output looks like this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.16.8-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; google.com txt
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 8353
+;; flags: qr rd ra; QUERY: 1, ANSWER: 9, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;google.com.			IN	TXT
+
+;; ANSWER SECTION:
+google.com.		3600	IN	TXT	&amp;quot;MS=E4A68B9AB2BB9670BCE15412F62916164C0B20BB&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;v=spf1 include:_spf.google.com ~all&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;google-site-verification=wD8N7i1JTNTkezJ49swvWW48f8_9xveREV4oB-0Hf5o&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;google-site-verification=TV9-DBe4R80X4v0M4U_bd_J9cpOJM0nikft0jAgjmsQ&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;apple-domain-verification=30afIBcvSuDV2PLX&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;docusign=05958488-4752-4ef2-95eb-aa7ba8a3bd0e&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;globalsign-smime-dv=CDYX+XFHUw2wml6/Gb8+59BsH31KzUr6c1l2BPvqKX8=&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95&amp;quot;
+google.com.		3600	IN	TXT	&amp;quot;docusign=1b0a6754-49b1-4db5-8540-d2c12664b289&amp;quot;
+
+;; Query time: 328 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Tue Nov 23 22:29:59 CET 2021
+;; MSG SIZE  rcvd: 625
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;then we need to find the SPF record between &lt;code&gt;TXT&lt;/code&gt; records. We simply need to find the one starting with &lt;code&gt;v=spf&lt;/code&gt;, in this case it is
+&lt;code&gt;google.com.  3600	IN	TXT	&amp;quot;v=spf1 include:_spf.google.com ~all&amp;quot;&lt;/code&gt;. Or we can use &lt;code&gt;grep&lt;/code&gt; to extract the information directly:
+&lt;code&gt;dig google.com txt | grep spf&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;find-the-dkim-record&#34;&gt;Find the DKIM record&lt;/h3&gt;
+&lt;p&gt;The DKIM entry is located at &lt;code&gt;selector._domainkey.example.com&lt;/code&gt;, so to find the DKIM record we first need to find the DKIM selector.
+This can be done in two ways, get it from an email received from the domain we are researching or trying to achieve a zone transfer.&lt;/p&gt;
+&lt;p&gt;From an email, we just need to look for the original message (containing the headers), if DKIM is enabled, one of the fields will be &lt;code&gt;DKIM-Signature:&lt;/code&gt; followed by different elements; what we are looking for is &lt;code&gt;s=&lt;/code&gt; that is followed by the selector.
+If we can&amp;rsquo;t receive an email from a specific domain, it&amp;rsquo;s possible to try and get a zone transfer, it&amp;rsquo;s basically a dump of every DNS record from a nameserver.
+This can be done with the command: &lt;code&gt;dig axfr @nameserver example.com&lt;/code&gt;.  The nameservers can be found using the command &lt;code&gt;dig ns example.com&lt;/code&gt;.
+Sadly google.com won&amp;rsquo;t allow zone transfer. It&amp;rsquo;s possible to practice this technique using &lt;a href=&#34;https://digi.ninja/projects/zonetransferme.php&#34;&gt;zonetransfer.me&lt;/a&gt;, this website also contains a lot of cool info about DNS and zone transfers.&lt;/p&gt;
+&lt;p&gt;I was able to recover the selector from an email received from google.com. Once we have the selector, we can get info about DKIM using the command:
+&lt;code&gt;dig 20210112._domainkey.google.com txt&lt;/code&gt;.
+The output looks like this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.16.8-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; 20210112._domainkey.google.com txt
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 52118
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;20210112._domainkey.google.com.	IN	TXT
+
+;; ANSWER SECTION:
+20210112._domainkey.google.com.	3600 IN	TXT	&amp;quot;v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtnbQAeqvEP2pG2L540W9JvVU7qy767Zs83Hjw34PCkZ9/9dWE6cK+CYaMNIQqTGfwq4uUe3diBuz3Uikkr+WPMj9AuxtxJqUAO8PsZ2Y5DneFpz5kVesC9/rtXgCwgYOmO&amp;quot; &amp;quot;9UjSy4IN11ewXUBuCH+zp2v5Abv5T0Lol/nWl8wLgRI1IesstingY4cnSfo3Pq3U0I1GAxdNFCK2FPedPpg4sdPpHqtxVvRLMLamRKoUfySBMjpXuMNL0UeCizmFfdUL73ZdiS+MNxGECzFNmeCngFBscLQN++urvfB9OqHQrbxLIwNyni3KMbE/E+cxPkx4KxhyGHSU2klV1vvIAHfwIDAQAB&amp;quot;
+
+;; Query time: 92 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Tue Nov 23 22:23:32 CET 2021
+;; MSG SIZE  rcvd: 483
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;find-the-dmarc-record&#34;&gt;Find the DMARC record&lt;/h3&gt;
+&lt;p&gt;The DMARC record is easy to find, just for the SPF record, we can use &lt;code&gt;dig _dmarc.google.com txt&lt;/code&gt; to get what we are looking for.&lt;/p&gt;
+&lt;p&gt;The output is:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.16.8-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; _dmarc.google.com txt
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 28825
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;_dmarc.google.com.		IN	TXT
+
+;; ANSWER SECTION:
+_dmarc.google.com.	300	IN	TXT	&amp;quot;v=DMARC1; p=reject; rua=mailto:mailauth-reports@google.com&amp;quot;
+
+;; Query time: 44 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Tue Nov 23 22:29:14 CET 2021
+;; MSG SIZE  rcvd: 117
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Another way to find these information is to use online tools like &lt;a href=&#34;https://mxtoolbox.com/SuperTool.aspx?action=mx%3alessonsec.com&amp;amp;run=toolpage#&#34;&gt;this&lt;/a&gt;, but I think that it&amp;rsquo;s better to query the DNS server manually to better understand how these things work.&lt;/p&gt;
+&lt;h2 id=&#34;actually-spoofing-an-email&#34;&gt;Actually spoofing an email&lt;/h2&gt;
+&lt;p&gt;Now that we have an overview of email security, we can go ahead and try to actually spoof an email.&lt;/p&gt;
+&lt;p&gt;Now, if you tried sending an email via code in past, you know for sure that it&amp;rsquo;s really hard to avoid ending up in the spam folder, even if you are trying to send an email from a legitimate domain and you are authorized. Said that, let&amp;rsquo;s go through some experiments I made and examine how feasible it really is to send spoofed emails from scratches.&lt;/p&gt;
+&lt;p&gt;Anyway, let&amp;rsquo;s dive into it.&lt;/p&gt;
+&lt;p&gt;First of we need to setup a vulnerable server or try to find a vulnerable domain administrator that will allow you to spoof their domain name. Luckily using bug bounty programs it&amp;rsquo;s easy to find vulnerable domains you&amp;rsquo;re allowed to work with.&lt;/p&gt;
+&lt;p&gt;Now, if you are familiar on the &amp;ldquo;raw&amp;rdquo; email format, you&amp;rsquo;ll know that the email is nothing but a text composed of headers-values and the content of the email. For this reason it&amp;rsquo;s possible to &amp;ldquo;spoof&amp;rdquo; headers like &lt;code&gt;From&lt;/code&gt;, &lt;code&gt;Reply-to&lt;/code&gt;, &lt;code&gt;Sender&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;first-attempt-using-gmail-smtp-server&#34;&gt;First attempt: using Gmail SMTP server&lt;/h3&gt;
+&lt;p&gt;I tried using my gmail account to send an email using google servers.
+To do that I had to enable access from less secure apps on my account. This is the only way to login into a google service from code you write.&lt;/p&gt;
+&lt;p&gt;Now, it&amp;rsquo;s not possible to specify envelope information, but it&amp;rsquo;s possible to send the email and specify the &lt;code&gt;From:&lt;/code&gt;, &lt;code&gt;Reply-to:&lt;/code&gt; and &lt;code&gt;Sender:&lt;/code&gt; headers.
+Using the &lt;code&gt;From:&lt;/code&gt; field, I was able to change the sender name, but the email displayed by the client would be the one from the account used to login into gmail. If no &lt;code&gt;From:&lt;/code&gt; header was specified, the header will be inferred by gmail servers and the email address (without the domain) will be used. Specifying the &lt;code&gt;Sender:&lt;/code&gt; header didn&amp;rsquo;t do much, if it was simply ignored, both with or without the &lt;code&gt;From:&lt;/code&gt; header.
+The &lt;code&gt;Reply-to:&lt;/code&gt; header was interpreted just like Sender:, but if specified, emails would be marked as &amp;ldquo;promotions&amp;rdquo; by gmail&amp;rsquo;s client.&lt;/p&gt;
+&lt;p&gt;Using different SMTP servers or clients will possibly lead to different results.&lt;/p&gt;
+&lt;p&gt;This is the code snippet used for this experiment:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; smtplib
+
+gmail_user &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;YOUR-EMAIL-HERE@gmail.com&amp;#39;&lt;/span&gt;
+gmail_password &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;YOUR-PASSWORD-HERE&amp;#39;&lt;/span&gt;
+
+sent_from_name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Foo&amp;#34;&lt;/span&gt;
+sent_from &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foobar@spam.com&amp;#39;&lt;/span&gt;
+to &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;receiver@email.com&amp;#39;&lt;/span&gt;
+subject &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;This is a spoofed email&amp;#39;&lt;/span&gt;
+body &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;This is the content of a spoofed email&amp;#34;&lt;/span&gt;
+
+
+email_text &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;MIME-Version: 1.0
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Date: Thu, 29 Apr 2021 18:49:13 +0200
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Subject: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;subject&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;From: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;sent_from_name&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;sent_from&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;To: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;to&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;body&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+    server &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; smtplib&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;SMTP_SSL(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;smtp.gmail.com&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;465&lt;/span&gt;)
+    server&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ehlo()
+    server&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;login(gmail_user, gmail_password)
+    server&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sendmail(sent_from, to, email_text)
+    server&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Email sent!&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Exception&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; e:
+    print(e)
+    print(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Email not sent!&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;second-attempt-setting-up-your-personal-smtp-server&#34;&gt;Second attempt: setting up your personal SMTP server&lt;/h3&gt;
+&lt;p&gt;Installing an SMTP server on your machine would make it possible to send emails from your computer using a script similar to the one used for google. Sadly this experiment won&amp;rsquo;t let you send emails, this is for different reasons: for starters the IP address from which the email is sent is from a residential IP range. This means that if your ISP doesn&amp;rsquo;t block the email (very possible), the receiving client will ignore the email because of the poor IP reputation.&lt;/p&gt;
+&lt;p&gt;I think it&amp;rsquo;s possible to send emails using this technique if an AWS, GCP or Azure VM is used, this simply because the IP wouldn&amp;rsquo;t be from a residential range anymore. I didn&amp;rsquo;t try this yet, but I&amp;rsquo;m confident that emails would be at least delivered.&lt;/p&gt;
+&lt;h3 id=&#34;third-attempt-using-online-services&#34;&gt;Third attempt: using online services&lt;/h3&gt;
+&lt;p&gt;With this approach I was able to send spoofed emails! I&amp;rsquo;m not linking any of the services I tried using, but there are free or paid services that actually work and let you specify the headers we are interested into.&lt;/p&gt;
+&lt;p&gt;Sadly most of the emails will end up in the spam folder or discarded by the client due to bad IP reputation (I think).
+But it&amp;rsquo;s a fun experiment to see how the emails are treated. Using a client with less protections (like online temporary email addresses ones) will allow the reception of the email.&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;I think that the main take-away from this article should be an increased awareness about email security, mainly because of a deeper understanding of spoofing techniques.  For me personally, experimenting and researching on this topic was useful because I could work with DNS queries and gather insights about DNS security, a topic I&amp;rsquo;d love to further explore.&lt;/p&gt;
+&lt;p&gt;Sadly I couldn&amp;rsquo;t experiment much at the moment, but I will for sure try and send emails from a VPS or Virtual Machine in the cloud that use a non-residential IP, I&amp;rsquo;m confident this approach would work in sending spoofed emails on vulnerable domains.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;This article was reviewed by Nicola Selenu from &lt;a href=&#34;http://topdeliverability.com&#34;&gt;topdeliverability.com&lt;/a&gt;, big thanks to him!&lt;/p&gt;
+</content:encoded>
+
+      </item>
+
   </channel>
 </rss>

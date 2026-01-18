@@ -1,75 +1,140 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
+
     <title>Cve on less on sec</title>
     <link>https://lessonsec.com/cve/</link>
-    <description>Recent content in Cve on less on sec</description>
+    <description>
+      Recent content in Cveon less on sec
+    </description>
+
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Wed, 14 Jan 2026 00:00:00 +0200</lastBuildDate><atom:link href="https://lessonsec.com/cve/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>CVE-2025-65396: SPI Fault Enables Bootloader Access and Firmware Dump in Blurams Flare Camera</title>
-      <link>https://lessonsec.com/cve/cve-2025-65396/</link>
-      <pubDate>Wed, 14 Jan 2026 00:00:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2025-65396/</guid>
-      <description>A vulnerability in the boot process of Blurams Flare Camera version 24.1114.151.929 and earlier allows a physically proximate attacker to hijack the boot mechanism and gain a bootloader shell via the UART interface.</description>
-    </item>
-    
-    <item>
-      <title>CVE-2025-65397: Insecure Startup Script Allows Root Command Execution in Blurams Flare Camera</title>
-      <link>https://lessonsec.com/cve/cve-2025-65397/</link>
-      <pubDate>Wed, 14 Jan 2026 00:00:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2025-65397/</guid>
-      <description>An insecure authentication mechanism in the safe_exec.sh startup script of Blurams Flare Camera version 24.1114.151.929 and earlier allows an attacker with physical access to the device to execute arbitrary commands with root privileges, if file /opt/images/public_key.</description>
-    </item>
-    
-    <item>
-      <title>CVE-2024-29019: Authentication Bypass via Cross Site Request Forgery in ESPhome</title>
-      <link>https://lessonsec.com/cve/cve-2024-29019/</link>
-      <pubDate>Wed, 20 Mar 2024 10:26:46 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2024-29019/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CVE-2024-27287: Cross-site Scripting (Stored) in ESPHome</title>
-      <link>https://lessonsec.com/cve/cve-2024-27287/</link>
-      <pubDate>Tue, 05 Mar 2024 10:26:46 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2024-27287/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CVE-2024-27081: Remote Code Execution via Arbitrary File Write in ESPHome</title>
-      <link>https://lessonsec.com/cve/cve-2024-27081/</link>
-      <pubDate>Sun, 25 Feb 2024 10:26:46 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2024-27081/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CVE-2023-27216: OS Command Injection Culnerability in D-Link DSL-3782</title>
-      <link>https://lessonsec.com/cve/cve-2023-27216/</link>
-      <pubDate>Tue, 11 Apr 2023 06:00:00 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2023-27216/</guid>
-      <description>An issue found in D-Link DSL-3782 v.1.03 allows remote authenticated users to execute arbitrary code as root via OS command injection in multiple setting pages.
+    <language>en</language>
+    <lastBuildDate>Wed, 14 Jan 2026 00:00:00 &#43;0200</lastBuildDate>
+    <atom:link href="https://lessonsec.com/cve/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>CVE-2025-65396: SPI Fault Enables Bootloader Access and Firmware Dump in Blurams Flare Camera</title>
+        <link>https://lessonsec.com/cve/cve-2025-65396/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2025-65396/</guid>
+        <pubDate>Wed, 14 Jan 2026 00:00:00 &#43;0200</pubDate><description>A vulnerability in the boot process of Blurams Flare Camera version 24.1114.151.929 and earlier allows a physically proximate attacker to hijack the boot mechanism and gain a bootloader shell via the UART interface.</description>
+	<content:encoded>&lt;p&gt;A vulnerability in the boot process of Blurams Flare Camera version 24.1114.151.929 and earlier allows a physically proximate attacker to hijack the boot mechanism and gain a bootloader shell via the UART interface. This is achieved by inducing a read error from the SPI flash memory during the boot, by shorting a data pin of the IC to ground. An attacker can then dump the entire firmware, leading to the disclosure of sensitive information including cryptographic keys and user configurations.&lt;/p&gt;
+&lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
+&lt;p&gt;23/09/2025  First contacted with vendor&lt;br&gt;
+08/10/2025  Vulnerability report submitted to vendor&lt;br&gt;
+11/10/2025  Vulnerabilities confirmed&lt;br&gt;
+31/10/2025  Requested CVE IDs&lt;br&gt;
+29/11/2025  CVE IDs Reserverd&lt;br&gt;
+14/01/2026  Disclosure&lt;/p&gt;
+</content:encoded>
+
+      </item><item>
+        <title>CVE-2025-65397: Insecure Startup Script Allows Root Command Execution in Blurams Flare Camera</title>
+        <link>https://lessonsec.com/cve/cve-2025-65397/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2025-65397/</guid>
+        <pubDate>Wed, 14 Jan 2026 00:00:00 &#43;0200</pubDate><description>An insecure authentication mechanism in the safe_exec.sh startup script of Blurams Flare Camera version 24.1114.151.929 and earlier allows an attacker with physical access to the device to execute arbitrary commands with root privileges, if file /opt/images/public_key.</description>
+	<content:encoded>&lt;p&gt;An insecure authentication mechanism in the &lt;code&gt;safe_exec.sh&lt;/code&gt; startup script of Blurams Flare Camera version 24.1114.151.929 and earlier allows an attacker with physical access to the device to execute arbitrary commands with root privileges, if file &lt;code&gt;/opt/images/public_key.der&lt;/code&gt; is not present in the file system. The vulnerability can be triggered by providing a maliciously crafted &lt;code&gt;auth.ini&lt;/code&gt; file on the device&amp;rsquo;s SD card.&lt;/p&gt;
+&lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
+&lt;p&gt;23/09/2025  First contacted with vendor&lt;br&gt;
+08/10/2025  Vulnerability report submitted to vendor&lt;br&gt;
+11/10/2025  Vulnerabilities confirmed&lt;br&gt;
+31/10/2025  Requested CVE IDs&lt;br&gt;
+29/11/2025  CVE IDs Reserverd&lt;br&gt;
+14/01/2026  Disclosure&lt;/p&gt;
+</content:encoded>
+
+      </item><item>
+        <title>CVE-2024-29019: Authentication Bypass via Cross Site Request Forgery in ESPhome</title>
+        <link>https://lessonsec.com/cve/cve-2024-29019/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2024-29019/</guid>
+        <pubDate>Wed, 20 Mar 2024 10:26:46 &#43;0200</pubDate><description></description>
+	<content:encoded></content:encoded>
+
+      </item><item>
+        <title>CVE-2024-27287: Cross-site Scripting (Stored) in ESPHome</title>
+        <link>https://lessonsec.com/cve/cve-2024-27287/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2024-27287/</guid>
+        <pubDate>Tue, 05 Mar 2024 10:26:46 &#43;0200</pubDate><description></description>
+	<content:encoded></content:encoded>
+
+      </item><item>
+        <title>CVE-2024-27081: Remote Code Execution via Arbitrary File Write in ESPHome</title>
+        <link>https://lessonsec.com/cve/cve-2024-27081/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2024-27081/</guid>
+        <pubDate>Sun, 25 Feb 2024 10:26:46 &#43;0200</pubDate><description></description>
+	<content:encoded></content:encoded>
+
+      </item><item>
+        <title>CVE-2023-27216: OS Command Injection Culnerability in D-Link DSL-3782</title>
+        <link>https://lessonsec.com/cve/cve-2023-27216/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2023-27216/</guid>
+        <pubDate>Tue, 11 Apr 2023 06:00:00 &#43;0200</pubDate><description>An issue found in D-Link DSL-3782 v.1.03 allows remote authenticated users to execute arbitrary code as root via OS command injection in multiple setting pages.
 Settings known to be affected by this issues are:</description>
-    </item>
-    
-    <item>
-      <title>CVE-2022-44900: Path Traversal Vulnerability in py7zr</title>
-      <link>https://lessonsec.com/cve/cve-2022-44900/</link>
-      <pubDate>Tue, 06 Dec 2022 22:19:25 +0100</pubDate>
-      
-      <guid>https://lessonsec.com/cve/cve-2022-44900/</guid>
-      <description>Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.</description>
-    </item>
-    
+	<content:encoded>&lt;p&gt;An issue found in D-Link DSL-3782 v.1.03 allows remote authenticated users to execute arbitrary code as root via OS command injection in multiple setting pages.&lt;/p&gt;
+&lt;p&gt;Settings known to be affected by this issues are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Subnet mask fields in network configuration&lt;/li&gt;
+&lt;li&gt;Remote log server IP field in logging configuration&lt;/li&gt;
+&lt;li&gt;Every field in port forwarding configuration&lt;/li&gt;
+&lt;li&gt;Every field in static routes configuration&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The input provided by the user is insufficiently sanitized by the server, so bypassing the client-checks it is possible to inject arbitrary strings directly into &lt;code&gt;.sh&lt;/code&gt; scripts. Depending on the affected field, the maximum payload length allowed will be different. Generally speaking, it is possible to inject between 15 and 50 characters.&lt;/p&gt;
+&lt;p&gt;To exploit &lt;a href=&#34;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-27216&#34;&gt;CVE-2023-27216&lt;/a&gt; an attacker with remote access to the web interface of the D-Link DSL-3782 needs to inject a malicious payload into one of the affected fields. An example of working payload is: &lt;code&gt;; ping example.org #&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I contacted D-Link two times regarding this issue and received no response.
+The issue has been disclosed 60 days after the first contact with the vendor.&lt;/p&gt;
+&lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;11/02/2023 - First contact with vendor&lt;/li&gt;
+&lt;li&gt;23/02/2023 - CVE ID request&lt;/li&gt;
+&lt;li&gt;21/03/2023 - CVE ID reserved&lt;/li&gt;
+&lt;li&gt;21/03/2023 - Second contact with vendor&lt;/li&gt;
+&lt;li&gt;11/04/2023 - Public disclosure&lt;/li&gt;
+&lt;/ul&gt;
+</content:encoded>
+
+      </item><item>
+        <title>CVE-2022-44900: Path Traversal Vulnerability in py7zr</title>
+        <link>https://lessonsec.com/cve/cve-2022-44900/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2022-44900/</guid>
+        <pubDate>Tue, 06 Dec 2022 22:19:25 &#43;0100</pubDate><description>Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.</description>
+	<content:encoded>&lt;p&gt;Directory traversal vulnerability in SevenZipFile.extractall() function of the python library py7zr version 0.20.0 and earlier allow attackers to read and write arbitrary files on the local machine via malicious 7z file extraction.&lt;/p&gt;
+&lt;p&gt;To exploit &lt;a href=&#34;https://www.cve.org/CVERecord?id=CVE-2022-44900&#34;&gt;CVE-2022-44900&lt;/a&gt; vulnerability an attacker needs to create a malicious 7z archive containing a symlink to achieve an arbitrary file read and a file with a path traversal payload as name to achieve an arbitrary file write.&lt;/p&gt;
+&lt;h2 id=&#34;exploiting&#34;&gt;Exploiting&lt;/h2&gt;
+&lt;p&gt;The script used for tests is the following:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import py7zr
+import click
+
+@click.command()
+@click.argument(&amp;quot;filename&amp;quot;)
+
+def main_procedure(filename):
+	with py7zr.SevenZipFile(filename, &#39;r&#39;) as archive:
+	    archive.extractall()
+	
+main_procedure()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The vulnerable function targeted is &lt;code&gt;py7zr.SevenZipFile.extractall()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;A lab setup has been built to test for vulnerabilities.
+Directories structured as follow were used:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;├── start_point
+│   ├── archive.7z
+│   └── py7zr_test.py
+└── target
+    ├── write
+    └── read
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;start_point&lt;/code&gt; directory contains the script used for tests and the malicious archive containing the path traversal payload in the form of the filename of an archived file.&lt;/p&gt;
+&lt;p&gt;To achieve an arbitrary file write, one of the files in the archives needs to have &lt;code&gt;../target/write&lt;/code&gt; set as name. The content of the file will be written into &lt;code&gt;target/write&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In a similar way, to achieve an arbitrary file read, a symlink pointing to &lt;code&gt;../target/read&lt;/code&gt; needs to be present in the archive. When extracted the symlink will consist of the content of &lt;code&gt;target/read&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
+&lt;p&gt;29/10/2022 - Maintainer was notified privately of the vulnerabilities&lt;br&gt;
+30/10/2022 - Response from maintainer&lt;br&gt;
+01/11/2022 - Release of patched version 0.20.1&lt;br&gt;
+01/11/2022 - CVE ID request&lt;br&gt;
+06/12/2022 - CVE ID obtained&lt;br&gt;
+06/12/2022 - Public disclosure&lt;/p&gt;
+</content:encoded>
+
+      </item>
+
   </channel>
 </rss>

@@ -1,20 +1,229 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
+
     <title>SDR on less on sec</title>
     <link>https://lessonsec.com/tags/sdr/</link>
-    <description>Recent content in SDR on less on sec</description>
+    <description>
+      Recent content in SDRon less on sec
+    </description>
+
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 15 Jul 2021 16:45:40 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/sdr/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Analysis of a Remote Control</title>
-      <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
-      <pubDate>Thu, 15 Jul 2021 16:45:40 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
-      <description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</description>
-    </item>
-    
+    <language>en</language>
+    <lastBuildDate>Thu, 15 Jul 2021 16:45:40 &#43;0200</lastBuildDate>
+    <atom:link href="https://lessonsec.com/tags/sdr/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>Analysis of a Remote Control</title>
+        <link>https://lessonsec.com/posts/analysis-of-a-remote-control/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/analysis-of-a-remote-control/</guid>
+        <pubDate>Thu, 15 Jul 2021 16:45:40 &#43;0200</pubDate><description>A couple of days ago I found some old remote controls around the house and decided it was time to take out my old RTL-SDR and put it to good use.</description>
+	<content:encoded>&lt;p&gt;A couple of days ago I found some old remote controls around the house and decided it was time to take out my old &lt;strong&gt;RTL-SDR&lt;/strong&gt; and put it to good use.
+In this article I will describe step-by-step my experience with &lt;em&gt;studying&lt;/em&gt;, &lt;em&gt;reversing&lt;/em&gt; and &lt;em&gt;understanding&lt;/em&gt; these devices.&lt;/p&gt;
+&lt;p&gt;In particular the analysis will comprehend:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Analysis of the &lt;strong&gt;board&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Analysis of the &lt;strong&gt;behavior&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Analysis of the &lt;strong&gt;signal&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This will allow to have a complete overview of the remotes.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/complete.jpeg#center&#34; alt=&#34;remote&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Remote to analyze&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;board-analysis&#34;&gt;Board analysis&lt;/h2&gt;
+&lt;p&gt;The first thing I did was to operate the remote: of course whenever the yellow button was pressed, the led on its side would light up signaling that everything was working fine. The device could use different communication methods, but since there is no visible IR LED, it is possible to assume that the device works via radio signals.&lt;/p&gt;
+&lt;p&gt;The very next step was to open up the remote and visually inspect the board.&lt;/p&gt;
+&lt;p&gt;Inside the plastic casing I found this simple PCB.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/pcb.jpg#center&#34; alt=&#34;RC pcb board&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;PCB board&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;At first glance it&amp;rsquo;s possible to notice that there&amp;rsquo;s an &lt;em&gt;antenna&lt;/em&gt;, &lt;em&gt;a crystal oscillator&lt;/em&gt;, a &lt;em&gt;trimmer&lt;/em&gt; an &lt;em&gt;integrated circuit&lt;/em&gt; and of course led, button and battery.
+As expected, there&amp;rsquo;s everything needed for a radio transmitter to work.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/clock.jpeg#center&#34; alt=&#34;crystal oscillator&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;30.875MHz oscillator&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Looking at the components further it&amp;rsquo;s possible to gather insights about how the device works.
+In particular the oscillator gives away that the device probably operates at &lt;em&gt;30.875MHz&lt;/em&gt; - this isn&amp;rsquo;t what I was expecting.&lt;/p&gt;
+&lt;p&gt;In my country, &lt;strong&gt;Short Range Devices&lt;/strong&gt; should work in the ranges:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;27,5000 – 28,0000 MHz&lt;/li&gt;
+&lt;li&gt;29,7000 – 30,0050 MHz&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Or, for general purpose applications they can work  in the ranges:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;433,000 – 435,0000 MHz (devices without a specific use)&lt;/li&gt;
+&lt;li&gt;862,0000 – 876,0000 MHz (devices without a specific use, wireless audio, alarm systems, social alarms, radio microphones, and RFID devices)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Radio transmitters are not forced to adopt the crystal oscillator frequency as working frequency, in fact it&amp;rsquo;s not uncommon that they use a multiple of such frequency instead. Said that, at this point it&amp;rsquo;s only a guess, but even if it&amp;rsquo;s not in the expected ranges, it&amp;rsquo;s possible that the working frequency of the remote would be around 30.875MHz.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/dip_switch.jpeg#center&#34; alt=&#34;DIP switch&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;10-position DIP switch&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can also see that there&amp;rsquo;s a 10-position DIP switch.&lt;/p&gt;
+&lt;p&gt;The first pin (1) of the DIP switch has written &amp;ldquo;ON&amp;rdquo; on top of it, meaning that the switch closes the circuit when the lever is in the &amp;ldquo;high&amp;rdquo; position.
+This component suggests us that the remote sends at least 10 bits of data. I say at least, because it&amp;rsquo;s possible that the device sends preamble/ending bits and/or checksum or parity bits.&lt;/p&gt;
+&lt;p&gt;Also, given the position of the switches, it&amp;rsquo;s possible to assume that the code sent by the remote would either be &lt;code&gt;0001000110&lt;/code&gt; or &lt;code&gt;1110111001&lt;/code&gt;.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/unknown_ic.jpeg#center&#34; alt=&#34;ITF CIE9101&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;ITF CIE9101 Integrated Circuit&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;On the back of the PCB there&amp;rsquo;s the ITF CIE9101 integrated circuit. Sadly I wasn&amp;rsquo;t able to find any datasheets or information about this component (hit me up if you know something about it!).&lt;/p&gt;
+&lt;p&gt;Inspecting the PCB it&amp;rsquo;s possible to see that this device is connected to the DIP switch, to the oscillator and to the antenna. We can make an educated guess and say that this IC is probably responsible for the radio transmission (in future it would be worth reverse engineering this IC to better understand how this device work).&lt;/p&gt;
+&lt;h2 id=&#34;behavior-analysis&#34;&gt;Behavior analysis&lt;/h2&gt;
+&lt;p&gt;To validate the hypothesis of the device being a radio transmitter, it&amp;rsquo;s fundamental to try to intercept and visualize the communication.&lt;/p&gt;
+&lt;p&gt;The goal now is to find the transmitted signal. There is a limited set of possible frequency ranges, but it&amp;rsquo;s not always easy to blindly spot the signal you&amp;rsquo;re looking for, especially in areas in which similar devices are widely employed (think of remote car keys, AC remotes, radio weather stations and so on).&lt;/p&gt;
+&lt;p&gt;To figure out the frequency and to work with the raw radio signal I used a Silver dongle &lt;a href=&#34;https://www.rtl-sdr.com/about-rtl-sdr/&#34;&gt;RTL-SDR&lt;/a&gt; and &lt;a href=&#34;https://gqrx.dk/&#34;&gt;gqrx&lt;/a&gt;.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/rtl_antenna.jpeg#center&#34; alt=&#34;rtl-sdr and antenna&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;RTL-SDR and Antenna&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Once &lt;em&gt;gqrx&lt;/em&gt; was open, it was necessary to spot the correct frequency. Since there is a 30.875MHz crystal oscillator in the remote, that was the first frequency I checked. And luckily the signal was right there. Well, for this remote in particular it was at 30.889MHz, but at least we got the working frequency.&lt;/p&gt;
+&lt;p&gt;NOTE: I could work with 3 of these remotes, and each one was using a slightly different frequency, that&amp;rsquo;s why it was possible to find the signal at 30.889MHz and not exactly at 30.875MHz. This can depend on a number of factors and it&amp;rsquo;s completely normal.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/gqrx_signal.gif#center&#34; alt=&#34;radio signal&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Signal interception&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Now it&amp;rsquo;s time to analyze the signal.&lt;/p&gt;
+&lt;h2 id=&#34;signal-analysis&#34;&gt;Signal analysis&lt;/h2&gt;
+&lt;p&gt;What I did at this point was to record the signal in &lt;em&gt;gqrx&lt;/em&gt; to analyze it.
+Opening the signal in audacity shows the recorded waveform.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/signal.jpeg#center&#34; alt=&#34;waveform&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Signal waveform&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can see noise at the beginning and at the end of the recording, while the center part represent the communication.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s possible to notice immediately that there are numerous spikes, this is due to the fact that I kept the button pressed for a few seconds while recording.
+Visually it&amp;rsquo;s possible to say that the spikes are identical, so our scope is limited to understanding what one of these spikes represent.&lt;/p&gt;
+&lt;p&gt;Now we need to zoom in on one spike to try and decode the actual digital data.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/rc_analysis/signal_zoom.jpeg#center&#34; alt=&#34;zoomed-in waveform&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Zoomed waveform&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Of course it&amp;rsquo;s a digital communication and It&amp;rsquo;s now clear that we are dealing with &lt;a href=&#34;https://en.wikipedia.org/wiki/Pulse-width_modulation&#34;&gt;Pulse Width Modulation (PWM)&lt;/a&gt;.
+If we look closely at the signal, we can see that there are &amp;ldquo;short&amp;rdquo; and &amp;ldquo;long&amp;rdquo; pulses. Those represent either 1s or 0s depending on the protocol shared by the remote and the receiver.&lt;/p&gt;
+&lt;p&gt;Counting the bits reveals that that&amp;rsquo;s more than a simple 10 bit communication. In fact, we are dealing with 14 bits.
+If we compare the signal to the position of the switches in the remote, we see that the pattern matches, with the exception of the last 4 bits. These bits (either 0000 or 1111) are trailing bits, needed to signal the end of the communication.&lt;/p&gt;
+&lt;p&gt;To prove that the signal actually corresponds to the one encoded by the switch + 4 trailing bits, I&amp;rsquo;m using &lt;code&gt;rtl_433&lt;/code&gt; to read and decode the signal.
+So we run &lt;code&gt;rtl_433 -f 30888000 -A&lt;/code&gt; and we get this output:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Attempting demodulation... short_width: 748, long_width: 1516, reset_limit: 5420, sync_width: 0
+Use a flex decoder with -X &#39;n=name,m=OOK_PWM,s=748,l=1516,r=5420,g=1556,t=307,y=0&#39;
+pulse_demod_pwm(): Analyzer Device
+bitbuffer:: Number of rows: 6 
+[00] {14} ee 40     : 11101110 010000
+[01] {14} ee 40     : 11101110 010000
+[02] {14} ee 40     : 11101110 010000
+[03] {14} ee 40     : 11101110 010000
+[04] {14} ee 40     : 11101110 010000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And we confirm that the signal uses a PWM modulation and is in fact &lt;code&gt;1110111001&lt;/code&gt; followed by &lt;code&gt;0000&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To exclude the possibility that the last 4 bits are parity bits, we need to try other configurations in the remote and analyze the signal.
+I proceeded to do so and one-by-one I lifted the switches corresponding to the 0s in the signal to see what would change in the transmitted bits.&lt;/p&gt;
+&lt;p&gt;Changing bit 9 from 0 to 1 produced the following signal:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[00] {14} ee c0     : 11101110 110000
+[01] {14} ee c0     : 11101110 110000
+[02] {14} ee c0     : 11101110 110000
+[03] {14} ee c0     : 11101110 110000
+[04] {14} ee c0     : 11101110 110000
+[05] {14} ee c0     : 11101110 110000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Similarly, changing bit 8, produced this signal:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[00] {14} ef c0     : 11101111 110000
+[01] {14} ef c0     : 11101111 110000
+[02] {14} ef c0     : 11101111 110000
+[03] {14} ef c0     : 11101111 110000
+[04] {14} ef c0     : 11101111 110000
+[05] {14} ef c0     : 11101111 110000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Finally I changed bit 4 and I decoded signal was:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[00] {14} ff c0     : 11111111 110000
+[01] {14} ff c0     : 11111111 110000
+[02] {14} ff c0     : 11111111 110000
+[03] {14} ff c0     : 11111111 110000
+[04] {14} ff c0     : 11111111 110000
+[05] {14} ff c0     : 11111111 110000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As I suspected the last 4 bits don&amp;rsquo;t change even if the signal changes. This means that they are simple trailing bits and not parity bits or a form of checksum.&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;After the analysis, everything about how this board operates is known.
+Since this device was pretty old I wasn&amp;rsquo;t expecting behaviors any more complex that the ones we observed.&lt;/p&gt;
+&lt;p&gt;I was left with a deeper understanding on radio communications, in particular of the concept of modulations.
+This was in fact the first time I was confronted with the PWM modulation in a real life scenario.
+Decoding these signals both visually and using specialized software allowed me to learn new tools I&amp;rsquo;ll be using for future experiments.&lt;/p&gt;
+</content:encoded>
+
+      </item>
+
   </channel>
 </rss>

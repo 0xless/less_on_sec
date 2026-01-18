@@ -1,20 +1,628 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
+
     <title>BLE on less on sec</title>
     <link>https://lessonsec.com/tags/ble/</link>
-    <description>Recent content in BLE on less on sec</description>
+    <description>
+      Recent content in BLEon less on sec
+    </description>
+
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 17 Apr 2022 14:08:32 +0200</lastBuildDate><atom:link href="https://lessonsec.com/tags/ble/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Walkthrough: BLE CTF</title>
-      <link>https://lessonsec.com/posts/walkthrough-ble-ctf/</link>
-      <pubDate>Sun, 17 Apr 2022 14:08:32 +0200</pubDate>
-      
-      <guid>https://lessonsec.com/posts/walkthrough-ble-ctf/</guid>
-      <description>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</description>
-    </item>
-    
+    <language>en</language>
+    <lastBuildDate>Sun, 17 Apr 2022 14:08:32 &#43;0200</lastBuildDate>
+    <atom:link href="https://lessonsec.com/tags/ble/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>Walkthrough: BLE CTF</title>
+        <link>https://lessonsec.com/posts/walkthrough-ble-ctf/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/walkthrough-ble-ctf/</guid>
+        <pubDate>Sun, 17 Apr 2022 14:08:32 &#43;0200</pubDate><description>This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it! The challenge is available at: https://github.</description>
+	<content:encoded>&lt;p&gt;This CTF has been in my todo list for a good while, finally I had the time to solve it and to publish a walkthrough article on it!
+The challenge is available at: &lt;a href=&#34;https://github.com/hackgnar/ble_ctf&#34;&gt;https://github.com/hackgnar/ble_ctf&lt;/a&gt; and is an awesome tool to learn about BLE and get your feet wet.&lt;/p&gt;
+&lt;p&gt;To be fair I expected the CTF to be a bit more security oriented, but I learned way more than I expected, both on BLE technologies and on the tools used to interact with those.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Disclaimer&lt;/strong&gt;&lt;/em&gt;&lt;br&gt;
+I&amp;rsquo;m not a fan of walkthrough articles that ignore the request of the creators not to post those.
+The reasons I&amp;rsquo;m publishing this article are that:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;No request by the creator has been made not to post the solutions&lt;/li&gt;
+&lt;li&gt;There are plenty of walkthrough articles on this CTF that don&amp;rsquo;t really teach anything and barely explain the solutions&lt;/li&gt;
+&lt;li&gt;The CTF is self-hosted and is more of a teaching tool than a proper challenge&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Of course I strongly recommend trying to solve the challenges on your own before checking the solutions here!
+Anyway I suggest reading the first part of the articles to gather some useful information about the technologies involved in the challenge.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Without further ado, let&amp;rsquo;s get started!&lt;/p&gt;
+&lt;h2 id=&#34;how-does-this-ctf-works&#34;&gt;How does this CTF works?&lt;/h2&gt;
+&lt;p&gt;The CTF is composed of a series of challenges hosted on an ESP32 board.
+The software required to setup the challenge is in fact a firmware to be installed on the board. I won&amp;rsquo;t enter in details about the installation in this article, but you can find detailed instructions here: &lt;a href=&#34;https://github.com/hackgnar/ble_ctf/blob/master/docs/setup.md&#34;&gt;https://github.com/hackgnar/ble_ctf/blob/master/docs/setup.md&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;When the firmware is installed, the ESP32 will host a GATT server with which we can interact to solve the challenges and gather the flags.&lt;/p&gt;
+&lt;h3 id=&#34;whats-a-gatt-server&#34;&gt;What&amp;rsquo;s a GATT server&lt;/h3&gt;
+&lt;p&gt;GATT is the name of a protocol that is used to exchange data between two Bluetooth Low Energy devices.
+This is developed on top of the Attribute Protocol (ATT) and manages device interactions following the advertising and pairing processes.
+A GATT Server is a device that stores attribute data locally and provides data access methods to a remote GATT Client paired via BLE.  A client, on the other hand, is a device that access data on a remote GATT Server. When two devices are paired, each can function as both a GATT Server and a GATT Client.&lt;/p&gt;
+&lt;p&gt;GATT lists a device’s characteristics, descriptors, and services in a table as either 16 or 32-bits values.
+A characteristic is a data value sent between the server and the client.&lt;/p&gt;
+&lt;p&gt;These characteristics can have descriptors that provide additional information about them.
+Characteristics are often grouped in services if they have purposes related to each other. Services can have several characteristics.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/BLE_CTF/gatt_server.jpg#center&#34; alt=&#34;GATT server layout&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;GATT Server content layout &lt;br /&gt;Credits - Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;attgatt-basics&#34;&gt;ATT/GATT basics&lt;/h3&gt;
+&lt;p&gt;It is possible to interact with a GATT server, by interacting with each of the characteristics available.
+It is possible to do that using handles, or UUID: handles define the address of a characteristic, while the UUID works as an identifier, but also gives the user some indication about the content of a characteristic. In general, handles are to be preferred to reference to a particular characteristic, this is because UUID can vary depending on the GATT implementation, while handles are expected to remain immutable for each device.&lt;/p&gt;
+&lt;p&gt;As anticipated, UUID contain info about the service or characteristic. These are useful because they are defined by profiles: standards that use known UUID to serve specific information, profiles can be found here: &lt;a href=&#34;https://www.bluetooth.com/specifications/specs/&#34;&gt;https://www.bluetooth.com/specifications/specs/&lt;/a&gt;
+While UUID vary depending on the device functionality some UUID remains the same, for example: 0x2800, around which service discovery is built. This UUID allows GATT servers to understand service boundaries without having to know the exact standard the device is following.&lt;/p&gt;
+&lt;p&gt;Finally, there are characteristic properties. Properties indicate how to interact with a characteristic and what to expect from it.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/BLE_CTF/properties.jpg#center&#34; alt=&#34;properties&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;GATT chatateristic proprieties  &lt;br /&gt;Credits - devzone.nordicsemi.com&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Properties are defined as an hex value and work as bitmasks, so using bitwise operations it is possible reveal the properties of a characteristic starting from its properties value.&lt;/p&gt;
+&lt;p&gt;Properties need to be interpreted knowing Attribute Protocol Packets, these are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Commands         	    (Client -&amp;gt; Server, no response required)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Requests            	     (Client -&amp;gt; Server, response required)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Responses         	    (Server -&amp;gt; Client, it&amp;rsquo;s the response to a request)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Notifications      	    (Server -&amp;gt; Client, no response required - Signal the fact that a&lt;/p&gt;
+&lt;p&gt;                 characteristic&amp;rsquo;s value has changed)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Indications        	     (Server -&amp;gt; Client, ACK response required by the client - Similar to&lt;/p&gt;
+&lt;p&gt;                notifications)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Confirmations   	    (Client -&amp;gt; Server, it&amp;rsquo;s the response to an indication)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As indicated in the image, the &lt;code&gt;Read&lt;/code&gt; and &lt;code&gt;Write&lt;/code&gt; properties are like permissions, and allow the reading and writing of the characteristic if set.
+The other properties are an indication of the behavior of a characteristic in response of an action by the client.&lt;/p&gt;
+&lt;p&gt;Actions performed by the client are limited to read and write operations.
+While read operations are requests by nature, write operations can either be commands or requests.&lt;/p&gt;
+&lt;h2 id=&#34;ctf&#34;&gt;CTF&lt;/h2&gt;
+&lt;p&gt;The tools that will be employed for this challenge are: gatttool and hcitool.
+There are other tools that can be used, in particular bettercap, which is a bit more user friendly but lacks some functionalities, or libraries that implement GATT operations, that were avoided to allow familiarizing with the tools available on a standard linux system.
+I think this &amp;ldquo;Living off the Land&amp;rdquo; approach helps better understanding GATT operations and also leads to a more generally employable approach to solve BLE related tasks. Of course you&amp;rsquo;re free to use the tools you prefer for this challenge.&lt;/p&gt;
+&lt;p&gt;Before starting, I suggest familiarizing with the challenge page and to understand how to operate actions relative to the challenge, like reading the score and submitting a flag. The list of the flags at the bottom of the page is really useful, as understanding exactly what to do can be tricky.
+There are also hints there, don&amp;rsquo;t be afraid to check those out. None of the hints gives away too much and in certain cases those are needed to understand the challenge and to get the flag.&lt;/p&gt;
+&lt;p&gt;NOTE: the score is reset each time the ESP32 is powered off! Keep that in mind.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Let&amp;rsquo;s begin! First thing first, we need to retrieve the device BT MAC address and we can do that using hcitool:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ sudo hcitool lescan
+LE Scan ...
+78:21:84:80:A2:22 BLECTF
+[...]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we know the address for my board is: &lt;code&gt;78:21:84:80:A2:22&lt;/code&gt;, it will vary on yours.&lt;/p&gt;
+&lt;p&gt;Once we have the address we can start enumerating services on the GATT server.
+The first thing to do is to connect to the board, we will do that using &lt;code&gt;gatttool&lt;/code&gt; and its interactive mode:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -I
+[                 ][LE]&amp;gt; connect 78:21:84:80:A2:22
+Attempting to connect to 78:21:84:80:A2:22
+Connection successful
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we need to enumerate the services, we can do that using the &lt;code&gt;primary&lt;/code&gt; command or by reading the UUID 0x2800.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[78:21:84:80:A2:22][LE]&amp;gt; primary
+attr handle: 0x0001, end grp handle: 0x0005 uuid: 00001801-0000-1000-8000-00805f9b34fb
+attr handle: 0x0014, end grp handle: 0x001c uuid: 00001800-0000-1000-8000-00805f9b34fb
+attr handle: 0x0028, end grp handle: 0xffff uuid: 000000ff-0000-1000-8000-00805f9b34fb
+[78:21:84:80:A2:22][LE]&amp;gt; char-read-uuid 0x2800
+handle: 0x0001 	 value: 01 18 
+handle: 0x0014 	 value: 00 18 
+handle: 0x0028 	 value: ff 00 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And in both cases we retrieve services boundaries. The first two services are standard, and contain info about the server itself, while the third is the one we want to work with.&lt;/p&gt;
+&lt;p&gt;Now we can enumerate the characteristic of each service. This can be done using the command &lt;code&gt;characteristics&lt;/code&gt; and using the boundaries found as upper and lower limits:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[78:21:84:80:A2:22][LE]&amp;gt; characteristics 0x0001 0x0014
+handle: 0x0002, char properties: 0x20, char value handle: 0x0003, uuid: 00002a05-0000-1000-8000-00805f9b34fb
+[78:21:84:80:A2:22][LE]&amp;gt; characteristics 0x0014 0x0028
+handle: 0x0015, char properties: 0x02, char value handle: 0x0016, uuid: 00002a00-0000-1000-8000-00805f9b34fb
+handle: 0x0017, char properties: 0x02, char value handle: 0x0018, uuid: 00002a01-0000-1000-8000-00805f9b34fb
+handle: 0x0019, char properties: 0x02, char value handle: 0x001a, uuid: 00002aa6-0000-1000-8000-00805f9b34fb
+[78:21:84:80:A2:22][LE]&amp;gt; characteristics 0x0028 0x00ff
+handle: 0x0029, char properties: 0x02, char value handle: 0x002a, uuid: 0000ff01-0000-1000-8000-00805f9b34fb
+handle: 0x002b, char properties: 0x0a, char value handle: 0x002c, uuid: 0000ff02-0000-1000-8000-00805f9b34fb
+handle: 0x002d, char properties: 0x02, char value handle: 0x002e, uuid: 0000ff03-0000-1000-8000-00805f9b34fb
+handle: 0x002f, char properties: 0x02, char value handle: 0x0030, uuid: 0000ff04-0000-1000-8000-00805f9b34fb
+handle: 0x0031, char properties: 0x0a, char value handle: 0x0032, uuid: 0000ff05-0000-1000-8000-00805f9b34fb
+handle: 0x0033, char properties: 0x0a, char value handle: 0x0034, uuid: 0000ff06-0000-1000-8000-00805f9b34fb
+handle: 0x0035, char properties: 0x0a, char value handle: 0x0036, uuid: 0000ff07-0000-1000-8000-00805f9b34fb
+handle: 0x0037, char properties: 0x02, char value handle: 0x0038, uuid: 0000ff08-0000-1000-8000-00805f9b34fb
+handle: 0x0039, char properties: 0x08, char value handle: 0x003a, uuid: 0000ff09-0000-1000-8000-00805f9b34fb
+handle: 0x003b, char properties: 0x0a, char value handle: 0x003c, uuid: 0000ff0a-0000-1000-8000-00805f9b34fb
+handle: 0x003d, char properties: 0x02, char value handle: 0x003e, uuid: 0000ff0b-0000-1000-8000-00805f9b34fb
+handle: 0x003f, char properties: 0x1a, char value handle: 0x0040, uuid: 0000ff0c-0000-1000-8000-00805f9b34fb
+handle: 0x0041, char properties: 0x02, char value handle: 0x0042, uuid: 0000ff0d-0000-1000-8000-00805f9b34fb
+handle: 0x0043, char properties: 0x2a, char value handle: 0x0044, uuid: 0000ff0e-0000-1000-8000-00805f9b34fb
+handle: 0x0045, char properties: 0x1a, char value handle: 0x0046, uuid: 0000ff0f-0000-1000-8000-00805f9b34fb
+handle: 0x0047, char properties: 0x02, char value handle: 0x0048, uuid: 0000ff10-0000-1000-8000-00805f9b34fb
+handle: 0x0049, char properties: 0x2a, char value handle: 0x004a, uuid: 0000ff11-0000-1000-8000-00805f9b34fb
+handle: 0x004b, char properties: 0x02, char value handle: 0x004c, uuid: 0000ff12-0000-1000-8000-00805f9b34fb
+handle: 0x004d, char properties: 0x02, char value handle: 0x004e, uuid: 0000ff13-0000-1000-8000-00805f9b34fb
+handle: 0x004f, char properties: 0x0a, char value handle: 0x0050, uuid: 0000ff14-0000-1000-8000-00805f9b34fb
+handle: 0x0051, char properties: 0x0a, char value handle: 0x0052, uuid: 0000ff15-0000-1000-8000-00805f9b34fb
+handle: 0x0053, char properties: 0x9b, char value handle: 0x0054, uuid: 0000ff16-0000-1000-8000-00805f9b34fb
+handle: 0x0055, char properties: 0x02, char value handle: 0x0056, uuid: 0000ff17-0000-1000-8000-00805f9b34fb
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And just like that we retrieved every characteristic available, their value and their properties.&lt;/p&gt;
+&lt;p&gt;At this point it is useful to define utility functions to work with the handles:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;mac&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;78:21:84:80:A2:22&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#change the value to match your board&amp;#39;s MAC&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# HEX encode&lt;/span&gt;
+encode&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        echo -n $1 | xxd -ps;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# HEX decode&lt;/span&gt;
+decode&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        echo $1 | tr -d &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; | xxd -r -p; echo
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Write flag to handle 0x002c&lt;/span&gt;
+submit_flag&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        gatttool -b $mac --char-write-req -a 0x002c -n &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;encode &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$1&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Read handle 0x002a to get the score&lt;/span&gt;
+get_score&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        read_hnd 0x002a
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Read values from handle and decode it&lt;/span&gt;
+read_hnd&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        decode &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;`gatttool -b &lt;/span&gt;$mac&lt;span style=&#34;color:#e6db74&#34;&gt; --char-read -a &lt;/span&gt;$1&lt;span style=&#34;color:#e6db74&#34;&gt; | awk -F&amp;#39;:&amp;#39; &amp;#39;{print &lt;/span&gt;$2&lt;span style=&#34;color:#e6db74&#34;&gt;}&amp;#39;`&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# List properties from hex property value&lt;/span&gt;
+get_properties&lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+		&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x1&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x1 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Broadcast&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x2&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x2 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Read&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x4&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x4 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Write without response&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x8&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x8 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Write&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x10&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x10 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Notify&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x20&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x20 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Indicate&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x40&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x40 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authenticated Signed Writes&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;((&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;$1 &amp;amp; 0x80&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; 0x80 &lt;span style=&#34;color:#f92672&#34;&gt;))&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;then&lt;/span&gt; echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Extended Properties&amp;#34;&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;fi&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;NOTE: properties for each characteristic of interest are listed in the challenge description, so the &lt;code&gt;get_properties&lt;/code&gt; function won&amp;rsquo;t be used explicitly.&lt;/p&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Flag #1&lt;/strong&gt;
+To get this flag we need to use the &lt;a href=&#34;https://github.com/hackgnar/ble_ctf/blob/master/docs/hints/flag1.md&#34;&gt;hint&lt;/a&gt;!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x002c -n $(echo -n &amp;quot;12345678901234567890&amp;quot;|xxd -ps)
+Characteristic value was written successfully
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now, reading the handle 0x002a confirms we got the first flag.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ get_score
+Score:1 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x002e&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;To get this flag we simply need to read the handle 0x002e.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x002e
+d205303e099ceff44835
+less@machine:~$ submit_flag d205303e099ceff44835
+less@machine:~$ get_score
+Score:2 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0030&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;MD5 of Device Name&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So for this flag we need to submit the MD5 of the Device Name.
+Note: the MD5 hash needs to be truncated to 20 characters as suggested in the README of the CTF project.&lt;/p&gt;
+&lt;p&gt;We already know the device name as we encountered it connecting to the device:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ sudo hcitool lescan
+LE Scan ...
+78:21:84:80:A2:22 BLECTF
+[...]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we only need to get the MD5 digest of the name, cut and submit it:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ echo -n &amp;quot;BLECTF&amp;quot; | md5sum | cut -c 1-20
+5cd56d74049ae40f442e
+less@machine:~$ submit_flag 5cd56d74049ae40f442e
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:3 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0016&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This is a particular challenge, the hint says:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;Bluetooth GATT services provide some extra device attributes.  Try finding the value of the Generic Access -&amp;gt; Device Name.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But the name of the challenge is &amp;ldquo;Flag 0x0016&amp;rdquo;, so it gives it away!&lt;/p&gt;
+&lt;p&gt;Reading the handle we get the flag:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x0016
+2b00042f7481c7b056c4b410d28f33cf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Of course we need to cut it before submitting it (as it is a name and the README clearly states that names and digests need to be cut to the 20th character):&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ echo 2b00042f7481c7b056c4b410d28f33cf | cut -c 1-20
+2b00042f7481c7b056c4
+less@machine:~$  submit_flag 2b00042f7481c7b056c4
+Characteristic value was written successfully
+less@machine:~$  get_score 
+Score:4 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;But it is important to understand the reason why this flag is there.
+We already talked about profiles and standard UUID, these include an UUID that corresponds to the Device Name, this UUID is: 0x2A00.&lt;/p&gt;
+&lt;p&gt;Using &lt;code&gt;gatttool&lt;/code&gt;, we can read the UUID and note that the handle is indeed 0x0016:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-read -u 0x2A00
+handle: 0x0016 	 value: 32 62 30 30 30 34 32 66 37 34 38 31 63 37 62 30 35 36 63 
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0032&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Write anything here&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;To get the flag we need to write &amp;ldquo;anything&amp;rdquo; to the 0x0032 handle.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x0032 -n `encode &amp;quot;anything&amp;quot;`
+Characteristic value was written successfully
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now, we can read the handle a second time and it will reveal the flag&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x0032
+3873c0270763568cf7aa
+less@machine:~$ submit_flag 3873c0270763568cf7aa
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:5 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0034&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Write the ascii value &amp;ldquo;yo&amp;rdquo; here&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The task is similar to the last one, but this time we don&amp;rsquo;t have to hex encode the string&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x0034 -n `encode &amp;quot;yo&amp;quot;`
+Characteristic value was written successfully
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now, we can get the flag reading the handle again&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x0034
+c55c6314b3db0a6128af
+less@machine:~$ submit_flag c55c6314b3db0a6128af
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:6 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0036&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Write the hex value 0x07 here&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This task is not different from the previous ones, but since the default encoding used in BLE communications is hex, and the value is to be sent in hex, no encoding needs to be used&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x0036 -n 07
+Characteristic value was written successfully
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now the flag should be available at the same handle&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x0036
+1179080b29f8da16ad66
+less@machine:~$ submit_flag 1179080b29f8da16ad66
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:7 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0038&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Write 0xC9 to handle 58&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read
+Handle 58 properties: Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;First off we need to convert 58 in hex to get the hex value for the handle, &lt;code&gt;hex(58)&lt;/code&gt; is 0x3A.
+Now we need to write the hex value 0xC9 to the handle, this can be done exactly like we did for the last challenge:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x003A -n C9
+Characteristic value was written successfully
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now reading the handle 0x0038 again reveals the flag&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x0038
+f8b136d937fad6a2be9f
+less@machine:~$ submit_flag f8b136d937fad6a2be9f
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:8 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x003C&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Brute force my value 00 to ff&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This can be achieved in multiple ways, but for consistency &lt;code&gt;gatttool&lt;/code&gt; and a bit of bash scripting will be used.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ for i in {0..255};
+&amp;gt; do gatttool -b 78:21:84:80:A2:22 --char-write-req -a 0x003c -n $(printf &#39;%02x\n&#39; $i) &amp;gt; /dev/null;
+&amp;gt; done;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This script iterates through every value from 0 to 255 (which is FF in hex) and writes such value in the handle 0x003C. The &lt;code&gt;$(printf &#39;%02x\n&#39; $i);&lt;/code&gt; command converts the value to write from decimal to hex.&lt;/p&gt;
+&lt;p&gt;Once the script has finished, it&amp;rsquo;s possible to read the handle 0x003C again to get the flag&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x003c
+933c1fcfa8ed52d2ec05
+less@machine:~$ submit_flag 933c1fcfa8ed52d2ec05
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:9 /20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x003E&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Read me 1000 times&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This can be done simply modifying the script used in the previous challenge&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ for i in {0..1000}; 
+&amp;gt; do gatttool -b 78:21:84:80:A2:22 --char-read -a 0x003e;
+&amp;gt; done;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This command will print out the content of the reads, and after a while you&amp;rsquo;ll notice that the output changes like in the example here:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[...]
+Characteristic value/descriptor: 52 65 61 64 20 6d 65 20 31 30 30 30 20 74 69 6d 65 73 
+Characteristic value/descriptor: 52 65 61 64 20 6d 65 20 31 30 30 30 20 74 69 6d 65 73 
+Characteristic value/descriptor: 52 65 61 64 20 6d 65 20 31 30 30 30 20 74 69 6d 65 73 
+Characteristic value/descriptor: 36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65 
+Characteristic value/descriptor: 36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65 
+Characteristic value/descriptor: 36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The values printed after the variation represent the flag!&lt;/p&gt;
+&lt;p&gt;So we just need to submit it to complete this challenge&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;36 66 66 63 64 32 31 34 66 66 65 62 64 63 30 64 30 36 39 65&amp;quot;
+6ffcd214ffebdc0d069e
+less@machine:~$ submit_flag 6ffcd214ffebdc0d069e
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:10/20 
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0040&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Listen to me for a single notification&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write, Notify&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;To listen for a notification, we first need to send a write request, but we will have to listen to the notification, this can be achieved with the following command:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0040 --value=dummy --listen
+Characteristic value was written successfully
+Notification handle = 0x0040 value: 35 65 63 33 37 37 32 62 63 64 30 30 63 66 30 36 64 38 65 62 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The notification value is the flag!&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;35 65 63 33 37 37 32 62 63 64 30 30 63 66 30 36 64 38 65 62&amp;quot;
+5ec3772bcd00cf06d8eb
+less@machine:~$ submit_flag 5ec3772bcd00cf06d8eb
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:11/20 
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0042&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Listen to handle 0x0044 for a single indication&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;p&gt;Handle 0x0044 Properties: Read, Write, Indicate&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This flag can be obtained just like the last one:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0044 --value=ffff --listen
+Characteristic value was written successfully
+Indication   handle = 0x0044 value: 63 37 62 38 36 64 64 31 32 31 38 34 38 63 37 37 63 31 31 33 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Once the notification value is retrieved we can decode and submit it:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;63 37 62 38 36 64 64 31 32 31 38 34 38 63 37 37 63 31 31 33&amp;quot;
+c7b86dd121848c77c113
+less@machine:~$ submit_flag c7b86dd121848c77c113
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:12/20 
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0046&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Listen to me for multi notifications&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write, Notify&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;And with the same command we can get this flag too!&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0046 --value=ffff --listen
+Characteristic value was written successfully
+Notification handle = 0x0046 value: 55 20 6e 6f 20 77 61 6e 74 20 74 68 69 73 20 6d 73 67 00 00 
+Notification handle = 0x0046 value: 63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64 
+Notification handle = 0x0046 value: 63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64 
+Notification handle = 0x0046 value: 63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;After the first notification, we get the content of the flag! (The decoded content of the first notification is &amp;ldquo;U no want this msg&amp;rdquo;).&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;63 39 34 35 37 64 65 35 66 64 38 63 61 66 65 33 34 39 66 64&amp;quot;
+c9457de5fd8cafe349fd
+less@machine:~$ submit_flag c9457de5fd8cafe349fd
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:13/20 
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0048&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Listen to handle 0x004a for multi indications&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;p&gt;Handle 0x004a Properties: Read, Write, Indicate&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Once again the same command is the key to the flag!&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x004a --value=ffff --listen
+Characteristic value was written successfully
+Indication   handle = 0x004a value: 55 20 6e 6f 20 77 61 6e 74 20 74 68 69 73 20 6d 73 67 00 00 
+Indication   handle = 0x004a value: 62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61 
+Indication   handle = 0x004a value: 62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61 
+Indication   handle = 0x004a value: 62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we can decode and submit the flag like always.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;62 36 66 33 61 34 37 66 32 30 37 64 33 38 65 31 36 66 66 61&amp;quot;
+b6f3a47f207d38e16ffa
+less@machine:~$ submit_flag b6f3a47f207d38e16ffa
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:14/20 
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x004c&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Connect with BT MAC address 11:22:33:44:55:66&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Now, this challenge depends on the BT card you&amp;rsquo;re using. I&amp;rsquo;m using a raspberry pi 3b+ and I could solve the challenge in the following way:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ sudo hcitool cmd 0x3f 0x001 0x66 0x55 0x44 0x33 0x22 0x11
+&amp;lt; HCI Command: ogf 0x3f, ocf 0x0001, plen 6
+  66 55 44 33 22 11 
+&amp;gt; HCI Event: 0x0e plen 4
+  01 01 FC 00 
+less@machine:~$ sudo hciconfig hci0 reset
+less@machine:~$ systemctl restart bluetooth.service
+Authentication is required to restart &#39;bluetooth.service&#39;.
+Authenticating as: ,,, (less)
+Password: 
+==== AUTHENTICATION COMPLETE ===
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;At this point we can confirm our BT MAC address executing &lt;code&gt;hciconfig&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ hciconfig
+hci0:	Type: Primary  Bus: UART
+	BD Address: 11:22:33:44:55:66  ACL MTU: 1021:8  SCO MTU: 64:1
+	UP RUNNING 
+	RX bytes:13820 acl:117 sco:0 events:824 errors:0
+	TX bytes:16604 acl:108 sco:0 commands:606 errors:0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And of course now, reading the handle gives us the flag:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x004c
+aca16920583e42bdcf5f
+less@machine:~$ submit_flag aca16920583e42bdcf5f
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:15/20
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Check out these resources for more info on this solution:
+&lt;a href=&#34;https://www.lisha.ufsc.br/teaching/shi/ine5346-2003-1/work/bluetooth/hci_commands.html&#34;&gt;https://www.lisha.ufsc.br/teaching/shi/ine5346-2003-1/work/bluetooth/hci_commands.html&lt;/a&gt; and &lt;a href=&#34;https://raspberrypi.stackexchange.com/a/124117&#34;&gt;https://raspberrypi.stackexchange.com/a/124117&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x004e&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Set your connection MTU to 444&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Even if there is the option to do that (-m), I can&amp;rsquo;t seem to get the flag without using the interactive mode of gatttools, so my solution to this flag is:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -I
+[                 ][LE]&amp;gt; connect 78:21:84:80:A2:22
+Attempting to connect to 78:21:84:80:A2:22
+Connection successful
+[78:21:84:80:A2:22][LE]&amp;gt; mtu 444
+MTU was exchanged successfully: 444
+[78:21:84:80:A2:22][LE]&amp;gt; char-read-hnd 0x004e
+Characteristic value/descriptor: 62 31 65 34 30 39 65 35 61 34 65 61 66 39 66 65 35 31 35 38 
+[78:21:84:80:A2:22][LE]&amp;gt; exit
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And just like that we got the flag&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;62 31 65 34 30 39 65 35 61 34 65 61 66 39 66 65 35 31 35 38 &amp;quot;
+b1e409e5a4eaf9fe5158
+less@machine:~$ submit_flag b1e409e5a4eaf9fe5158
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:16/20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0050&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;Write+resp &amp;lsquo;hello&amp;rsquo; &amp;quot;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I suggest checking the hint for this challenge! The key is in correctly handling the ACK response from the write instruction, this is the reason&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;--char-write-req&lt;/code&gt; needs to be used.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0050 --value=`encode hello`
+Characteristic value was written successfully
+less@machine:~$ read_hnd 0x0050
+d41d8cd98f00b204e980
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we only need to submit the flag.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ submit_flag d41d8cd98f00b204e980
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:17/20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0052&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;No notifications here! really?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Read, Write&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In fact even if there is no notification property set&amp;hellip;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0052 --value=`encode hello` --listen
+Characteristic value was written successfully
+Notification handle = 0x0052 value: 66 63 39 32 30 63 36 38 62 36 30 30 36 31 36 39 34 37 37 62 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The flag is revealed through a notification!
+Now we can decode and submit it.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ decode &amp;quot;66 63 39 32 30 63 36 38 62 36 30 30 36 31 36 39 34 37 37 62&amp;quot;
+fc920c68b6006169477b
+less@machine:~$ submit_flag fc920c68b6006169477b
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:18/20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0054&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;So many properties!&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Properties: Broadcast, Read, Write, Notify, Extended properties&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&amp;hellip;and to be fair this handle has &amp;ldquo;Broadcast, Read, Write, Notify, Extended properties&amp;rdquo; properties. It&amp;rsquo;s a bit of a mess!&lt;/p&gt;
+&lt;p&gt;But getting the flag is fairly simple. The first half can be retrieved simply listening for a notification:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ gatttool -b 78:21:84:80:A2:22 --char-write-req --handle=0x0054 --value=ffff --listen
+Characteristic value was written successfully
+Notification handle = 0x0054 value: 30 37 65 34 61 30 63 63 34 38 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For the second half we need to read the handle once more:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ read_hnd 0x0054
+fbb966958f
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we just need to put the two halves together and submit the flag (the second half of the flag goes first!):&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ submit_flag fbb966958f07e4a0cc48
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:19/20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Flag 0x0056&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The content of the handle is: &amp;ldquo;md5 of author&amp;rsquo;s twitter handle&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Properties: Read&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So we need to do a bit of OSINT to solve this challenge!&lt;/p&gt;
+&lt;p&gt;The starting point is the github page of the challenge: &lt;a href=&#34;https://github.com/hackgnar/ble_ctf&#34;&gt;https://github.com/hackgnar/ble_ctf&lt;/a&gt;
+Luckily in the README.md file we can find a twitter follow button, this leads us to: &lt;a href=&#34;https://twitter.com/hackgnar&#34;&gt;https://twitter.com/hackgnar&lt;/a&gt;
+And now we know the handle is: @hackgnar&lt;/p&gt;
+&lt;p&gt;Now we can get the MD5 digest of the handle and cut it to 20 chars:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ echo -n &amp;quot;@hackgnar&amp;quot; | md5sum | cut -c 1-20
+d953bfb9846acc2e15ee
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We can now submit it as a flag&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;less@machine:~$ submit_flag d953bfb9846acc2e15ee
+Characteristic value was written successfully
+less@machine:~$ get_score 
+Score:20/20
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;Hope this article is useful to anyone who&amp;rsquo;s stuck on one of these challenges or to anyone who&amp;rsquo;s trying to learn about BLE technologies.
+Writing this article has helped me formalizing most of the things I learned solving these challenges and my main takeaways are an improved understanding of BLE, GATT and ATT, but also the ability to use the tools needed to work with these technologies.&lt;/p&gt;
+&lt;p&gt;In future I&amp;rsquo;ll try working with GATT libraries to programmatically interact with GATT servers!&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://epxx.co/artigos/bluetooth_gatt.html&#34;&gt;https://epxx.co/artigos/bluetooth_gatt.html&lt;/a&gt; (ATT/GATT basics)&lt;/li&gt;
+&lt;li&gt;Practical IoT Hacking: The Definitive Guide to Attacking the Internet of Things (General BLE introduction)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://axodyne.com/2020/08/ble-uuids/&#34;&gt;https://axodyne.com/2020/08/ble-uuids/&lt;/a&gt;  (Explanation on standard UUIDS)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://learn.adafruit.com/introduction-to-bluetooth-low-energy/gatt&#34;&gt;https://learn.adafruit.com/introduction-to-bluetooth-low-energy/gatt&lt;/a&gt; (Profiles and services)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://devzone.nordicsemi.com/guides/short-range-guides/b/bluetooth-low-energy/posts/ble-characteristics-a-beginners-tutorial&#34;&gt;https://devzone.nordicsemi.com/guides/short-range-guides/b/bluetooth-low-energy/posts/ble-characteristics-a-beginners-tutorial&lt;/a&gt; (Properties)&lt;/li&gt;
+&lt;/ul&gt;
+</content:encoded>
+
+      </item>
+
   </channel>
 </rss>
