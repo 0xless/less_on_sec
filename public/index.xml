@@ -1326,14 +1326,6 @@ But it&amp;rsquo;s a fun experiment to see how the emails are treated. Using a c
 </content:encoded>
 
       </item><item>
-        <title>Business Card</title>
-        <link>https://lessonsec.com/smart-business-card/</link>
-        <guid isPermaLink="true">https://lessonsec.com/smart-business-card/</guid>
-        <pubDate>Fri, 29 Oct 2021 00:00:00 &#43;0000</pubDate><description>{{ .Content }}</description>
-	<content:encoded>&lt;p&gt;{{ .Content }}&lt;/p&gt;
-</content:encoded>
-
-      </item><item>
         <title>Walkthrough: CryptoHack CTF</title>
         <link>https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</link>
         <guid isPermaLink="true">https://lessonsec.com/posts/walkthrough-cryptohack-ctf/</guid>
