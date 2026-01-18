@@ -1,0 +1,111 @@
+{{- $authorEmail := "" -}}
+{{- $authorName := "" -}}
+
+{{- with site.Params.author -}}
+  {{- if reflect.IsMap . -}}
+    {{- with .email }}{{ $authorEmail = . }}{{ end -}}
+    {{- with .name }}{{ $authorName = . }}{{ end -}}
+  {{- else -}}
+    {{- $authorName = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $pctx := . -}}
+{{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
+
+{{- $pages := slice -}}
+{{- if or $.IsHome $.IsSection -}}
+  {{- $pages = $pctx.RegularPages -}}
+{{- else -}}
+  {{- $pages = $pctx.Pages -}}
+{{- end -}}
+
+{{- /* Exclude pages with front matter exclude_from_rss = true */ -}}
+{{- $pages = where $pages "Params.exclude_from_rss" "!=" true -}}
+
+{{- $limit := site.Config.Services.RSS.Limit -}}
+{{- if ge $limit 1 -}}
+  {{- $pages = $pages | first $limit -}}
+{{- end -}}
+
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+
+    <title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>
+      Recent content
+      {{- if ne .Title .Site.Title -}}
+        {{ with .Title }} in {{ . }}{{ end }}
+      {{- end -}}
+      on {{ .Site.Title }}
+    </description>
+
+    <generator>Hugo -- gohugo.io</generator>
+    <language>{{ site.Language.Lang }}</language>
+
+    {{- with $authorEmail }}
+    <managingEditor>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</managingEditor>
+    <webMaster>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</webMaster>
+    {{- end }}
+
+    {{- with .Site.Copyright }}
+    <copyright>{{ . }}</copyright>
+    {{- end }}
+
+    {{- if not (len $pages | eq 0) }}
+    <lastBuildDate>{{ (index $pages.ByLastmod.Reverse 0).Lastmod.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</lastBuildDate>
+    {{- end }}
+
+    {{- with .OutputFormats.Get "RSS" }}
+    <atom:link href="{{ .Permalink }}" rel="self" type="{{ .MediaType }}" />
+    {{- end }}
+
+    {{- range $pages }}
+
+      {{- /* Detect thumbnail image */ -}}
+      {{- $thumb := "" -}}
+      {{- with .Resources.GetMatch "{featured*,cover*,thumbnail*}" -}}
+        {{- $thumb = .Permalink -}}
+      {{- end -}}
+      {{- if not $thumb -}}
+        {{- with .Params.thumbnail }}{{ $thumb = . | absURL }}{{ end -}}
+      {{- end -}}
+      {{- if not $thumb -}}
+        {{- with .Params.image }}{{ $thumb = . | absURL }}{{ end -}}
+      {{- end -}}
+      {{- if not $thumb -}}
+        {{- with .Params.cover }}{{ $thumb = . | absURL }}{{ end -}}
+      {{- end -}}
+
+      <item>
+        <title>{{ .Title }}</title>
+        <link>{{ .Permalink }}</link>
+        <guid isPermaLink="true">{{ .Permalink }}</guid>
+        <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</pubDate>
+
+        {{- with $authorEmail }}
+        <author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>
+        {{- end }}
+
+        {{- /* Use summary if available, else truncate plain text */ -}}
+	{{- $summary := .Summary | default (.Plain | truncate 300) -}}
+	
+	<description>{{ .Summary | plainify | htmlEscape | safeHTML }}</description>
+	<content:encoded>{{ .Content | htmlEscape | safeHTML }}</content:encoded>
+
+
+        {{- with $thumb }}
+        <media:content url="{{ . }}" medium="image" />
+        <media:thumbnail url="{{ . }}" />
+        {{- end }}
+
+      </item>
+    {{- end }}
+
+  </channel>
+</rss>

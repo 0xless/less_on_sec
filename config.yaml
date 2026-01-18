@@ -3,6 +3,11 @@ languageCode: en-us
 theme: smigle
 title: less on sec
 
+outputs:
+  home:
+  - html
+  - rss
+
 menu:
   main:
     - identifier: home
@@ -51,7 +56,9 @@ params:
 #    - name: Twitter
 #      url: https://twitter.com/0xless
     - name: Email
-      url: mailto:contact[@]lessonsec.com
+      url: mailto:contact[at]lessonsec[dot]com
+    - name: RSS
+      url: index.xml
       
 # Prevents automatic "pluralization" of page titles
 pluralizeListTitles: False
