@@ -19,7 +19,8 @@
         <link>https://lessonsec.com/cve/cve-2025-65396/</link>
         <guid isPermaLink="true">https://lessonsec.com/cve/cve-2025-65396/</guid>
         <pubDate>Wed, 14 Jan 2026 00:00:00 &#43;0200</pubDate><description>A vulnerability in the boot process of Blurams Flare Camera version 24.1114.151.929 and earlier allows a physically proximate attacker to hijack the boot mechanism and gain a bootloader shell via the UART interface.</description>
-	<content:encoded>&lt;p&gt;A vulnerability in the boot process of Blurams Flare Camera version 24.1114.151.929 and earlier allows a physically proximate attacker to hijack the boot mechanism and gain a bootloader shell via the UART interface. This is achieved by inducing a read error from the SPI flash memory during the boot, by shorting a data pin of the IC to ground. An attacker can then dump the entire firmware, leading to the disclosure of sensitive information including cryptographic keys and user configurations.&lt;/p&gt;
+	<content:encoded>&lt;p&gt;A vulnerability in the boot process of Blurams Flare Camera version &lt;code&gt;24.1114.151.929&lt;/code&gt; and earlier allows a physically proximate attacker to hijack the boot mechanism and gain a bootloader shell via the UART interface. This is achieved by inducing a read error from the SPI flash memory during the boot, by shorting a data pin of the IC to ground. An attacker can then dump the entire firmware, leading to the disclosure of sensitive information including cryptographic keys and user configurations.&lt;/p&gt;
+&lt;p&gt;Vendor applied patches for the issue in software version &lt;code&gt;25.1119.177.2341&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
 &lt;p&gt;23/09/2025  First contacted with vendor&lt;br&gt;
 08/10/2025  Vulnerability report submitted to vendor&lt;br&gt;
@@ -34,7 +35,8 @@
         <link>https://lessonsec.com/cve/cve-2025-65397/</link>
         <guid isPermaLink="true">https://lessonsec.com/cve/cve-2025-65397/</guid>
         <pubDate>Wed, 14 Jan 2026 00:00:00 &#43;0200</pubDate><description>An insecure authentication mechanism in the safe_exec.sh startup script of Blurams Flare Camera version 24.1114.151.929 and earlier allows an attacker with physical access to the device to execute arbitrary commands with root privileges, if file /opt/images/public_key.</description>
-	<content:encoded>&lt;p&gt;An insecure authentication mechanism in the &lt;code&gt;safe_exec.sh&lt;/code&gt; startup script of Blurams Flare Camera version 24.1114.151.929 and earlier allows an attacker with physical access to the device to execute arbitrary commands with root privileges, if file &lt;code&gt;/opt/images/public_key.der&lt;/code&gt; is not present in the file system. The vulnerability can be triggered by providing a maliciously crafted &lt;code&gt;auth.ini&lt;/code&gt; file on the device&amp;rsquo;s SD card.&lt;/p&gt;
+	<content:encoded>&lt;p&gt;An insecure authentication mechanism in the &lt;code&gt;safe_exec.sh&lt;/code&gt; startup script of Blurams Flare Camera version &lt;code&gt;24.1114.151.929&lt;/code&gt; and earlier allows an attacker with physical access to the device to execute arbitrary commands with root privileges, if file &lt;code&gt;/opt/images/public_key.der&lt;/code&gt; is not present in the file system. The vulnerability can be triggered by providing a maliciously crafted &lt;code&gt;auth.ini&lt;/code&gt; file on the device&amp;rsquo;s SD card.&lt;/p&gt;
+&lt;p&gt;Vendor applied patches for the issue in software version &lt;code&gt;25.1119.177.2341&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
 &lt;p&gt;23/09/2025  First contacted with vendor&lt;br&gt;
 08/10/2025  Vulnerability report submitted to vendor&lt;br&gt;
