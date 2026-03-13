@@ -13,8 +13,15 @@
 
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 04 Sep 2025 21:41:00 &#43;0200</lastBuildDate>
+    <lastBuildDate>Wed, 11 Mar 2026 09:00:00 &#43;0200</lastBuildDate>
     <atom:link href="https://lessonsec.com/tags/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>BLE</title>
+        <link>https://lessonsec.com/tags/ble/</link>
+        <guid isPermaLink="true">https://lessonsec.com/tags/ble/</guid>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
+	<content:encoded></content:encoded>
+
+      </item><item>
         <title>Hardware hacking</title>
         <link>https://lessonsec.com/tags/hardware-hacking/</link>
         <guid isPermaLink="true">https://lessonsec.com/tags/hardware-hacking/</guid>
@@ -46,13 +53,6 @@
         <title>Radio</title>
         <link>https://lessonsec.com/tags/radio/</link>
         <guid isPermaLink="true">https://lessonsec.com/tags/radio/</guid>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
-	<content:encoded></content:encoded>
-
-      </item><item>
-        <title>BLE</title>
-        <link>https://lessonsec.com/tags/ble/</link>
-        <guid isPermaLink="true">https://lessonsec.com/tags/ble/</guid>
         <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
 	<content:encoded></content:encoded>
 

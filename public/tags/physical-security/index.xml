@@ -13,8 +13,708 @@
 
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 04 Sep 2025 21:41:00 &#43;0200</lastBuildDate>
+    <lastBuildDate>Wed, 11 Mar 2026 09:00:00 &#43;0200</lastBuildDate>
     <atom:link href="https://lessonsec.com/tags/physical-security/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>Reversing the FT100 BLE Fitness Bracelet</title>
+        <link>https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/</guid>
+        <pubDate>Wed, 11 Mar 2026 09:00:00 &#43;0200</pubDate><description>The device The device is called FT100 Fitness Bracelet by TWENTYFIVESEVEN and it offers some basic features such as heart rate and blood pressure monitoring, steps count, music control, notifications handling, a find device functionality and OTA firmware update.</description>
+	<content:encoded>&lt;h2 id=&#34;the-device&#34;&gt;The device&lt;/h2&gt;
+&lt;p&gt;The device is called &lt;code&gt;FT100 Fitness Bracelet&lt;/code&gt; by &lt;code&gt;TWENTYFIVESEVEN&lt;/code&gt; and it offers some basic features such as heart rate and blood pressure monitoring, steps count, music control, notifications handling, a find device functionality and OTA firmware update.&lt;/p&gt;
+&lt;p&gt;It features a display and a soft touch button and it is possible to use the manufacturer&amp;rsquo;s app to configure the device via &lt;code&gt;BLE&lt;/code&gt; connection.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/ft100.jpg#center&#34; alt=&#34;FT100 Fitness Bracelet&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;FT100 Fitness Bracelet&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The watch features a &lt;code&gt;PHY6202&lt;/code&gt; MCU, &lt;code&gt;512Kb&lt;/code&gt; of ROM, &lt;code&gt;16Kb&lt;/code&gt; of RAM and a whopping 50mAh battery (that I promptly swapped with an external power supply as it was giving me troubles).&lt;/p&gt;
+&lt;p&gt;The companion app &lt;code&gt;Lefun Health&lt;/code&gt; allows interaction with device&amp;rsquo;s functionalities. It offers &amp;ldquo;data aggregation&amp;rdquo; features such as recording sport activity or sleep quality. The app itself works ok-ish but it has frequent ads, it often asks for additional permissions and it tries to push to users some unrelated AI services made by Lefun. It&amp;rsquo;s not my favorite app, but it is good enough to work with.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/app.png#center&#34; alt=&#34;LeFun App&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Lefun App&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;What I&amp;rsquo;ll do in this article is try to instrument the android companion app to access BLE traffic between smartphone and our smartwatch to attempt reverse engineering the communication.&lt;/p&gt;
+&lt;h2 id=&#34;sniffing-the-ble-traffic-with-frida&#34;&gt;Sniffing the BLE traffic with frida&lt;/h2&gt;
+&lt;p&gt;In order to target the functionalities on the &lt;code&gt;FT100&lt;/code&gt; it is necessary to gain visibility of the BLE traffic exchanged between the phone and the bracelet. So we need to work toward that.&lt;/p&gt;
+&lt;p&gt;To be completely fair, there are multiple ways that could be used to dump the BLE traffic in this exact situation, with android &lt;a href=&#34;https://source.android.com/docs/core/connect/bluetooth/verifying_debugging#debugging-with-logs&#34;&gt;HCI Snoop log&lt;/a&gt; being my usual choice. However I&amp;rsquo;ve been working on mobile applications a lot more recently, I&amp;rsquo;ve recently &lt;a href=&#34;https://mandomat.github.io/2026-02-04-speaking-the-language-of-wearables/&#34;&gt;checked out this article&lt;/a&gt; which uses a similar technique and I figured this project would be a nice way to get practice working with &lt;code&gt;frida&lt;/code&gt;, so I decided to go for this way.
+This method could also come in handy when working on a non-rooted android device as usually there is no access to HCI logs, and a frida gadget could be patched into the apk, bypassing the need for root access.&lt;/p&gt;
+&lt;p&gt;The first step here would be to perform a static analysis of the apk. Using &lt;code&gt;jadx&lt;/code&gt; I decompiled the apk and started digging for clues on the right point to hook into.&lt;/p&gt;
+&lt;p&gt;During static analysis, the obvious first attempt was to look for and attempt hooking android default functions to handle BLE GATT events in &lt;a href=&#34;https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback&#34;&gt;&lt;code&gt;BluetoothGattCallback&lt;/code&gt;&lt;/a&gt; class. Ideally we would need at least access to &lt;code&gt;onCharacteristicChanged()&lt;/code&gt; and &lt;code&gt;onCharacteristicWrite()&lt;/code&gt; to intercept characteristic writes and GATT notifications traffic. But simply hooking these functions I was only able to intercept traffic for writes.
+After further analysis I realized the app was not using the base Android &lt;code&gt;BluetoothGattCallback&lt;/code&gt;, but instead some of these functions would be overridden by anonymous classes. So I needed to reliably hook the override implementations used at runtime in order to access incoming data.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://lessonsec.com/home/less/Documents/smartwatch/img/overrides.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The turning point was identifying &lt;code&gt;BluetoothDevice.connectGatt()&lt;/code&gt; as the universal entry point for every BLE connection. This method always receives the actual callback instance as an argument. By hooking all overloads of &lt;code&gt;connectGatt()&lt;/code&gt; and dynamically extracting the runtime callback class (&lt;code&gt;callback.$className&lt;/code&gt;), it became possible to hook the correct implementation of the target functions regardless of anonymous inner classes as observed in &lt;code&gt;jadx&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;var BluetoothDevice &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Java&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;use&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;android.bluetooth.BluetoothDevice&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+
+    var hookedCallbacks &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{};&lt;/span&gt;
+
+    BluetoothDevice&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;connectGatt&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;overloads&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;forEach&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;function &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;overload&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+
+        overload&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;implementation&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; function &lt;span style=&#34;color:#f92672&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+
+            logSection&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;connectGatt intercepted&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;var i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 0&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; arguments&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;length&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;++)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;arg[&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;] = &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; arguments&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;]);&lt;/span&gt;
+            &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+            &lt;span style=&#34;color:#75715e&#34;&gt;// Callback is always argument index 2 in all overloads
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            var callback &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; arguments&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;2&lt;span style=&#34;color:#f92672&#34;&gt;];&lt;/span&gt;
+
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;callback&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+
+                var className &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; callback&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;$className&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;;&lt;/span&gt;
+                console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[+] Real callback class: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; className&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+
+                hookGattCallback&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;className&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+            &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; overload&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;apply&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; arguments&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;};&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then inside the &lt;code&gt;hookGattCallback&lt;/code&gt; function each interesting function can be hooked explicitly like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Callback&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;onCharacteristicChanged&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                Callback&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;onCharacteristicChanged&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;overload&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;
+                        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;android.bluetooth.BluetoothGatt&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt;
+                        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;android.bluetooth.BluetoothGattCharacteristic&amp;#34;&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;implementation&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; function &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;gatt&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; characteristic&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+
+                        var value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; characteristic&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getValue&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;();&lt;/span&gt;
+
+                        logSection&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;BLE RX (Notification)&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Device : &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; gatt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getDevice&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;().&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getAddress&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;());&lt;/span&gt;
+                        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Service: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; characteristic&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getService&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;().&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getUuid&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;());&lt;/span&gt;
+                        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Char   : &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; characteristic&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;getUuid&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;());&lt;/span&gt;
+                        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Data   : &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; bytesToHex&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;value&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+                        console&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;log&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ASCII  : &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; bytesToAscii&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;value&lt;span style=&#34;color:#f92672&#34;&gt;));&lt;/span&gt;
+
+                        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;onCharacteristicChanged&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;gatt&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; characteristic&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;};&lt;/span&gt;
+            &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this method it was possible to achieve full visibility over the BLE events including characteristic read and writes, as well as notifications. Now it&amp;rsquo;s time to analyze the protocol.&lt;/p&gt;
+&lt;h2 id=&#34;gatt-traffic-overview&#34;&gt;GATT traffic overview&lt;/h2&gt;
+&lt;p&gt;We can now check out the extracted data from the frida hooks and having access to &lt;code&gt;GATT&lt;/code&gt; level operations, we can start digging into the protocol. Now, if you&amp;rsquo;ve worked with BLE before you will surely know &lt;code&gt;GATT&lt;/code&gt; in more or less details, but if you don&amp;rsquo;t, feel free to check out this post on &lt;a href=&#34;https://lessonsec.com/posts/walkthrough-ble-ctf/&#34;&gt;solving BLE CTF on esp32&lt;/a&gt; I go through basics there.&lt;/p&gt;
+&lt;p&gt;For the sake of clarity, let&amp;rsquo;s explicit that the stack we are working with looks something like this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;App protocol
+     ↓
+GATT characteristic
+     ↓
+ATT packets
+     ↓
+BLE link
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For the scope of the article, we may as well just consider APP protocol and GATT characteristic.&lt;/p&gt;
+&lt;p&gt;Picking out a few messages we can start figuring out what&amp;rsquo;s going on under the hood:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 05 31 01 bf
+ASCII  : ..1..
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 05 06 00 a2
+ASCII  : .....
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+BLE RX (Notification)
+======================================
+Device : C0:00:A1:A2:1F:04
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d00-0000-1000-8000-00805f9b34fb
+Data   : 5a 09 06 00 00 a0 32 14 79 00 00 00 00 00 00 00 00 00 00 00
+ASCII  : Z.....2.y...........
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;From these few exchanges we can already tell a few things about the protocol: first off the protocol lives on top of service &lt;code&gt;000018d0-0000-1000-8000-00805f9b34fb&lt;/code&gt; which doesn&amp;rsquo;t appear to be a standard &lt;code&gt;GATT&lt;/code&gt; service.&lt;/p&gt;
+&lt;p&gt;The app writes on char &lt;code&gt;00002d01-0000-1000-8000-00805f9b34fb&lt;/code&gt; (handle &lt;code&gt;0x002b&lt;/code&gt;) and the BLE notifications from the smart band are received on char &lt;code&gt;00002d00-0000-1000-8000-00805f9b34fb &lt;/code&gt;(handle  &lt;code&gt;0x002e&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;We can also see that some commands from the app trigger a response from the device through a BLE notification, and some other don&amp;rsquo;t.&lt;/p&gt;
+&lt;p&gt;In order to understand the semantics of the protocol, we need to observe some more traffic.
+For brevity char writes by the app will be marked as &lt;code&gt;TX&lt;/code&gt;, while BLE notifications from the smartband will be marked with &lt;code&gt;RX&lt;/code&gt;.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[TX] AB 05 56 01 8B
+[TX] AB 05 E0 01 23
+[TX] AB 0A 39 00 01 02 D0 06 40 23
+[TX] AB 05 51 00 BB
+[TX] AB 05 31 01 BF
+[TX] AB 05 06 00 A2
+[RX] 5A 09 06 00 00 A0 32 14 79 00 00 00 00 00 00 00 00 00 00 00
+[TX] AB 04 00 0C
+[RX] 5A 14 00 FF 27 14 F1 50 31 39 02 01 02 32 19 54 4A 44 50 16
+[TX] AB 04 03 EE
+[RX] 5A 05 03 23 62 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[TX] AB 04 70 F4
+[TX] AB 05 22 00 58
+[RX] 5A 07 22 00 1F FF 06 00 00 00 00 00 00 00 00 00 00 00 00 00
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Messages are tagged with an header depending on the direction of the communications, char writes from phone to device always have &lt;code&gt;0xAB&lt;/code&gt; header, while notifications have a &lt;code&gt;0x5A&lt;/code&gt; header. Additionally notifications always seem to be padded to 20 bytes (padding with zeros).&lt;/p&gt;
+&lt;p&gt;The other bytes seem to have a straightforward meaning as well, the second byte is in fact the length of the message, while the third and fourth bytes seem to be command bytes (CMD, SUB-CMD).&lt;/p&gt;
+&lt;h2 id=&#34;reversing-the-protocol&#34;&gt;Reversing the protocol&lt;/h2&gt;
+&lt;p&gt;Now, we could start black box reversing from these messages, but it would be pretty hard to make progress, both because some messages don&amp;rsquo;t produce an observable result and because payloads and message sending is out of our control. It would be wise to start somewhere simpler and more controlled.&lt;/p&gt;
+&lt;h3 id=&#34;find-my-device&#34;&gt;Find my device&lt;/h3&gt;
+&lt;p&gt;From the app, it is possible to use the find my device functionality to have the smarband buzz three times to help the owner find it. This functionality seems straightforward, so for the time being, we can ignore other messages and we can try to intercept the find my device messages only:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 04 09 90
+ASCII  : ....
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+BLE RX (Notification)
+======================================
+Device : C0:00:A1:A2:1F:04
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d00-0000-1000-8000-00805f9b34fb
+Data   : 5a 05 09 01 1a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ASCII  : Z...................
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We see that the smartphone app writes payload &lt;code&gt;ab 04 09 90&lt;/code&gt; on the target service characteristic, it triggers the find my device behavior on the smartband.&lt;/p&gt;
+&lt;p&gt;Surely enough, if we try on our own, connect to the smartwatch and write on characteristic &lt;code&gt;00002d01-0000-1000-8000-00805f9b34fb&lt;/code&gt; the value &lt;code&gt;ab 04 09 90&lt;/code&gt; we can trigger device vibration.&lt;/p&gt;
+&lt;p&gt;This can be done quite simply with &lt;code&gt;gatttool -b [MAC] --char-write-req -a 0x002c -n ab040990&lt;/code&gt;.  (&lt;code&gt;gatttool&lt;/code&gt; is technically deprecated, but I was having issues with pairing using &lt;code&gt;bluetoothctl&lt;/code&gt;, so I figured it would be alright for quick testing).&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;NOTE: I wish I had a GIF of the device reacting to the command, but as I&amp;rsquo;m writing this article I just broke the device screen. My bad.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This was fun, but let&amp;rsquo;s dig deeper.&lt;/p&gt;
+&lt;h3 id=&#34;notification-handling&#34;&gt;Notification handling&lt;/h3&gt;
+&lt;p&gt;We can move on and reverse engineer how smartphone notifications are forwarded to the device. We can trigger android notifications on the smartphone and have the &lt;code&gt;Lefun&lt;/code&gt; app relay the notification to the smartband to observe the payloads.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 12 17 14 01 01 01 74 65 73 74 3a 20 74 65 73 74 67
+ASCII  : .......test: testg
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For this test, the notification, is a whatsapp notification and the text shown on the screen is: &lt;code&gt;test: test&lt;/code&gt;.
+We can see from the logs of out instrumented app that we see &lt;code&gt;ab121714010101746573743a207465737467&lt;/code&gt; payload written to the characteristic with handle &lt;code&gt;0x2c&lt;/code&gt;.  By converting it in ASCII we can see that the text payload is shared in cleartext as &lt;code&gt;746573743a2074657374&lt;/code&gt; is the hex for ASCII &lt;code&gt;test: test&lt;/code&gt;. Last byte looks suspicious and I&amp;rsquo;m sure it&amp;rsquo;s some kind of CRC, but we will figure this out later.&lt;/p&gt;
+&lt;p&gt;Based on what we know, we can make an educated guess and suppose that the base message frame looks something like this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Offset&lt;/th&gt;
+&lt;th&gt;Field&lt;/th&gt;
+&lt;th&gt;Note&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;Header&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0xAB&lt;/code&gt; (phone to device)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Length&lt;/td&gt;
+&lt;td&gt;Length of the message&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Command ID&lt;/td&gt;
+&lt;td&gt;In case it is a &lt;code&gt;0x5A&lt;/code&gt; message, it mirrors the command byte&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;n..m&lt;/td&gt;
+&lt;td&gt;Payload&lt;/td&gt;
+&lt;td&gt;Command payload (optional)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last&lt;/td&gt;
+&lt;td&gt;CRC&lt;/td&gt;
+&lt;td&gt;?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;This fits both the notification message format and the find device message format.&lt;/p&gt;
+&lt;p&gt;Now, we can replay our notification countless time, but can we modify it? If we change the ASCII payload, we see that the smart band doesn&amp;rsquo;t react to the message anymore even adjusting the length byte.  And just like that, now it&amp;rsquo;s the perfect time to figure out the CRC.&lt;/p&gt;
+&lt;p&gt;So we attempt using &lt;a href=&#34;https://reveng.sourceforge.io/&#34;&gt;reveng&lt;/a&gt; to understand which CRC we are working with and surely enough it gives us a result:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;./reveng -w 8 -s ab121714010101746573743a207465737467&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;width=8 poly=0x31 init=0x00 refin=true refout=true xorout=0x00 check=0xa1 residue=0x00 name=&amp;quot;CRC-8/MAXIM-DOW&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Now, it is possible to implement the function to calculate the CRC and we can start creating valid messages.&lt;/p&gt;
+&lt;p&gt;Minding the CRC and the length byte, we can generate our own notifications commands to send to the device.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/hacked_notification.jpeg#center&#34; alt=&#34;Custom notification&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Custom notification&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much&amp;hellip; Also we kinda figured out the packet format, but it doesn&amp;rsquo;t account for every byte in notification messages.
+It would make sense for there to be one or more bytes to handle some type of data fragmentation, to handle payloads longer than 16 bytes.&lt;/p&gt;
+&lt;p&gt;So I&amp;rsquo;ve sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify total &lt;code&gt;fragment number&lt;/code&gt; and the &lt;code&gt;current fragment&lt;/code&gt;. Then by experimenting I figured out two more bytes that are part of the notification message format which I called &lt;code&gt;sub-command&lt;/code&gt; and &lt;code&gt;extra&lt;/code&gt; bytes.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/penguin_notification.jpeg#center&#34; alt=&#34;Fragmented custom notification&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Fragmented custom notification&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The &lt;code&gt;sub-command&lt;/code&gt; byte specifies the notification icon that will be shown on the smart band screen.
+By creating and sending notification messages to the device, it was possible to compile a list of sub-commands and their respective notification type.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Code&lt;/th&gt;
+&lt;th&gt;Icon&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Call&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2/3&lt;/td&gt;
+&lt;td&gt;SMS&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;Snapchat&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5/6/7&lt;/td&gt;
+&lt;td&gt;SMS&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;SMS (style 2)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;16/17&lt;/td&gt;
+&lt;td&gt;Facebook&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;18&lt;/td&gt;
+&lt;td&gt;Twitter&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;19&lt;/td&gt;
+&lt;td&gt;LinkedIn&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;20&lt;/td&gt;
+&lt;td&gt;WhatsApp&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;21&lt;/td&gt;
+&lt;td&gt;Line&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;22&lt;/td&gt;
+&lt;td&gt;Talk&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;23&lt;/td&gt;
+&lt;td&gt;Facebook messenger&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;24&lt;/td&gt;
+&lt;td&gt;Instagram&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;25&lt;/td&gt;
+&lt;td&gt;WhatsApp Business&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Some icons appear on the &lt;code&gt;FT100&lt;/code&gt; for multiple sub-command values. This might be due to the fact that not all the supported notification types have a dedicated icon, but I&amp;rsquo;m just guessing.&lt;/p&gt;
+&lt;p&gt;To this day I&amp;rsquo;m not sure what the &lt;code&gt;extra&lt;/code&gt; byte is there for. Sometimes it gets printed as a normal character, sometimes it doesn&amp;rsquo;t.&lt;/p&gt;
+&lt;p&gt;The notification message format is completely reconstructed as follow:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Offset&lt;/th&gt;
+&lt;th&gt;Field&lt;/th&gt;
+&lt;th&gt;Note&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;Header&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0xAB&lt;/code&gt; (phone to device)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Length&lt;/td&gt;
+&lt;td&gt;Length of the message&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Command ID&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0x17&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Sub-command&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;Total Fragments&lt;/td&gt;
+&lt;td&gt;Total number of fragment for messages longer than 20 bytes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;Fragment Index&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;Extra&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;n..m&lt;/td&gt;
+&lt;td&gt;Payload&lt;/td&gt;
+&lt;td&gt;ASCII data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last&lt;/td&gt;
+&lt;td&gt;CRC8&lt;/td&gt;
+&lt;td&gt;CRC-8/MAXIM-DOW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Finally, whenever I see fragmentation I have to try and mess with it a little bit and I noticed a weird behavior. Fragment indexes are 1 based, and the device starts buffering fragments at index 1 as expected, however, if a second message sets fragment index = 1, the first chunk of buffered message gets overwritten. The funny part is that fragment 1 is the only one that shows this behavior. Fragments with indexes greater than 1 will be buffered in order of arrival (and not depending on the frame number) until one message with fragment index = total fragments is written on the target characteristic, again not dependent on the actual number of frames received.&lt;/p&gt;
+&lt;h3 id=&#34;weather-data-push&#34;&gt;Weather data push&lt;/h3&gt;
+&lt;p&gt;Just because there&amp;rsquo;s way too much stuff to ignore it all, I wanted to reverse engineer another message type: weather data push.
+I&amp;rsquo;m not sure if this happens periodically while using the app, but it is possible to trigger a manual weather data push in the app, so it was kind of easy to experiment with this feature as well.&lt;/p&gt;
+&lt;p&gt;For the first time, the menu item for this functionality appears on the device only if a weather push has been performed before.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 08 2a 00 08 0f 05 28
+ASCII  : . . . . . . . . (
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+BLE RX (Notification)
+======================================
+Device : C0:00:A1:A2:1F:04
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d00-0000-1000-8000-00805f9b34fb
+Data   : 5a 05 2a 01 8e 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ASCII  : Z...................
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Again, I&amp;rsquo;ve sent a few of these messages and figured out the packet format:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Offset&lt;/th&gt;
+&lt;th&gt;Field&lt;/th&gt;
+&lt;th&gt;Note&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;Header&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0xAB&lt;/code&gt; (phone to device)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Length&lt;/td&gt;
+&lt;td&gt;Length of the message&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Command ID&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0x2A&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Sub-command&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;Extra&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;Max Temp&lt;/td&gt;
+&lt;td&gt;Maximum temperature value&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;Min Temp&lt;/td&gt;
+&lt;td&gt;Minimum temperature value&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last&lt;/td&gt;
+&lt;td&gt;CRC8&lt;/td&gt;
+&lt;td&gt;CRC-8/MAXIM-DOW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Sub-command values in this case change the weather icon shown in the weather menu. Values in this case are:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Code&lt;/th&gt;
+&lt;th&gt;Icon&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;Sun&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Cloud + Sun&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Rain&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Snow&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;Cloud&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Any other value will default to cloud icon.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Here too, no image of the smartwatch because I broke the screen, it sucks I know.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;watchface-data-push&#34;&gt;Watchface data push&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I meant to keep the analysis of this feature for a part 2 of the article, but as the screen is now broken I figured it was worth wrapping up what I have done to this point.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After identifying several control commands, I wanted to understand how the companion app uploads custom watchfaces to the device. Capturing a full update revealed that the process consists of two distinct phases: a short control exchange that prepares the watch for the transfer, followed by a large stream of fragmented image data.&lt;/p&gt;
+&lt;p&gt;The actual watchface image is transmitted as a sequence of packets written on the same BLE characteristic used for other commands. Unlike the notification and weather packets analyzed earlier, these frames do not include a length byte. Instead, they are simple fragments of raw pixel data indexed with a 16-bit counter. The start of image stream is probably set up by previous communications.&lt;/p&gt;
+&lt;p&gt;Typical fragments looks like this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 2c 00 00 79 ce 00 00 08 42 c7 39 e7 39 c7 39 08 42 c7 39
+ASCII  : .,..y....B.9.9.9.B.9
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 2c 00 01 c7 39 e7 39 e7 39 a6 31 e8 41 a6 31 c7 39 e7 39
+ASCII  : .,...9.9.9.1.A.1.9.9
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+BLE WRITE (TX)
+======================================
+Service: 000018d0-0000-1000-8000-00805f9b34fb
+Char   : 00002d01-0000-1000-8000-00805f9b34fb
+Data   : ab 2c 00 02 c7 39 e7 39 c7 39 08 42 21 08 e3 18 86 31 04 21
+ASCII  : .,...9.9.9.B!....1.!
+
+======================================
+BLE WRITE ACK
+======================================
+Status : 0
+
+======================================
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;By analyzing multiple captures it becomes clear that these packets implement a simple fragmentation scheme.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Offset&lt;/th&gt;
+&lt;th&gt;Field&lt;/th&gt;
+&lt;th&gt;Note&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;Header&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0xAB&lt;/code&gt; (phone to device)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Command ID&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0x2C&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Index (MSB)&lt;/td&gt;
+&lt;td&gt;Fragment index high byte&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Index (LSB)&lt;/td&gt;
+&lt;td&gt;Fragment index low byte&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4..n&lt;/td&gt;
+&lt;td&gt;Payload&lt;/td&gt;
+&lt;td&gt;Raw image data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last&lt;/td&gt;
+&lt;td&gt;CRC8&lt;/td&gt;
+&lt;td&gt;CRC-8/MAXIM-DOW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The index field increments sequentially for each fragment, allowing the watch to reconstruct the full image stream.&lt;/p&gt;
+&lt;p&gt;Once all fragments are concatenated in order, the resulting byte stream contains nothing but pixel data.
+Now, it was easy to determine how images were sent, but it took a lot of fiddling to make sense of the data.&lt;/p&gt;
+&lt;p&gt;There are still two unknowns:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Data format&lt;/li&gt;
+&lt;li&gt;Image size&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What I did was use an &amp;ldquo;easy to debug with&amp;rdquo; image, I decided to go for a numbered chess board.&lt;/p&gt;
+&lt;p&gt;I then captured the traffic when performing the upload operation, wrote a small parser that extracts &lt;code&gt;0xAB 0x2C&lt;/code&gt; packets from the BLE dump, sorts them by fragment index, and rebuilds the binary stream. I then tried using different image encoding formats to interpret the payload. I was eventually able to determine that the correct one was &lt;strong&gt;RGB565&lt;/strong&gt;. I focused on common color encodings used in embedded displays, and the payload started to make sense when decoded this way.&lt;/p&gt;
+&lt;p&gt;Finding out the image size took longer to figure out as at first it wasn&amp;rsquo;t clear if or how metadata was included in the extracted binary blob. After a few attempts and a couple of hours spent staring at badly distorted images, it was possible to understand that the size is 80 x 160 pixel.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/watchface_broken.png#center&#34; alt=&#34;Badly reconstructed image&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Badly reconstructed image&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The correctly extracted watchface image looks like this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/watchface.png#center&#34; alt=&#34;Reconstructed image&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Reconstructed image&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;This fragmentation approach is fairly typical for BLE devices: instead of relying on large MTU sizes, the application simply slices the image into fixed-size chunks and transmits them sequentially. The watch then reassembles the data internally before updating the displayed watchface.&lt;/p&gt;
+&lt;p&gt;Now that the format of the watchface stream is understood, the next logical step would be to reproduce the process in reverse, however, I didn&amp;rsquo;t get to achieve this as I broke the watch.&lt;/p&gt;
+&lt;h3 id=&#34;response-message-format&#34;&gt;Response message format&lt;/h3&gt;
+&lt;p&gt;While we are at it we might as well formalize the response format, which looks something like this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Offset&lt;/th&gt;
+&lt;th&gt;Field&lt;/th&gt;
+&lt;th&gt;Note&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;Header&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0x5A&lt;/code&gt; (device to phone)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Length&lt;/td&gt;
+&lt;td&gt;Length of the message&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Command ID&lt;/td&gt;
+&lt;td&gt;Reflected from the message &lt;br /&gt;the device is responding to&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;n..m&lt;/td&gt;
+&lt;td&gt;Payload&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last&lt;/td&gt;
+&lt;td&gt;CRC8&lt;/td&gt;
+&lt;td&gt;CRC-8/MAXIM-DOW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;With the payload being either a status code (&lt;code&gt;0x01&lt;/code&gt; positive outcome, &lt;code&gt;0x00&lt;/code&gt; negative outcome) or a returned value.&lt;/p&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;As I&amp;rsquo;m finishing this article, I&amp;rsquo;ve found a bunch of interesting classes that could help for future reversing efforts, namely &lt;code&gt;com.tjd.lefun.sdk.ble.BleWatchServiceImpl&lt;/code&gt; and &lt;code&gt;com.tjd.lefun.sdk.ble.WristbandCommandByte&lt;/code&gt; these classes explain quite well message formats and what operations the SDK supports, however many commands are not implemented in the app or in the smartband as I&amp;rsquo;ve forging messages for a few of those and got no response from the smartband.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/message_format.png#center&#34; alt=&#34;Useful code&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;App code handling notifications&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;This would have saved me some frustration reversing the protocol, but it is what it is. It might be useful for future work.&lt;/p&gt;
+&lt;p&gt;All relevant scripts and resources are available here: &lt;a href=&#34;https://github.com/0xless/FT100_fitness_bracelet_reversing&#34;&gt;https://github.com/0xless/FT100_fitness_bracelet_reversing&lt;/a&gt;&lt;/p&gt;
+</content:encoded>
+
+      </item><item>
         <title>nRF51 RBPCONF bypass for firmware dumping</title>
         <link>https://lessonsec.com/posts/nrf51-bypass/</link>
         <guid isPermaLink="true">https://lessonsec.com/posts/nrf51-bypass/</guid>

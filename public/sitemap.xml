@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://lessonsec.com/tags/ble/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/hardware-hacking/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/physical-security/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/posts/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/</loc>
+    <lastmod>2026-03-11T09:00:00+02:00</lastmod>
+  </url><url>
     <loc>https://lessonsec.com/cve/</loc>
     <lastmod>2026-01-14T00:00:00+02:00</lastmod>
   </url><url>
@@ -11,22 +32,7 @@
     <loc>https://lessonsec.com/cve/cve-2025-65397/</loc>
     <lastmod>2026-01-14T00:00:00+02:00</lastmod>
   </url><url>
-    <loc>https://lessonsec.com/</loc>
-    <lastmod>2026-01-14T00:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/hardware-hacking/</loc>
-    <lastmod>2025-09-04T21:41:00+02:00</lastmod>
-  </url><url>
     <loc>https://lessonsec.com/posts/nrf51-bypass/</loc>
-    <lastmod>2025-09-04T21:41:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/physical-security/</loc>
-    <lastmod>2025-09-04T21:41:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/posts/</loc>
-    <lastmod>2025-09-04T21:41:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/</loc>
     <lastmod>2025-09-04T21:41:00+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/cve/cve-2024-29019/</loc>
@@ -58,9 +64,6 @@
   </url><url>
     <loc>https://lessonsec.com/cve/cve-2022-44900/</loc>
     <lastmod>2022-12-06T22:19:25+01:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/ble/</loc>
-    <lastmod>2022-04-17T14:08:32+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/tags/ctfs/</loc>
     <lastmod>2022-04-17T14:08:32+02:00</lastmod>

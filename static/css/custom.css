@@ -5,6 +5,23 @@ table
     font-style: italic;
 }
 
+/* Default table borders (for normal tables) */
+table {
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    border: 1px solid #ccc;
+    padding: 0.4rem;
+}
+
+/* Remove borders if table contains images (caption tables) */
+table:has(img) th,
+table:has(img) td {
+    border: none;
+}
+
 table thead tr th img[src$='#center']
 {
     display: block; 
@@ -18,21 +35,18 @@ img[src$='#center']
     margin: 0.7rem auto; /* you can replace the vertical '0.7rem' by
                             whatever floats your boat, but keep the
                             horizontal 'auto' for this to work */
-    /* whatever else styles you fancy here */
 }
 
 img[src$='#floatleft']
 {
     float:left;
     margin: 0.7rem;      /* this margin is totally up to you */
-    /* whatever else styles you fancy here */
 }
 
 img[src$='#floatright']
 {
     float:right;
     margin: 0.7rem;      /* this margin is totally up to you */
-    /* whatever else styles you fancy here */
 }
 
 .responsive_div_top
