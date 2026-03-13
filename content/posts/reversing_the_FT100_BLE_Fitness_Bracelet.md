@@ -2,36 +2,40 @@
 
 
 title: "Reversing the FT100 BLE Fitness Bracelet"
-date: 2026-03-11T9:00:00+02:00
-toc: false
+date: 2026-03-12T9:00:00+02:00
 images:
-  - /images/ft100/nrf51/uicr.png
+  - /images/ft100/app.png
+  - /images/ft100/ft100.jpg
+  - /images/ft100/hacked_notification.jpeg
+  - /images/ft100/penguin_notification.jpeg
+  - /images/ft100/watchface_broken.png
+  - /images/ft100/watchface.png
+  - /images/ft100/message_format.png
 tags:
   - BLE
   - Hardware hacking
   - Physical security
 image:
-  - /images/ft100/nrf51/setup.png
+  - /images/ft100/penguin_notification.jpeg
 ---
 
 ## The device
 
-The device is called `FT100 Fitness Bracelet` by `TWENTYFIVESEVEN` and it offers some basic features such as heart rate and blood pressure monitoring, steps count, music control, notifications handling, a find device functionality and OTA firmware update.
+The device is called `FT100 Fitness Bracelet` by `TWENTYFIVESEVEN` and it offers some basic features such as heart rate and blood pressure monitoring, step count, music control, notifications handling, a find device functionality, and OTA firmware update.
 
-It features a display and a soft touch button and it is possible to use the manufacturer's app to configure the device via `BLE` connection.
+It features a display and a soft touch button, and it is possible to use the manufacturer's app to configure the device via `BLE` connection.
 
-![]()
-| ![FT100 Fitness Bracelet](images/ft100/ft100.jpg#center) |
-| :------------------------------------------------------: |
-|                  FT100 Fitness Bracelet                  |
+| ![FT100 Fitness Bracelet](/images/ft100/ft100.jpg#center) |
+| :-------------------------------------------------------: |
+|                  FT100 Fitness Bracelet                   |
 
 The watch features a `PHY6202` MCU, `512Kb` of ROM, `16Kb` of RAM and a whopping 50mAh battery (that I promptly swapped with an external power supply as it was giving me troubles).
 
 The companion app `Lefun Health` allows interaction with device's functionalities. It offers "data aggregation" features such as recording sport activity or sleep quality. The app itself works ok-ish but it has frequent ads, it often asks for additional permissions and it tries to push to users some unrelated AI services made by Lefun. It's not my favorite app, but it is good enough to work with.
 
-| ![LeFun App](images/ft100/app.png#center) |
-| :---------------------------------------------: |
-|                  Lefun App              |
+| ![LeFun App](/images/ft100/app.png#center) |
+| :----------------------------------------: |
+|                 Lefun App                  |
 
 What I'll do in this article is try to instrument the android companion app to access BLE traffic between smartphone and our smartwatch to attempt reverse engineering the communication. 
 
@@ -47,7 +51,7 @@ The first step here would be to perform a static analysis of the apk. Using `jad
 During static analysis, the obvious first attempt was to look for and attempt hooking android default functions to handle BLE GATT events in [`BluetoothGattCallback`](https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback) class. Ideally we would need at least access to `onCharacteristicChanged()` and `onCharacteristicWrite()` to intercept characteristic writes and GATT notifications traffic. But simply hooking these functions I was only able to intercept traffic for writes.
 After further analysis I realized the app was not using the base Android `BluetoothGattCallback`, but instead some of these functions would be overridden by anonymous classes. So I needed to reliably hook the override implementations used at runtime in order to access incoming data.
 
-![](/home/less/Documents/smartwatch/img/overrides.png)
+![](/images/ft100/overrides.png)
 
 The turning point was identifying `BluetoothDevice.connectGatt()` as the universal entry point for every BLE connection. This method always receives the actual callback instance as an argument. By hooking all overloads of `connectGatt()` and dynamically extracting the runtime callback class (`callback.$className`), it became possible to hook the correct implementation of the target functions regardless of anonymous inner classes as observed in `jadx`. 
 
@@ -125,7 +129,7 @@ ATT packets
 BLE link
 ```
 
-For the scope of the article, we may as well just consider APP protocol and GATT characteristic.
+For the scope of the article, we may as well just consider App protocol and GATT characteristics.
 
 Picking out a few messages we can start figuring out what's going on under the hood:
 
@@ -173,7 +177,7 @@ The app writes on char `00002d01-0000-1000-8000-00805f9b34fb` (handle `0x002b`) 
 We can also see that some commands from the app trigger a response from the device through a BLE notification, and some other don't. 
 
 In order to understand the semantics of the protocol, we need to observe some more traffic.
-For brevity char writes by the app will be marked as `TX`, while BLE notifications from the smartband will be marked with `RX`.
+For brevity, char writes by the app will be marked as `TX`, while BLE notifications from the smartband will be marked with `RX`.
 
 ```
 [TX] AB 05 56 01 8B
@@ -252,8 +256,8 @@ Data   : ab 12 17 14 01 01 01 74 65 73 74 3a 20 74 65 73 74 67
 ASCII  : .......test: testg
 ```
 
-For this test, the notification, is a whatsapp notification and the text shown on the screen is: `test: test`.
-We can see from the logs of out instrumented app that we see `ab121714010101746573743a207465737467` payload written to the characteristic with handle `0x2c`.  By converting it in ASCII we can see that the text payload is shared in cleartext as `746573743a2074657374` is the hex for ASCII `test: test`. Last byte looks suspicious and I'm sure it's some kind of CRC, but we will figure this out later.
+For this test, the notification is a whatsapp notification and the text shown on the screen is: `test: test`.
+We can see from the logs of our instrumented app that we see `ab121714010101746573743a207465737467` payload written to the characteristic with handle `0x2c`.  By converting it in ASCII we can see that the text payload is shared in cleartext as `746573743a2074657374` is the hex for ASCII `test: test`. Last byte looks suspicious and I'm sure it's some kind of CRC, but we will figure this out later.
 
 Based on what we know, we can make an educated guess and suppose that the base message frame looks something like this:
 | Offset | Field      | Note                                                        |
@@ -278,16 +282,16 @@ Now, it is possible to implement the function to calculate the CRC and we can st
 
 Minding the CRC and the length byte, we can generate our own notifications commands to send to the device.
 
-| ![Custom notification](images/ft100/hacked_notification.jpeg#center) |
+| ![Custom notification](/images/ft100/hacked_notification.jpeg#center) |
 | :----------------------------------------------------------: |
 |                     Custom notification                      |
 
-Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much... Also we kinda figured out the packet format, but it doesn't account for every byte in notification messages. 
+Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much... Also we kind of figured out the packet format, but it doesn't account for every byte in notification messages. 
 It would make sense for there to be one or more bytes to handle some type of data fragmentation, to handle payloads longer than 16 bytes. 
 
-So I've sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify total `fragment number` and the `current fragment`. Then by experimenting I figured out two more bytes that are part of the notification message format which I called `sub-command` and `extra` bytes.
+So I've sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify the total `fragment number` and the `current fragment`. Then by experimenting I figured out two more bytes that are part of the notification message format which I called `sub-command` and `extra` bytes.
 
-| ![Fragmented custom notification](images/ft100/penguin_notification.jpeg#center) |
+| ![Fragmented custom notification](/images/ft100/penguin_notification.jpeg#center) |
 | :----------------------------------------------------------: |
 |                Fragmented custom notification                |
 
@@ -397,7 +401,7 @@ After identifying several control commands, I wanted to understand how the compa
 
 The actual watchface image is transmitted as a sequence of packets written on the same BLE characteristic used for other commands. Unlike the notification and weather packets analyzed earlier, these frames do not include a length byte. Instead, they are simple fragments of raw pixel data indexed with a 16-bit counter. The start of image stream is probably set up by previous communications.
 
-Typical fragments looks like this:
+Typical fragments look like this:
 
 ```
 ======================================
@@ -470,16 +474,16 @@ I then captured the traffic when performing the upload operation, wrote a small 
 Finding out the image size took longer to figure out as at first it wasn't clear if or how metadata was included in the extracted binary blob. After a few attempts and a couple of hours spent staring at badly distorted images, it was possible to understand that the size is 80 x 160 pixel.
 
 
-| ![Badly reconstructed image](images/ft100/watchface_broken.png#center) |
+| ![Badly reconstructed image](/images/ft100/watchface_broken.png#center) |
 | :----------------------------------------------------------: |
 |                  Badly reconstructed image                   |
 
 
 The correctly extracted watchface image looks like this:
 
-| ![Reconstructed image](images/ft100/watchface.png#center) |
-| :-------------------------------------------------------: |
-|                    Reconstructed image                    |
+| ![Reconstructed image](/images/ft100/watchface.png#center) |
+| :--------------------------------------------------------: |
+|                    Reconstructed image                     |
 
 This fragmentation approach is fairly typical for BLE devices: instead of relying on large MTU sizes, the application simply slices the image into fixed-size chunks and transmits them sequentially. The watch then reassembles the data internally before updating the displayed watchface.
 
@@ -503,9 +507,9 @@ With the payload being either a status code (`0x01` positive outcome, `0x00` neg
 
 As I'm finishing this article, I've found a bunch of interesting classes that could help for future reversing efforts, namely `com.tjd.lefun.sdk.ble.BleWatchServiceImpl` and `com.tjd.lefun.sdk.ble.WristbandCommandByte` these classes explain quite well message formats and what operations the SDK supports, however many commands are not implemented in the app or in the smartband as I've forging messages for a few of those and got no response from the smartband. 
 
-| ![Useful code](images/ft100/message_format.png#center) |
-| :----------------------------------------------------: |
-|            App code handling notifications             |
+| ![Useful code](/images/ft100/message_format.png#center) |
+| :-----------------------------------------------------: |
+|             App code handling notifications             |
 
 This would have saved me some frustration reversing the protocol, but it is what it is. It might be useful for future work.
 

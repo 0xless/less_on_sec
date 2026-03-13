@@ -13,20 +13,19 @@
 
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 11 Mar 2026 09:00:00 &#43;0200</lastBuildDate>
+    <lastBuildDate>Thu, 12 Mar 2026 09:00:00 &#43;0200</lastBuildDate>
     <atom:link href="https://lessonsec.com/tags/physical-security/index.xml" rel="self" type="application/rss&#43;xml" /><item>
         <title>Reversing the FT100 BLE Fitness Bracelet</title>
         <link>https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/</link>
         <guid isPermaLink="true">https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/</guid>
-        <pubDate>Wed, 11 Mar 2026 09:00:00 &#43;0200</pubDate><description>The device The device is called FT100 Fitness Bracelet by TWENTYFIVESEVEN and it offers some basic features such as heart rate and blood pressure monitoring, steps count, music control, notifications handling, a find device functionality and OTA firmware update.</description>
+        <pubDate>Thu, 12 Mar 2026 09:00:00 &#43;0200</pubDate><description>The device The device is called FT100 Fitness Bracelet by TWENTYFIVESEVEN and it offers some basic features such as heart rate and blood pressure monitoring, step count, music control, notifications handling, a find device functionality, and OTA firmware update.</description>
 	<content:encoded>&lt;h2 id=&#34;the-device&#34;&gt;The device&lt;/h2&gt;
-&lt;p&gt;The device is called &lt;code&gt;FT100 Fitness Bracelet&lt;/code&gt; by &lt;code&gt;TWENTYFIVESEVEN&lt;/code&gt; and it offers some basic features such as heart rate and blood pressure monitoring, steps count, music control, notifications handling, a find device functionality and OTA firmware update.&lt;/p&gt;
-&lt;p&gt;It features a display and a soft touch button and it is possible to use the manufacturer&amp;rsquo;s app to configure the device via &lt;code&gt;BLE&lt;/code&gt; connection.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The device is called &lt;code&gt;FT100 Fitness Bracelet&lt;/code&gt; by &lt;code&gt;TWENTYFIVESEVEN&lt;/code&gt; and it offers some basic features such as heart rate and blood pressure monitoring, step count, music control, notifications handling, a find device functionality, and OTA firmware update.&lt;/p&gt;
+&lt;p&gt;It features a display and a soft touch button, and it is possible to use the manufacturer&amp;rsquo;s app to configure the device via &lt;code&gt;BLE&lt;/code&gt; connection.&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/ft100.jpg#center&#34; alt=&#34;FT100 Fitness Bracelet&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/ft100.jpg#center&#34; alt=&#34;FT100 Fitness Bracelet&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -40,7 +39,7 @@
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/app.png#center&#34; alt=&#34;LeFun App&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/app.png#center&#34; alt=&#34;LeFun App&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -57,7 +56,7 @@ This method could also come in handy when working on a non-rooted android device
 &lt;p&gt;The first step here would be to perform a static analysis of the apk. Using &lt;code&gt;jadx&lt;/code&gt; I decompiled the apk and started digging for clues on the right point to hook into.&lt;/p&gt;
 &lt;p&gt;During static analysis, the obvious first attempt was to look for and attempt hooking android default functions to handle BLE GATT events in &lt;a href=&#34;https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback&#34;&gt;&lt;code&gt;BluetoothGattCallback&lt;/code&gt;&lt;/a&gt; class. Ideally we would need at least access to &lt;code&gt;onCharacteristicChanged()&lt;/code&gt; and &lt;code&gt;onCharacteristicWrite()&lt;/code&gt; to intercept characteristic writes and GATT notifications traffic. But simply hooking these functions I was only able to intercept traffic for writes.
 After further analysis I realized the app was not using the base Android &lt;code&gt;BluetoothGattCallback&lt;/code&gt;, but instead some of these functions would be overridden by anonymous classes. So I needed to reliably hook the override implementations used at runtime in order to access incoming data.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://lessonsec.com/home/less/Documents/smartwatch/img/overrides.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/overrides.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;The turning point was identifying &lt;code&gt;BluetoothDevice.connectGatt()&lt;/code&gt; as the universal entry point for every BLE connection. This method always receives the actual callback instance as an argument. By hooking all overloads of &lt;code&gt;connectGatt()&lt;/code&gt; and dynamically extracting the runtime callback class (&lt;code&gt;callback.$className&lt;/code&gt;), it became possible to hook the correct implementation of the target functions regardless of anonymous inner classes as observed in &lt;code&gt;jadx&lt;/code&gt;.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;var BluetoothDevice &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Java&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;use&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;android.bluetooth.BluetoothDevice&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;);&lt;/span&gt;
 
@@ -119,7 +118,7 @@ GATT characteristic
 ATT packets
      ↓
 BLE link
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For the scope of the article, we may as well just consider APP protocol and GATT characteristic.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For the scope of the article, we may as well just consider App protocol and GATT characteristics.&lt;/p&gt;
 &lt;p&gt;Picking out a few messages we can start figuring out what&amp;rsquo;s going on under the hood:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
 BLE WRITE (TX)
@@ -159,7 +158,7 @@ ASCII  : Z.....2.y...........
 &lt;p&gt;The app writes on char &lt;code&gt;00002d01-0000-1000-8000-00805f9b34fb&lt;/code&gt; (handle &lt;code&gt;0x002b&lt;/code&gt;) and the BLE notifications from the smart band are received on char &lt;code&gt;00002d00-0000-1000-8000-00805f9b34fb &lt;/code&gt;(handle  &lt;code&gt;0x002e&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;We can also see that some commands from the app trigger a response from the device through a BLE notification, and some other don&amp;rsquo;t.&lt;/p&gt;
 &lt;p&gt;In order to understand the semantics of the protocol, we need to observe some more traffic.
-For brevity char writes by the app will be marked as &lt;code&gt;TX&lt;/code&gt;, while BLE notifications from the smartband will be marked with &lt;code&gt;RX&lt;/code&gt;.&lt;/p&gt;
+For brevity, char writes by the app will be marked as &lt;code&gt;TX&lt;/code&gt;, while BLE notifications from the smartband will be marked with &lt;code&gt;RX&lt;/code&gt;.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[TX] AB 05 56 01 8B
 [TX] AB 05 E0 01 23
 [TX] AB 0A 39 00 01 02 D0 06 40 23
@@ -217,8 +216,8 @@ Service: 000018d0-0000-1000-8000-00805f9b34fb
 Char   : 00002d01-0000-1000-8000-00805f9b34fb
 Data   : ab 12 17 14 01 01 01 74 65 73 74 3a 20 74 65 73 74 67
 ASCII  : .......test: testg
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For this test, the notification, is a whatsapp notification and the text shown on the screen is: &lt;code&gt;test: test&lt;/code&gt;.
-We can see from the logs of out instrumented app that we see &lt;code&gt;ab121714010101746573743a207465737467&lt;/code&gt; payload written to the characteristic with handle &lt;code&gt;0x2c&lt;/code&gt;.  By converting it in ASCII we can see that the text payload is shared in cleartext as &lt;code&gt;746573743a2074657374&lt;/code&gt; is the hex for ASCII &lt;code&gt;test: test&lt;/code&gt;. Last byte looks suspicious and I&amp;rsquo;m sure it&amp;rsquo;s some kind of CRC, but we will figure this out later.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For this test, the notification is a whatsapp notification and the text shown on the screen is: &lt;code&gt;test: test&lt;/code&gt;.
+We can see from the logs of our instrumented app that we see &lt;code&gt;ab121714010101746573743a207465737467&lt;/code&gt; payload written to the characteristic with handle &lt;code&gt;0x2c&lt;/code&gt;.  By converting it in ASCII we can see that the text payload is shared in cleartext as &lt;code&gt;746573743a2074657374&lt;/code&gt; is the hex for ASCII &lt;code&gt;test: test&lt;/code&gt;. Last byte looks suspicious and I&amp;rsquo;m sure it&amp;rsquo;s some kind of CRC, but we will figure this out later.&lt;/p&gt;
 &lt;p&gt;Based on what we know, we can make an educated guess and suppose that the base message frame looks something like this:&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
@@ -266,7 +265,7 @@ We can see from the logs of out instrumented app that we see &lt;code&gt;ab12171
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/hacked_notification.jpeg#center&#34; alt=&#34;Custom notification&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/hacked_notification.jpeg#center&#34; alt=&#34;Custom notification&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -275,13 +274,13 @@ We can see from the logs of out instrumented app that we see &lt;code&gt;ab12171
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much&amp;hellip; Also we kinda figured out the packet format, but it doesn&amp;rsquo;t account for every byte in notification messages.
+&lt;p&gt;Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much&amp;hellip; Also we kind of figured out the packet format, but it doesn&amp;rsquo;t account for every byte in notification messages.
 It would make sense for there to be one or more bytes to handle some type of data fragmentation, to handle payloads longer than 16 bytes.&lt;/p&gt;
-&lt;p&gt;So I&amp;rsquo;ve sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify total &lt;code&gt;fragment number&lt;/code&gt; and the &lt;code&gt;current fragment&lt;/code&gt;. Then by experimenting I figured out two more bytes that are part of the notification message format which I called &lt;code&gt;sub-command&lt;/code&gt; and &lt;code&gt;extra&lt;/code&gt; bytes.&lt;/p&gt;
+&lt;p&gt;So I&amp;rsquo;ve sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify the total &lt;code&gt;fragment number&lt;/code&gt; and the &lt;code&gt;current fragment&lt;/code&gt;. Then by experimenting I figured out two more bytes that are part of the notification message format which I called &lt;code&gt;sub-command&lt;/code&gt; and &lt;code&gt;extra&lt;/code&gt; bytes.&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/penguin_notification.jpeg#center&#34; alt=&#34;Fragmented custom notification&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/penguin_notification.jpeg#center&#34; alt=&#34;Fragmented custom notification&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -536,7 +535,7 @@ ASCII  : Z...................
 &lt;/blockquote&gt;
 &lt;p&gt;After identifying several control commands, I wanted to understand how the companion app uploads custom watchfaces to the device. Capturing a full update revealed that the process consists of two distinct phases: a short control exchange that prepares the watch for the transfer, followed by a large stream of fragmented image data.&lt;/p&gt;
 &lt;p&gt;The actual watchface image is transmitted as a sequence of packets written on the same BLE characteristic used for other commands. Unlike the notification and weather packets analyzed earlier, these frames do not include a length byte. Instead, they are simple fragments of raw pixel data indexed with a 16-bit counter. The start of image stream is probably set up by previous communications.&lt;/p&gt;
-&lt;p&gt;Typical fragments looks like this:&lt;/p&gt;
+&lt;p&gt;Typical fragments look like this:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;======================================
 BLE WRITE (TX)
 ======================================
@@ -633,7 +632,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/watchface_broken.png#center&#34; alt=&#34;Badly reconstructed image&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/watchface_broken.png#center&#34; alt=&#34;Badly reconstructed image&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -646,7 +645,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/watchface.png#center&#34; alt=&#34;Reconstructed image&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/watchface.png#center&#34; alt=&#34;Reconstructed image&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -701,7 +700,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;images/ft100/message_format.png#center&#34; alt=&#34;Useful code&#34;&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;img src=&#34;https://lessonsec.com/images/ft100/message_format.png#center&#34; alt=&#34;Useful code&#34;&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
@@ -740,7 +739,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 &lt;/table&gt;
 &lt;p&gt;Registers inside UICR we are going to focus onto are: &lt;code&gt;CLENR0&lt;/code&gt; and &lt;code&gt;RBPCONF&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Register &lt;code&gt;CLENR0&lt;/code&gt; is what allows dividing code flash in two areas: Code Region 0 (CR0) and Code Region 1 (CR1). CR0 always starts at &lt;code&gt;0x00000000&lt;/code&gt;, and its size is defined by the &lt;code&gt;CLENR0&lt;/code&gt; register. Everything above that boundary falls into CR1. If &lt;code&gt;CLENR0&lt;/code&gt; is left untouched (&lt;code&gt;0xFFFFFFFF&lt;/code&gt;), the whole flash is simply treated as CR1.&lt;/p&gt;
-&lt;p&gt;sThere are a few differences between CR0 and CR1:&lt;/p&gt;
+&lt;p&gt;There are a few differences between CR0 and CR1:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Code running in CR0 cannot be modified by code running in CR1.&lt;/li&gt;
 &lt;li&gt;Pages of CR0 cannot be erased, CR0 is erasable only via chip-wide wipe (&lt;code&gt;ERASEALL&lt;/code&gt;)&lt;/li&gt;

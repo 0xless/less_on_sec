@@ -46,7 +46,7 @@ Registers inside UICR we are going to focus onto are: `CLENR0` and `RBPCONF`.
 
 Register `CLENR0` is what allows dividing code flash in two areas: Code Region 0 (CR0) and Code Region 1 (CR1). CR0 always starts at `0x00000000`, and its size is defined by the `CLENR0` register. Everything above that boundary falls into CR1. If `CLENR0` is left untouched (`0xFFFFFFFF`), the whole flash is simply treated as CR1. 
 
-sThere are a few differences between CR0 and CR1: 
+There are a few differences between CR0 and CR1: 
 
 - Code running in CR0 cannot be modified by code running in CR1.
 - Pages of CR0 cannot be erased, CR0 is erasable only via chip-wide wipe (`ERASEALL`)

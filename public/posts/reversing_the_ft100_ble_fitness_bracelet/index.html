@@ -37,8 +37,8 @@
   <meta name="theme-color" content="#ffffff"><meta name="og:title" content="Reversing the FT100 BLE Fitness Bracelet" />
 		<meta name="twitter:title" content="Reversing the FT100 BLE Fitness Bracelet" />
 		<meta property="og:url" content="https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/" />
-		<meta property="og:description" content="" /><meta name="og:image" content="[/images/ft100/nrf51/setup.png]" />
-			<meta name="twitter:image" content="[/images/ft100/nrf51/setup.png]" /></head>
+		<meta property="og:description" content="" /><meta name="og:image" content="[/images/ft100/penguin_notification.jpeg]" />
+			<meta name="twitter:image" content="[/images/ft100/penguin_notification.jpeg]" /></head>
 
   <body>
     <header>
@@ -104,11 +104,11 @@
       <div class="post-meta">
   <strong>
     <span>Posted on</span>
-    <time>2026-03-11</time>
+    <time>2026-03-12</time>
     
     
   </strong>
-  <span> • 3498 words</span>
+  <span> • 3500 words</span>
   
   
   
@@ -123,13 +123,12 @@
 </div>
 
       <div><h2 id="the-device">The device</h2>
-<p>The device is called <code>FT100 Fitness Bracelet</code> by <code>TWENTYFIVESEVEN</code> and it offers some basic features such as heart rate and blood pressure monitoring, steps count, music control, notifications handling, a find device functionality and OTA firmware update.</p>
-<p>It features a display and a soft touch button and it is possible to use the manufacturer&rsquo;s app to configure the device via <code>BLE</code> connection.</p>
-<p><img src="" alt=""></p>
+<p>The device is called <code>FT100 Fitness Bracelet</code> by <code>TWENTYFIVESEVEN</code> and it offers some basic features such as heart rate and blood pressure monitoring, step count, music control, notifications handling, a find device functionality, and OTA firmware update.</p>
+<p>It features a display and a soft touch button, and it is possible to use the manufacturer&rsquo;s app to configure the device via <code>BLE</code> connection.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/ft100.jpg#center" alt="FT100 Fitness Bracelet"></th>
+<th style="text-align:center"><img src="/images/ft100/ft100.jpg#center" alt="FT100 Fitness Bracelet"></th>
 </tr>
 </thead>
 <tbody>
@@ -143,7 +142,7 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/app.png#center" alt="LeFun App"></th>
+<th style="text-align:center"><img src="/images/ft100/app.png#center" alt="LeFun App"></th>
 </tr>
 </thead>
 <tbody>
@@ -160,7 +159,7 @@ This method could also come in handy when working on a non-rooted android device
 <p>The first step here would be to perform a static analysis of the apk. Using <code>jadx</code> I decompiled the apk and started digging for clues on the right point to hook into.</p>
 <p>During static analysis, the obvious first attempt was to look for and attempt hooking android default functions to handle BLE GATT events in <a href="https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback"><code>BluetoothGattCallback</code></a> class. Ideally we would need at least access to <code>onCharacteristicChanged()</code> and <code>onCharacteristicWrite()</code> to intercept characteristic writes and GATT notifications traffic. But simply hooking these functions I was only able to intercept traffic for writes.
 After further analysis I realized the app was not using the base Android <code>BluetoothGattCallback</code>, but instead some of these functions would be overridden by anonymous classes. So I needed to reliably hook the override implementations used at runtime in order to access incoming data.</p>
-<p><img src="/home/less/Documents/smartwatch/img/overrides.png" alt=""></p>
+<p><img src="/images/ft100/overrides.png" alt=""></p>
 <p>The turning point was identifying <code>BluetoothDevice.connectGatt()</code> as the universal entry point for every BLE connection. This method always receives the actual callback instance as an argument. By hooking all overloads of <code>connectGatt()</code> and dynamically extracting the runtime callback class (<code>callback.$className</code>), it became possible to hook the correct implementation of the target functions regardless of anonymous inner classes as observed in <code>jadx</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">var BluetoothDevice <span style="color:#f92672">=</span> Java<span style="color:#f92672">.</span><span style="color:#a6e22e">use</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;android.bluetooth.BluetoothDevice&#34;</span><span style="color:#f92672">);</span>
 
@@ -222,7 +221,7 @@ GATT characteristic
 ATT packets
      ↓
 BLE link
-</code></pre><p>For the scope of the article, we may as well just consider APP protocol and GATT characteristic.</p>
+</code></pre><p>For the scope of the article, we may as well just consider App protocol and GATT characteristics.</p>
 <p>Picking out a few messages we can start figuring out what&rsquo;s going on under the hood:</p>
 <pre tabindex="0"><code>======================================
 BLE WRITE (TX)
@@ -262,7 +261,7 @@ ASCII  : Z.....2.y...........
 <p>The app writes on char <code>00002d01-0000-1000-8000-00805f9b34fb</code> (handle <code>0x002b</code>) and the BLE notifications from the smart band are received on char <code>00002d00-0000-1000-8000-00805f9b34fb </code>(handle  <code>0x002e</code>).</p>
 <p>We can also see that some commands from the app trigger a response from the device through a BLE notification, and some other don&rsquo;t.</p>
 <p>In order to understand the semantics of the protocol, we need to observe some more traffic.
-For brevity char writes by the app will be marked as <code>TX</code>, while BLE notifications from the smartband will be marked with <code>RX</code>.</p>
+For brevity, char writes by the app will be marked as <code>TX</code>, while BLE notifications from the smartband will be marked with <code>RX</code>.</p>
 <pre tabindex="0"><code>[TX] AB 05 56 01 8B
 [TX] AB 05 E0 01 23
 [TX] AB 0A 39 00 01 02 D0 06 40 23
@@ -320,8 +319,8 @@ Service: 000018d0-0000-1000-8000-00805f9b34fb
 Char   : 00002d01-0000-1000-8000-00805f9b34fb
 Data   : ab 12 17 14 01 01 01 74 65 73 74 3a 20 74 65 73 74 67
 ASCII  : .......test: testg
-</code></pre><p>For this test, the notification, is a whatsapp notification and the text shown on the screen is: <code>test: test</code>.
-We can see from the logs of out instrumented app that we see <code>ab121714010101746573743a207465737467</code> payload written to the characteristic with handle <code>0x2c</code>.  By converting it in ASCII we can see that the text payload is shared in cleartext as <code>746573743a2074657374</code> is the hex for ASCII <code>test: test</code>. Last byte looks suspicious and I&rsquo;m sure it&rsquo;s some kind of CRC, but we will figure this out later.</p>
+</code></pre><p>For this test, the notification is a whatsapp notification and the text shown on the screen is: <code>test: test</code>.
+We can see from the logs of our instrumented app that we see <code>ab121714010101746573743a207465737467</code> payload written to the characteristic with handle <code>0x2c</code>.  By converting it in ASCII we can see that the text payload is shared in cleartext as <code>746573743a2074657374</code> is the hex for ASCII <code>test: test</code>. Last byte looks suspicious and I&rsquo;m sure it&rsquo;s some kind of CRC, but we will figure this out later.</p>
 <p>Based on what we know, we can make an educated guess and suppose that the base message frame looks something like this:</p>
 <table>
 <thead>
@@ -369,7 +368,7 @@ We can see from the logs of out instrumented app that we see <code>ab12171401010
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/hacked_notification.jpeg#center" alt="Custom notification"></th>
+<th style="text-align:center"><img src="/images/ft100/hacked_notification.jpeg#center" alt="Custom notification"></th>
 </tr>
 </thead>
 <tbody>
@@ -378,13 +377,13 @@ We can see from the logs of out instrumented app that we see <code>ab12171401010
 </tr>
 </tbody>
 </table>
-<p>Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much&hellip; Also we kinda figured out the packet format, but it doesn&rsquo;t account for every byte in notification messages.
+<p>Only one last step is missing for full notification handling as we know the longest payload we can send on the exchanged MTU is 20 bytes. Now, if we remove, header, length, command ID and CRC bytes we are left with 16 bytes for the notification text, which is not much&hellip; Also we kind of figured out the packet format, but it doesn&rsquo;t account for every byte in notification messages.
 It would make sense for there to be one or more bytes to handle some type of data fragmentation, to handle payloads longer than 16 bytes.</p>
-<p>So I&rsquo;ve sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify total <code>fragment number</code> and the <code>current fragment</code>. Then by experimenting I figured out two more bytes that are part of the notification message format which I called <code>sub-command</code> and <code>extra</code> bytes.</p>
+<p>So I&rsquo;ve sent a dozen of notifications to the smartwatch using the phone and I was able to figure the notification message format out almost entirely: As anticipated we confirm we have a fragmentation mechanism, in particular 2 extra bytes that specify the total <code>fragment number</code> and the <code>current fragment</code>. Then by experimenting I figured out two more bytes that are part of the notification message format which I called <code>sub-command</code> and <code>extra</code> bytes.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/penguin_notification.jpeg#center" alt="Fragmented custom notification"></th>
+<th style="text-align:center"><img src="/images/ft100/penguin_notification.jpeg#center" alt="Fragmented custom notification"></th>
 </tr>
 </thead>
 <tbody>
@@ -639,7 +638,7 @@ ASCII  : Z...................
 </blockquote>
 <p>After identifying several control commands, I wanted to understand how the companion app uploads custom watchfaces to the device. Capturing a full update revealed that the process consists of two distinct phases: a short control exchange that prepares the watch for the transfer, followed by a large stream of fragmented image data.</p>
 <p>The actual watchface image is transmitted as a sequence of packets written on the same BLE characteristic used for other commands. Unlike the notification and weather packets analyzed earlier, these frames do not include a length byte. Instead, they are simple fragments of raw pixel data indexed with a 16-bit counter. The start of image stream is probably set up by previous communications.</p>
-<p>Typical fragments looks like this:</p>
+<p>Typical fragments look like this:</p>
 <pre tabindex="0"><code>======================================
 BLE WRITE (TX)
 ======================================
@@ -736,7 +735,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/watchface_broken.png#center" alt="Badly reconstructed image"></th>
+<th style="text-align:center"><img src="/images/ft100/watchface_broken.png#center" alt="Badly reconstructed image"></th>
 </tr>
 </thead>
 <tbody>
@@ -749,7 +748,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/watchface.png#center" alt="Reconstructed image"></th>
+<th style="text-align:center"><img src="/images/ft100/watchface.png#center" alt="Reconstructed image"></th>
 </tr>
 </thead>
 <tbody>
@@ -804,7 +803,7 @@ Now, it was easy to determine how images were sent, but it took a lot of fiddlin
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="images/ft100/message_format.png#center" alt="Useful code"></th>
+<th style="text-align:center"><img src="/images/ft100/message_format.png#center" alt="Useful code"></th>
 </tr>
 </thead>
 <tbody>
