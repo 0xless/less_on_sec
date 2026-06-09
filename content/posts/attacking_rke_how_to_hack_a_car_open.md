@@ -8,7 +8,7 @@ tags:
   - Hardware hacking
   - Automotive
 
-location: "https://www.secjuice.com/attacking-rke-how-to-hack-a-car-open/"
+location: "https://secjuice.com/attacking-rke-how-to-hack-a-car-open-2/"
 type: "redirect"
 ---
 
