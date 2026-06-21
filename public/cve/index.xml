@@ -13,8 +13,24 @@
 
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 14 Jan 2026 00:00:00 &#43;0200</lastBuildDate>
+    <lastBuildDate>Sat, 20 Jun 2026 00:00:00 &#43;0200</lastBuildDate>
     <atom:link href="https://lessonsec.com/cve/index.xml" rel="self" type="application/rss&#43;xml" /><item>
+        <title>CVE-2025-64719: Git Pathspec Confusion Denial of Service in Gogs</title>
+        <link>https://lessonsec.com/cve/cve-2025-64719/</link>
+        <guid isPermaLink="true">https://lessonsec.com/cve/cve-2025-64719/</guid>
+        <pubDate>Sat, 20 Jun 2026 00:00:00 &#43;0200</pubDate><description>In Gogs version &amp;lt;=0.14.2 a malicious user with rights to create a new file or wiki entry can cause persistent denial of service in repository and wiki pages by creating files with names that are interpreted as malformed Git pathspecs, resulting in HTTP 500 errors when wiki index and repo index pages are viewed.</description>
+	<content:encoded>&lt;p&gt;In Gogs version &amp;lt;=0.14.2 a malicious user with rights to create a new file or wiki entry can cause persistent denial of service in repository and wiki pages by creating files with names that are interpreted as malformed Git pathspecs, resulting in HTTP 500 errors when wiki index and repo index pages are viewed.&lt;/p&gt;
+&lt;p&gt;More information and root cause analysis in github&amp;rsquo;s security advisory: &lt;a href=&#34;https://github.com/gogs/gogs/security/advisories/GHSA-3qq3-668m-v9mj&#34;&gt;GHSA-3qq3-668m-v9mj&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;disclosure-timeline&#34;&gt;Disclosure timeline&lt;/h2&gt;
+&lt;p&gt;05/11/2025  Opened security issue on github&lt;br&gt;
+12/11/2025  Maintainers acknowledged the vulnerability&lt;br&gt;
+12/11/2025   CVE IDs requested&lt;br&gt;
+12/11/2025   CVE IDs reserved&lt;br&gt;
+07/06/2026  Release with fix&lt;br&gt;
+19/06/2026  Disclosure&lt;/p&gt;
+</content:encoded>
+
+      </item><item>
         <title>CVE-2025-65396: SPI Fault Enables Bootloader Access and Firmware Dump in Blurams Flare Camera</title>
         <link>https://lessonsec.com/cve/cve-2025-65396/</link>
         <guid isPermaLink="true">https://lessonsec.com/cve/cve-2025-65396/</guid>
