@@ -16,8 +16,8 @@
     <lastBuildDate>Sun, 11 Oct 2026 18:30:00 &#43;0000</lastBuildDate>
     <atom:link href="https://lessonsec.com/tags/rfid/index.xml" rel="self" type="application/rss&#43;xml" /><item>
         <title>Walkthrough: Meethack x RomHack Cyber Car Wash CTF</title>
-        <link>https://lessonsec.com/posts/meethack-x-romhack-car-wash-ctf-walktrhough/</link>
-        <guid isPermaLink="true">https://lessonsec.com/posts/meethack-x-romhack-car-wash-ctf-walktrhough/</guid>
+        <link>https://lessonsec.com/posts/meethack_x_romhack_car_wash_ctf_walkthrough/</link>
+        <guid isPermaLink="true">https://lessonsec.com/posts/meethack_x_romhack_car_wash_ctf_walkthrough/</guid>
         <pubDate>Sun, 11 Oct 2026 18:30:00 &#43;0000</pubDate><description>Having moved to a new country recently, I&amp;rsquo;ve left behind some friends, including the Meethack Torino hacking group, and since they were organizing a CTF for their community stand at RomHack, I figured it would be nice to give it a try.</description>
 	<content:encoded>&lt;p&gt;Having moved to a new country recently, I&amp;rsquo;ve left behind some friends, including the &lt;code&gt;Meethack&lt;/code&gt; Torino hacking group, and since they were organizing a CTF for their community stand at &lt;code&gt;RomHack&lt;/code&gt;, I figured it would be nice to give it a try.
 So, by knowing the right people I got early access to the CTF, so I setup  the necessary hardware as best as I could to try solving the challenge.&lt;/p&gt;
