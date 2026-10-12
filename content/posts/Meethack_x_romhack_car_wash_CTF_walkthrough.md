@@ -65,7 +65,7 @@ An obvious step to take is to read the values stored in the keyfob to better und
 
 |![tag_id](/images/meethack_ctf/tag_id.jpeg#center)|
 | :----------------------------------: |
-|            Missing keys - can't read sectors         |
+|            Tag identified as Mifare 1k         |
 
 We found that we are working with a MIFARE Classic 1k, however attempting to dump the content of the tag, we meet the first issue:
 
