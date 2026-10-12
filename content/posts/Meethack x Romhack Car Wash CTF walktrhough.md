@@ -36,7 +36,6 @@ images:
 image:
 - /images/meethack_ctf/no_keys.jpg
 
-draft: true
 ---
 
 Having moved to a new country recently, I've left behind some friends, including the `Meethack` Torino hacking group, and since they were organizing a CTF for their community stand at `RomHack`, I figured it would be nice to give it a try.

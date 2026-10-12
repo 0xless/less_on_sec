@@ -2,31 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://lessonsec.com/tags/ctfs/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/hardware-hacking/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/physical-security/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/posts/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/rfid/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/tags/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
+    <loc>https://lessonsec.com/posts/meethack-x-romhack-car-wash-ctf-walktrhough/</loc>
+    <lastmod>2026-10-11T18:30:00+00:00</lastmod>
+  </url><url>
     <loc>https://lessonsec.com/cve/</loc>
     <lastmod>2026-06-20T00:00:00+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/cve/cve-2025-64719/</loc>
     <lastmod>2026-06-20T00:00:00+02:00</lastmod>
   </url><url>
-    <loc>https://lessonsec.com/</loc>
-    <lastmod>2026-06-20T00:00:00+02:00</lastmod>
-  </url><url>
     <loc>https://lessonsec.com/tags/ble/</loc>
     <lastmod>2026-03-12T09:00:00+02:00</lastmod>
   </url><url>
-    <loc>https://lessonsec.com/tags/hardware-hacking/</loc>
-    <lastmod>2026-03-12T09:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/physical-security/</loc>
-    <lastmod>2026-03-12T09:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/posts/</loc>
-    <lastmod>2026-03-12T09:00:00+02:00</lastmod>
-  </url><url>
     <loc>https://lessonsec.com/posts/reversing_the_ft100_ble_fitness_bracelet/</loc>
-    <lastmod>2026-03-12T09:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/</loc>
     <lastmod>2026-03-12T09:00:00+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/cve/cve-2025-65396/</loc>
@@ -68,9 +77,6 @@
     <loc>https://lessonsec.com/cve/cve-2022-44900/</loc>
     <lastmod>2022-12-06T22:19:25+01:00</lastmod>
   </url><url>
-    <loc>https://lessonsec.com/tags/ctfs/</loc>
-    <lastmod>2022-04-17T14:08:32+02:00</lastmod>
-  </url><url>
     <loc>https://lessonsec.com/posts/walkthrough-ble-ctf/</loc>
     <lastmod>2022-04-17T14:08:32+02:00</lastmod>
   </url><url>
@@ -99,9 +105,6 @@
     <lastmod>2021-07-15T16:45:40+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/posts/cloning-rfid-tags-for-fun-and-profit/</loc>
-    <lastmod>2021-04-20T16:27:00+02:00</lastmod>
-  </url><url>
-    <loc>https://lessonsec.com/tags/rfid/</loc>
     <lastmod>2021-04-20T16:27:00+02:00</lastmod>
   </url><url>
     <loc>https://lessonsec.com/tags/dev-chronicles/</loc>

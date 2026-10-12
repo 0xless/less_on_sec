@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Personal blog on cybersecurity, harware hacking and security research."
+  />
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      
+      	<title> Walkthrough: Meethack x RomHack Cyber Car Wash CTF | less on sec </title>
+      
+    
+  
+  <link rel="stylesheet" href="/css/reset.css"/>
+  <link rel="stylesheet" href="/css/font.css"/>
+  <link rel="stylesheet" href="/css/smigle.css"/>
+  
+    <link rel="stylesheet" href="/css/custom.css"/>
+  
+  <link rel="canonical" href="https://lessonsec.com/posts/meethack-x-romhack-car-wash-ctf-walktrhough/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff"><meta name="og:title" content="Walkthrough: Meethack x RomHack Cyber Car Wash CTF" />
+		<meta name="twitter:title" content="Walkthrough: Meethack x RomHack Cyber Car Wash CTF" />
+		<meta property="og:url" content="https://lessonsec.com/posts/meethack-x-romhack-car-wash-ctf-walktrhough/" />
+		<meta property="og:description" content="" /><meta name="og:image" content="[/images/meethack_ctf/no_keys.jpg]" />
+			<meta name="twitter:image" content="[/images/meethack_ctf/no_keys.jpg]" /></head>
+
+  <body>
+    <header>
+  <div id="brand">
+    <a class="icon-link" href="https://lessonsec.com">
+      <img
+        class="icon"
+        src="/images/logo_white.svg"
+      />
+    </a>
+    <div class="text">
+      <a href="https://lessonsec.com"><h1>less on sec</h1></a>
+      <h3>exploring, hacking and breaking stuff</h3>
+    </div>
+  </div>
+  <nav>
+	<div class="responsive_div_top">
+		
+		
+		
+		<a href="/"><b>Home</b></a>
+		
+		 | 
+		<a href="/whoami/"><b>Whoami</b></a>
+		
+		 | 
+		<a href="/posts/"><b>Posts</b></a>
+		
+		 | 
+		<a href="/cve/"><b>CVE</b></a>
+		
+		
+		
+	</div>
+
+	<div class="responsive_div_bottom">
+		Links: 
+		
+		
+		<a href="https://github.com/0xless">GitHub</a>
+		
+		 | 
+		<a href="https://www.linkedin.com/in/matteo-cosentino/">Linkedin</a>
+		
+		 | 
+		<a href="mailto:contact[at]lessonsec[dot]com">Email</a>
+		
+		 | 
+		<a href="index.xml">RSS</a>
+		
+	</div>
+      
+  
+  </nav>
+  <hr />
+</header>
+
+    <div id="content">
+      
+  <main>
+    <article>
+      <h1>Walkthrough: Meethack x RomHack Cyber Car Wash CTF</h1>
+      <div class="post-meta">
+  <strong>
+    <span>Posted on</span>
+    <time>2026-10-11</time>
+    
+    
+  </strong>
+  <span> • 1573 words</span>
+  
+  
+  
+    <div>
+      <span>Tags:</span>
+      
+        <a href="/tags/ctfs">CTFs</a>, 
+        <a href="/tags/rfid">RFID</a>, 
+        <a href="/tags/physical-security">Physical security</a>, 
+        <a href="/tags/hardware-hacking">Hardware hacking</a>
+    </div>
+  
+</div>
+
+      <div><p>Having moved to a new country recently, I&rsquo;ve left behind some friends, including the <code>Meethack</code> Torino hacking group, and since they were organizing a CTF for their community stand at <code>RomHack</code>, I figured it would be nice to give it a try.
+So, by knowing the right people I got early access to the CTF, so I setup  the necessary hardware as best as I could to try solving the challenge.</p>
+<blockquote>
+<p>The materials are now public, check out <a href="https://meethack.it/resources/">here</a> if you want to give the challenge a try.</p>
+</blockquote>
+<h2 id="setup-and-tooling">Setup and tooling</h2>
+<p>I tried solving the challenge as I would on site: mostly using my phone; and to be fair I did most of the heavy lifting with it, however I could use the help of a tiny <code>ChameleonUltra</code> NFC tool. At some point I also used a <code>proxmark3</code>, but no spoilers.</p>
+<p>So the tools I used the most were the Chameleon and its companion app, as well as the <code>MIFARE Classic Tool</code> application, which came in handy in the past.</p>
+<p>To play the CTF each user is given:</p>
+<ul>
+<li>NFC keyfob</li>
+<li>Cyber Car Wash APK file</li>
+<li>18€ in credit loaded in the keyfob</li>
+</ul>
+<p>With the objective to buy the most expensive item on the menu (5500€), through a point of sale device held by administrators.</p>
+<p>The app only allows users to read their own tag, nothing more, nothing less, so I put it on the side for a minute and focused on something else.</p>
+<h2 id="poking-at-the-nfc-tag">Poking at the NFC Tag</h2>
+<p>An obvious step to take is to read the values stored in the keyfob to better understand how to approach the challenge. Before proceeding further, it is necessary to identify the device.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/tag_id.jpeg#center" alt="tag_id"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Missing keys - can&rsquo;t read sectors</td>
+</tr>
+</tbody>
+</table>
+<p>We found that we are working with a MIFARE Classic 1k, however attempting to dump the content of the tag, we meet the first issue:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/no_keys.jpg#center" alt="no keys"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Missing keys - can&rsquo;t read sectors</td>
+</tr>
+</tbody>
+</table>
+<p>Only sector one is readable with default keys, all other sectors are protected by unknown keys.</p>
+<p>At this point one can attempt doing multiple things, I decided to go for the hardware hacking way and attempt recovering the keys exploiting known key recovery attacks on MIFARE Classic 1k tags, namely Nested/Hard-nested and/or backdored tag.</p>
+<blockquote>
+<p>Mandatory disclaimer: since I played the CTF at home, I couldn&rsquo;t get my hands on the official keyfobs distributed at the conference. Instead I programmed some MIFARE Classic tags I had laying around. This means that the applicability of the key recovery attacks might vary depending on the actual tag you have in your hands.</p>
+</blockquote>
+<h2 id="getting-the-keys-the-unintended-way">Getting the keys the unintended way</h2>
+<p>In my case it was possible to recover the keys using the nested attack as the PRNG on my tag was not strong.
+I simply used my <code>Chameleon</code> to do this, the attack is implemented in the app and it only takes a couple of minutes to retrieve all the keys.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/recovered_keys.jpeg#center" alt="recovered_keys"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Keys recovered with nested attack</td>
+</tr>
+</tbody>
+</table>
+<p>Having recovered the keys, we can dump the content of each sector, however it will look seemingly random.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/raw_content.jpeg#center" alt="raw_content"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Raw content for keyfob sectors</td>
+</tr>
+</tbody>
+</table>
+<p>But is it?</p>
+<p>Decoding the sectors as ASCII, we notice a bunch of things:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/ascii_content.jpeg#center" alt="ascii_content"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ASCII values from sectors</td>
+</tr>
+</tbody>
+</table>
+<p>This is a good start, but what else do we have&hellip;</p>
+<p><img src="/images/meethack_ctf/ascii_content_2.jpeg#center" alt="ascii_content_2"></p>
+<p>Prompt injection, fair play in my opinion, let&rsquo;s look for more stuff.</p>
+<p><img src="/images/meethack_ctf/ascii_content_3.jpeg#center" alt="ascii_content_3"></p>
+<p>Now we can tell the creator of this challenge is a funny guy, what else?</p>
+<p><img src="/images/meethack_ctf/ascii_content_4.jpeg#center" alt="ascii_content_4"></p>
+<p>Alright, alright, let&rsquo;s see where this goes.</p>
+<p><img src="/images/meethack_ctf/ascii_content_5.jpeg#center" alt="ascii_content_5"></p>
+<p>* drum roll *</p>
+<p><img src="/images/meethack_ctf/ascii_content_6.jpeg#center" alt="ascii_content_6"></p>
+<p>Ok, this guy is really trying to be funny uh?</p>
+<p><img src="/images/meethack_ctf/ascii_content_7.jpeg#center" alt="ascii_content_7"></p>
+<p>Just spill the beans already!</p>
+<p><img src="/images/meethack_ctf/ascii_content_8.jpeg#center" alt="ascii_content_8"></p>
+<p>Alright, now we have a name if you want to take out your anger on somebody.</p>
+<p><img src="/images/meethack_ctf/ascii_content_9.jpeg#center" alt="ascii_content_9"></p>
+<p>Alright, now violence might be the only option.</p>
+<p>Well, not the kind of hint I was hoping for.</p>
+<h2 id="reversing-the-apk">Reversing the APK</h2>
+<p>Let&rsquo;s open the APK in <code>JADX</code> and see if we can go any further.</p>
+<p>After looking around the code a little, we can find a bunch of useful functions in <code>com.meethack.romhack.camp2026.wrappers.NfcWrapper</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/read_data.png#center" alt="read_data"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">NFC related app functions</td>
+</tr>
+</tbody>
+</table>
+<p>These read functions show us how data is stored into specific blocks. We can now start to figure out if and how we can forge data to put on the card.</p>
+<p>To summarize what we can tell from these functsions:</p>
+<ul>
+<li>Name and surname are stored in ASCII in the blocks available in sector 14 (surname) and 15 (name).</li>
+<li>Creation date is stored in the first bytes of blocks 1,2 and 3 of sector 13, like so: year in block 0, month in block 1 and day in block 2.</li>
+<li>Amount is stored in block 3 as a 32 bit signed integer (little endian)</li>
+</ul>
+<p>Knowing this we have a solid chance to actually be able to forge the amount value and attempt buying the most expensive item available on the point of sale.
+So I used my chameleon to edit the dump and write it again on the keyfob.</p>
+<p>Let&rsquo;s try reading back the card with forged data:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/forge_value.jpeg#center" alt="updated_val"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">First attempt at forging card amount</td>
+</tr>
+</tbody>
+</table>
+<p>Sadly, when I tried purchasing using the point of sale app, I got no luck and received an error message in return.</p>
+<blockquote>
+<p>Missing screenshot notice: here I would have put a screenshot of the error, if I had one.</p>
+</blockquote>
+<p>At this point I started wondering how the point of sale could detect errors, so I looked at the data a little closer and focused on diffs between two dumps, I started noticing a pattern, and finally I decided to check on the datasheet:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/value_block.jpeg#center" alt="value_block"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">MIFARE Value block documentation</td>
+</tr>
+</tbody>
+</table>
+<p>Now it feels like the challenge is ready to be solved.</p>
+<h2 id="solving-the-ctf">Solving the CTF</h2>
+<p>We forge the data again paying attention to the value block using these functions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">make_value_block</span>(value: int, block_address: int) <span style="color:#f92672">-&gt;</span> bytes:
+    <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">    Create a MIFARE Classic value block.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    Layout:
+</span><span style="color:#e6db74">        0x00-0x03  value       (LE)
+</span><span style="color:#e6db74">        0x04-0x07  ~value
+</span><span style="color:#e6db74">        0x08-0x0B  value       (LE)
+</span><span style="color:#e6db74">        0x0C       block address
+</span><span style="color:#e6db74">        0x0D       ~block address
+</span><span style="color:#e6db74">        0x0E       block address
+</span><span style="color:#e6db74">        0x0F       ~block address
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+
+    <span style="color:#75715e"># Unsigned 32-bit representation</span>
+    value_u32 <span style="color:#f92672">=</span> value <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffffff</span>
+
+    value_bytes <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;I&#34;</span>, value_u32)
+    inverse_value <span style="color:#f92672">=</span> bytes(b <span style="color:#f92672">^</span> <span style="color:#ae81ff">0xff</span> <span style="color:#66d9ef">for</span> b <span style="color:#f92672">in</span> value_bytes)
+
+    address <span style="color:#f92672">=</span> block_address <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff</span>
+    inverse_address <span style="color:#f92672">=</span> address <span style="color:#f92672">^</span> <span style="color:#ae81ff">0xff</span>
+
+    <span style="color:#66d9ef">return</span> (
+        value_bytes <span style="color:#f92672">+</span> inverse_value <span style="color:#f92672">+</span> value_bytes <span style="color:#f92672">+</span>
+        bytes([address, inverse_address, address,inverse_address])
+    )
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">make_string_blocks</span>(value: str) <span style="color:#f92672">-&gt;</span> list[bytes]:
+    data <span style="color:#f92672">=</span> value<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#34;utf-8&#34;</span>)
+    <span style="color:#66d9ef">if</span> len(data) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">48</span>:
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+            <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>value<span style="color:#e6db74">!r}</span><span style="color:#e6db74"> is </span><span style="color:#e6db74">{</span>len(data)<span style="color:#e6db74">}</span><span style="color:#e6db74"> bytes; maximum is 48 bytes&#34;</span>
+        )
+    data <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">48</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">return</span> [data[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">16</span>], data[<span style="color:#ae81ff">16</span>:<span style="color:#ae81ff">32</span>], data[<span style="color:#ae81ff">32</span>:<span style="color:#ae81ff">48</span>]]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forge_sector_12</span>(amount: int) <span style="color:#f92672">-&gt;</span> list[bytes]:
+    <span style="color:#66d9ef">return</span> [
+        make_value_block(amount, <span style="color:#ae81ff">48</span>),
+        bytes(<span style="color:#ae81ff">16</span>),
+        bytes(<span style="color:#ae81ff">16</span>),
+    ]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forge_sector_13</span>(date: datetime) <span style="color:#f92672">-&gt;</span> list[bytes]:
+    <span style="color:#66d9ef">return</span> [
+        make_value_block(date<span style="color:#f92672">.</span>year, <span style="color:#ae81ff">52</span>),
+        make_value_block(date<span style="color:#f92672">.</span>month, <span style="color:#ae81ff">53</span>),
+        make_value_block(date<span style="color:#f92672">.</span>day, <span style="color:#ae81ff">54</span>),
+    ]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forge_sector_14</span>(surname: str) <span style="color:#f92672">-&gt;</span> list[bytes]:
+    <span style="color:#66d9ef">return</span> make_string_blocks(surname)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forge_sector_15</span>(name: str) <span style="color:#f92672">-&gt;</span> list[bytes]:
+    <span style="color:#66d9ef">return</span> make_string_blocks(name)
+</code></pre></div><p>We write the edited content to the card, and when we try buying something from the point of sale app&hellip;</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/win.jpg#center" alt="win"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Challenge solved!</td>
+</tr>
+</tbody>
+</table>
+<p>We finally got to buy the most expensive item and won the challenge.</p>
+<h2 id="getting-the-keys-the-intended-way">Getting the keys the intended way</h2>
+<p>To be completely fair, it didn&rsquo;t sit right with me that I used a vulnerability in my own keyfob to solve part of the challenge, so I dug deeper and not long after looking a bit more into the APK, I found where the app gets the keys:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/fetchkeys.png#center" alt="fetchkeys"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">fetch keys function</td>
+</tr>
+</tbody>
+</table>
+<p>We see that it performs a POST request including an HTTP header and a JSON body containing the UID of the NFC tag. In the <code>/res/values/strings.xml</code> file we find the endpoint and API key header name and value.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/endpoint_and_keys.png#center" alt="endpoint_and_keys"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">String values for endpoint and keys</td>
+</tr>
+</tbody>
+</table>
+<p>At this point I had blindly poked at the endpoint for a while and I could only get 502 errors. I then checked how fetch keys was called to better look at the UID value and there I noticed that the UID value has to be the entire <code>block 0</code> of the tag.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/fetchkeys_param.png#center" alt="fetchkeys_param"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Parameter for fetchkeys</td>
+</tr>
+</tbody>
+</table>
+<p>Now the endpoint started responding nicely with the keys for the tag:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/keys.png#center" alt="keys"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Keys recovered the intended way</td>
+</tr>
+</tbody>
+</table>
+<p>For convenience, here&rsquo;s the curl command I used:</p>
+<pre tabindex="0"><code>curl -s -k -X POST &quot;https://cyber-car-washer-alb-1288079676.eu-west-1.elb.amazonaws.com/&quot; \
+  -H &quot;Content-Type: application/json; charset=utf-8&quot; \
+  -H &quot;X-Api-Key: 1067d23605d6bd05aefa6ad0d0803b0a188ac33cfce932334d6ade20d6af02f07203382d27f5ad126ade76c0837e1319&quot; \
+  -d '{&quot;uid&quot;:&quot;0B55C2039F0804006263646566676869&quot;}' | jq
+</code></pre><h2 id="getting-the-keys-the-unintended-way-pt-2">Getting the keys the unintended way pt. 2</h2>
+<p>By knowing the right people, I was able to get one of the original tags distributed at the CTF.</p>
+<p>And so I got to work, I had yet to find a MIFARE Classic tag that effectively protects its keys.
+Just like I had imagined, we have a new unintended solution to explore: abusing the <code>Fudan FM11RF08S</code> backdoor.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/backdoor.jpeg#center" alt="backdoor"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Challenge keyfob is backdored</td>
+</tr>
+</tbody>
+</table>
+<p>I had read about this issue, but never encountered it in the wild, so it was pretty fun to mess with too.</p>
+<p>It&rsquo;s just a matter of reading the tag with known backdoor keys to see if any would work.
+For reference these keys are:</p>
+<ul>
+<li><code>A396EFA4E24F</code> (Mifare classic 1k)</li>
+<li><code>A31667A8CEC1</code> (Mifare classic 1k)</li>
+<li><code>518B3354E760</code> (Mifare classic 4k)</li>
+</ul>
+<p>So I used my <code>proxmark3</code> to attempt using these keys to perform read operations</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/backdoor_read.png#center" alt="backdoor_read"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">MIFARE keyfob read with backdoor key</td>
+</tr>
+</tbody>
+</table>
+<p>However this doesn&rsquo;t give us write access, for the recovery of the keys, we&rsquo;ll just use a script in the in the <code>proxmark3</code> repo: <code>mf_backdoor_dump.py</code></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="/images/meethack_ctf/key_recovery.png#center" alt="key_recovery"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Backdoor based key recovery</td>
+</tr>
+</tbody>
+</table>
+<p>This takes some time, between 15 and 30 minutes, but we demonstrated we could get the keys in another unintended way.</p>
+<h2 id="thanks">Thanks</h2>
+<p>I wanted to thank the <code>Meethack</code> group for creating this challenge.
+A special thank you to <a href="https://github.com/iadrabbit">IadRabbit</a> for letting me try the challenge in advance and for keeping a keyfob on the side for me and to <a href="https://github.com/ohkuom">[kuomkuom]</a> for bringing me the keyfob back from the conference.</p>
+</div>
+    </article>
+  </main>
+
+    </div>
+    <footer>
+  <hr />
+
+  <p class="copyright">
+    Copyright © 2026
+    <a href="https://lessonsec.com"><strong>Matteo [0xless] Cosentino</strong></a>.
+</footer>
+
+<script data-goatcounter="https://lessonsec.goatcounter.com/count"
+        async src="https://lessonsec.com/script/count.js"></script>
+
+
+
+  </body>
+</html>

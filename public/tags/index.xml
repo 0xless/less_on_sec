@@ -13,11 +13,11 @@
 
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 12 Mar 2026 09:00:00 &#43;0200</lastBuildDate>
+    <lastBuildDate>Sun, 11 Oct 2026 18:30:00 &#43;0000</lastBuildDate>
     <atom:link href="https://lessonsec.com/tags/index.xml" rel="self" type="application/rss&#43;xml" /><item>
-        <title>BLE</title>
-        <link>https://lessonsec.com/tags/ble/</link>
-        <guid isPermaLink="true">https://lessonsec.com/tags/ble/</guid>
+        <title>CTFs</title>
+        <link>https://lessonsec.com/tags/ctfs/</link>
+        <guid isPermaLink="true">https://lessonsec.com/tags/ctfs/</guid>
         <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
 	<content:encoded></content:encoded>
 
@@ -32,6 +32,20 @@
         <title>Physical security</title>
         <link>https://lessonsec.com/tags/physical-security/</link>
         <guid isPermaLink="true">https://lessonsec.com/tags/physical-security/</guid>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
+	<content:encoded></content:encoded>
+
+      </item><item>
+        <title>RFID</title>
+        <link>https://lessonsec.com/tags/rfid/</link>
+        <guid isPermaLink="true">https://lessonsec.com/tags/rfid/</guid>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
+	<content:encoded></content:encoded>
+
+      </item><item>
+        <title>BLE</title>
+        <link>https://lessonsec.com/tags/ble/</link>
+        <guid isPermaLink="true">https://lessonsec.com/tags/ble/</guid>
         <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
 	<content:encoded></content:encoded>
 
@@ -53,13 +67,6 @@
         <title>Radio</title>
         <link>https://lessonsec.com/tags/radio/</link>
         <guid isPermaLink="true">https://lessonsec.com/tags/radio/</guid>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
-	<content:encoded></content:encoded>
-
-      </item><item>
-        <title>CTFs</title>
-        <link>https://lessonsec.com/tags/ctfs/</link>
-        <guid isPermaLink="true">https://lessonsec.com/tags/ctfs/</guid>
         <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
 	<content:encoded></content:encoded>
 
@@ -88,13 +95,6 @@
         <title>SDR</title>
         <link>https://lessonsec.com/tags/sdr/</link>
         <guid isPermaLink="true">https://lessonsec.com/tags/sdr/</guid>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
-	<content:encoded></content:encoded>
-
-      </item><item>
-        <title>RFID</title>
-        <link>https://lessonsec.com/tags/rfid/</link>
-        <guid isPermaLink="true">https://lessonsec.com/tags/rfid/</guid>
         <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate><description></description>
 	<content:encoded></content:encoded>
 
